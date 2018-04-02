@@ -40,7 +40,7 @@ const String API_KEY = "api_key";
 const String NODE_ID = "pzem";
 const char* host = "emoncms.org";
 const int httpsPort = 443;
-const char* fingerprint = "1B 9D 33 23 65 3C EC 50 97 C4 2E 63 8E 37 DA C5 04 9A CF 0E";
+const char* fingerprint = "1D 08 43 BC B4 9C FB B1 61 37 F7 05 D6 6B B7 38 28 93 26 E6";
 
 WiFiClient wclient;
 
