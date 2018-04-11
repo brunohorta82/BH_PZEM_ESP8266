@@ -8277,8 +8277,8 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <smd name="VCC" x="-7.792" y="-8.2" dx="2.286" dy="1.2" layer="1"/>
 <smd name="TXD0" x="7.592" y="5.8" dx="2.286" dy="1.2" layer="1"/>
 <smd name="RXD0" x="7.592" y="3.8" dx="2.286" dy="1.2" layer="1"/>
-<smd name="GPIO4" x="7.592" y="1.8" dx="2.286" dy="1.2" layer="1"/>
-<smd name="GPIO5" x="7.592" y="-0.2" dx="2.286" dy="1.2" layer="1"/>
+<smd name="GPIO5" x="7.592" y="1.8" dx="2.286" dy="1.2" layer="1"/>
+<smd name="GPIO4" x="7.592" y="-0.2" dx="2.286" dy="1.2" layer="1"/>
 <smd name="GPIO0" x="7.592" y="-2.2" dx="2.286" dy="1.2" layer="1"/>
 <smd name="GPIO2" x="7.592" y="-4.2" dx="2.286" dy="1.2" layer="1"/>
 <smd name="GPIO15" x="7.592" y="-6.2" dx="2.286" dy="1.2" layer="1"/>
@@ -8303,8 +8303,8 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <pin name="GPIO15" x="15.24" y="-7.62" visible="pin" length="middle" rot="R180"/>
 <pin name="GPIO2" x="15.24" y="-5.08" visible="pin" length="middle" rot="R180"/>
 <pin name="GPIO0" x="15.24" y="-2.54" visible="pin" length="middle" rot="R180"/>
-<pin name="GPIO5" x="15.24" y="0" visible="pin" length="middle" rot="R180"/>
-<pin name="GPIO4" x="15.24" y="2.54" visible="pin" length="middle" rot="R180"/>
+<pin name="GPIO4" x="15.24" y="0" visible="pin" length="middle" rot="R180"/>
+<pin name="GPIO5" x="15.24" y="2.54" visible="pin" length="middle" rot="R180"/>
 <pin name="RX" x="15.24" y="5.08" visible="pin" length="middle" rot="R180"/>
 <pin name="TX" x="15.24" y="7.62" visible="pin" length="middle" rot="R180"/>
 <text x="-12.7" y="10.16" size="1.778" layer="95">&gt;Name</text>
@@ -8330,8 +8330,8 @@ You are welcome to use this library for commercial purposes. For attribution, we
 <connect gate="G$1" pin="GPIO15" pad="GPIO15"/>
 <connect gate="G$1" pin="GPIO16" pad="GPIO16"/>
 <connect gate="G$1" pin="GPIO2" pad="GPIO2"/>
-<connect gate="G$1" pin="GPIO4" pad="GPIO4"/>
-<connect gate="G$1" pin="GPIO5" pad="GPIO5"/>
+<connect gate="G$1" pin="GPIO4" pad="GPIO5"/>
+<connect gate="G$1" pin="GPIO5" pad="GPIO4"/>
 <connect gate="G$1" pin="RESET" pad="RESET"/>
 <connect gate="G$1" pin="RX" pad="RX"/>
 <connect gate="G$1" pin="TX" pad="TX"/>
@@ -9040,7 +9040,6 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <text x="200.66" y="48.26" size="1.778" layer="95">HLK-PM05</text>
 <text x="175.26" y="167.64" size="6.4516" layer="95">BH PZEM BOARD</text>
 <text x="53.34" y="157.48" size="5.08" layer="95">ESP8266-12</text>
-<text x="175.26" y="160.02" size="6.4516" layer="95">REV1.0</text>
 </plain>
 <instances>
 <instance part="F1" gate="G$1" x="114.3" y="17.78" smashed="yes">
@@ -9120,7 +9119,8 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 </segment>
 <segment>
 <pinref part="J1" gate="G$1" pin="4"/>
-<wire x1="109.22" y1="71.12" x2="121.92" y2="71.12" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="71.12" x2="114.3" y2="71.12" width="0.1524" layer="91"/>
+<label x="114.3" y="71.12" size="1.778" layer="95" xref="yes"/>
 </segment>
 <segment>
 <pinref part="U1" gate="G$1" pin="GND"/>
@@ -9130,6 +9130,7 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <segment>
 <pinref part="OK1" gate="A" pin="EMIT"/>
 <wire x1="53.34" y1="17.78" x2="63.5" y2="17.78" width="0.1524" layer="91"/>
+<label x="63.5" y="17.78" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="VCC" class="0">
@@ -9146,6 +9147,17 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <segment>
 <pinref part="R2" gate="G$1" pin="1"/>
 <wire x1="58.42" y1="33.02" x2="71.12" y2="33.02" width="0.1524" layer="91"/>
+<label x="71.12" y="33.02" size="1.778" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="J6" gate="G$1" pin="9"/>
+<wire x1="124.46" y1="172.72" x2="139.7" y2="172.72" width="0.1524" layer="91"/>
+<label x="139.7" y="172.72" size="1.778" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="J1" gate="G$1" pin="1"/>
+<wire x1="109.22" y1="63.5" x2="132.08" y2="63.5" width="0.1524" layer="91"/>
+<label x="132.08" y="63.5" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="GPIO0" class="0">
@@ -9215,7 +9227,7 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <segment>
 <pinref part="X3" gate="-1" pin="KL"/>
 <wire x1="50.8" y1="73.66" x2="66.04" y2="73.66" width="0.1524" layer="91"/>
-<label x="68.58" y="73.66" size="1.778" layer="95" xref="yes"/>
+<label x="66.04" y="73.66" size="1.778" layer="95" xref="yes"/>
 </segment>
 <segment>
 <wire x1="119.38" y1="48.26" x2="104.14" y2="48.26" width="0.1524" layer="91"/>
@@ -9232,18 +9244,7 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <segment>
 <pinref part="U$2" gate="G$1" pin="AC1"/>
 <wire x1="200.66" y1="50.8" x2="177.8" y2="50.8" width="0.1524" layer="91"/>
-<label x="177.8" y="50.8" size="1.778" layer="95" rot="R180"/>
-</segment>
-</net>
-<net name="VCC_D" class="0">
-<segment>
-<pinref part="J6" gate="G$1" pin="9"/>
-<wire x1="124.46" y1="172.72" x2="139.7" y2="172.72" width="0.1524" layer="91"/>
-<label x="139.7" y="172.72" size="1.778" layer="95" xref="yes"/>
-</segment>
-<segment>
-<pinref part="J1" gate="G$1" pin="1"/>
-<wire x1="109.22" y1="63.5" x2="121.92" y2="63.5" width="0.1524" layer="91"/>
+<label x="177.8" y="50.8" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="RX" class="0">
@@ -9261,22 +9262,6 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <net name="GPIO04" class="0">
 <segment>
 <pinref part="U2" gate="G$1" pin="GPIO4"/>
-<wire x1="86.36" y1="147.32" x2="88.9" y2="147.32" width="0.1524" layer="91"/>
-<label x="88.9" y="147.32" size="1.778" layer="95" xref="yes"/>
-</segment>
-<segment>
-<pinref part="J6" gate="G$1" pin="6"/>
-<wire x1="124.46" y1="165.1" x2="132.08" y2="165.1" width="0.1524" layer="91"/>
-<label x="132.08" y="165.1" size="1.778" layer="95" xref="yes"/>
-</segment>
-<segment>
-<pinref part="J1" gate="G$1" pin="2"/>
-<wire x1="109.22" y1="66.04" x2="121.92" y2="66.04" width="0.1524" layer="91"/>
-</segment>
-</net>
-<net name="GPIO05" class="0">
-<segment>
-<pinref part="U2" gate="G$1" pin="GPIO5"/>
 <wire x1="86.36" y1="144.78" x2="88.9" y2="144.78" width="0.1524" layer="91"/>
 <label x="88.9" y="144.78" size="1.778" layer="95" xref="yes"/>
 </segment>
@@ -9287,7 +9272,25 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 </segment>
 <segment>
 <pinref part="J1" gate="G$1" pin="3"/>
-<wire x1="109.22" y1="68.58" x2="121.92" y2="68.58" width="0.1524" layer="91"/>
+<wire x1="109.22" y1="68.58" x2="129.54" y2="68.58" width="0.1524" layer="91"/>
+<label x="129.54" y="68.58" size="1.778" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="GPIO05" class="0">
+<segment>
+<pinref part="U2" gate="G$1" pin="GPIO5"/>
+<wire x1="86.36" y1="147.32" x2="88.9" y2="147.32" width="0.1524" layer="91"/>
+<label x="88.9" y="147.32" size="1.778" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="J6" gate="G$1" pin="6"/>
+<wire x1="124.46" y1="165.1" x2="132.08" y2="165.1" width="0.1524" layer="91"/>
+<label x="132.08" y="165.1" size="1.778" layer="95" xref="yes"/>
+</segment>
+<segment>
+<pinref part="J1" gate="G$1" pin="2"/>
+<wire x1="109.22" y1="66.04" x2="114.3" y2="66.04" width="0.1524" layer="91"/>
+<label x="114.3" y="66.04" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="GPIO02" class="0">
@@ -9352,6 +9355,7 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <pinref part="R2" gate="G$1" pin="2"/>
 <wire x1="58.42" y1="22.86" x2="53.34" y2="22.86" width="0.1524" layer="91"/>
 <wire x1="58.42" y1="22.86" x2="71.12" y2="22.86" width="0.1524" layer="91"/>
+<label x="71.12" y="22.86" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 <net name="GPIO16" class="0">
@@ -9454,9 +9458,8 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 </segment>
 <segment>
 <pinref part="U$2" gate="G$1" pin="AC2"/>
-<wire x1="200.66" y1="45.72" x2="193.04" y2="40.64" width="0.1524" layer="91"/>
-<wire x1="193.04" y1="40.64" x2="180.34" y2="40.64" width="0.1524" layer="91"/>
-<label x="177.8" y="40.64" size="1.778" layer="95" rot="R180"/>
+<wire x1="200.66" y1="45.72" x2="180.34" y2="45.72" width="0.1524" layer="91"/>
+<label x="182.88" y="45.72" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 <segment>
 <pinref part="U$1" gate="G$1" pin="P$2"/>

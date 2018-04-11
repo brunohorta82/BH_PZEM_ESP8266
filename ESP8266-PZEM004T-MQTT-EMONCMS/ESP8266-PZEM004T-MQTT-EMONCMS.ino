@@ -15,39 +15,44 @@
 //https://github.com/olehs/PZEM004T
 #include <PZEM004T.h>
 
-
-#define MQTT_AUTH true
-#define MQTT_USERNAME "homeassistant"
-#define MQTT_PASSWORD "moscasMoscas82"
-PZEM004T pzem(12, 13);
-IPAddress ip(192, 168, 1, 1);
+//----------> CONFIGURAR O SERVIDOR MQTT
+#define MQTT_BROKER_IP "0.0.0.0"
+#define MQTT_BROKER_PORT 1883
+#define MQTT_AUTH false
+#define MQTT_USERNAME ""
+#define MQTT_PASSWORD ""
+//IP POR DEFEITO do PZEM 192.168.1.1
+IPAddress pzemIP(192, 168, 1, 1);
+PZEM004T pzem(4, 5);
 
 //CONTROL FLAGS
 bool OTA = false;
 bool OTABegin = false;
 //Constantes
-const String HOSTNAME  = "pzem";
+const String HOSTNAME  = "pzem-bh";
 const char * OTA_PASSWORD  = "otapower";
 
-//----------- Altera para o teu broker mqtt
-const char* MQTT_SERVER = "broker_IP_DNS";
+//-----------> Altera para o teu broker mqtt
 const String MQTT_LOG = "system/log";
 const String MQTT_SYSTEM_CONTROL_TOPIC = "system/set/"+HOSTNAME;
 
 //EMONCMS 
-//----------- Altera para a tua API KEY
-const String API_KEY = "api_key";
+//-----------> Altera para a tua API KEY
+const String API_KEY = "API_KEY";
 const String NODE_ID = "pzem";
 const char* host = "emoncms.org";
 const int httpsPort = 443;
+//--------- Altera o Finger print se necessário https://www.youtube.com/watch?v=RgCi0luav1I
 const char* fingerprint = "1D 08 43 BC B4 9C FB B1 61 37 F7 05 D6 6B B7 38 28 93 26 E6";
 
 WiFiClient wclient;
 
-PubSubClient client(MQTT_SERVER, 1883, wclient);
+PubSubClient client(MQTT_BROKER_IP, MQTT_BROKER_PORT, wclient);
 
 void setup() {
+  
   Serial.begin(115200);
+ 
   WiFiManager wifiManager;
   //reset saved settings
   //wifiManager.resetSettings();
@@ -63,7 +68,7 @@ void setup() {
   client.setCallback(callback);
   
   //PZEM SETUP
-  pzem.setAddress(ip);
+  pzem.setAddress(pzemIP);
 }
 //Chamada de recepção de mensagens MQTT
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -102,10 +107,10 @@ bool checkMqttConnection(){
 }
 
 void loop() {
-  float v = pzem.voltage(ip);
-  float i = pzem.current(ip);
-  float p = pzem.power(ip); 
-  float e = pzem.energy(ip);
+  float v = pzem.voltage(pzemIP);
+  float i = pzem.current(pzemIP);
+  float p = pzem.power(pzemIP); 
+  float e = pzem.energy(pzemIP);
   
   if (WiFi.status() == WL_CONNECTED) {
     if (checkMqttConnection()) {
@@ -125,8 +130,7 @@ void loop() {
       String amperagem = String(i);
       String potencia = String(p);
       String energia = String(e);
-      
-      Serial.print(v); 
+       Serial.print(v); 
       Serial.print("V; ");
       Serial.print(i);
       Serial.print("A; ");
@@ -135,6 +139,8 @@ void loop() {
       Serial.print(e);
       Serial.print("Wh; ");
       Serial.println();
+      
+     
       
       client.publish("/pzem/energy", energia.c_str());
       client.publish("/pzem/power", potencia.c_str());
