@@ -9216,37 +9216,6 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <label x="132.08" y="137.16" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
-<net name="NEUTRAL_IN" class="1">
-<segment>
-<wire x1="111.76" y1="17.78" x2="109.22" y2="17.78" width="0.1524" layer="91"/>
-<pinref part="F1" gate="G$1" pin="1"/>
-<junction x="109.22" y="17.78"/>
-<wire x1="109.22" y1="17.78" x2="101.6" y2="17.78" width="0.1524" layer="91"/>
-<label x="101.6" y="17.78" size="1.778" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
-<pinref part="X3" gate="-1" pin="KL"/>
-<wire x1="50.8" y1="73.66" x2="66.04" y2="73.66" width="0.1524" layer="91"/>
-<label x="66.04" y="73.66" size="1.778" layer="95" xref="yes"/>
-</segment>
-<segment>
-<wire x1="119.38" y1="48.26" x2="104.14" y2="48.26" width="0.1524" layer="91"/>
-<pinref part="U$1" gate="G$1" pin="P$1"/>
-<label x="104.14" y="48.26" size="1.778" layer="95" rot="R180" xref="yes"/>
-</segment>
-</net>
-<net name="NEUTRAL_IN_FUSED" class="0">
-<segment>
-<pinref part="F1" gate="G$1" pin="2"/>
-<wire x1="121.92" y1="17.78" x2="134.62" y2="17.78" width="0.1524" layer="91"/>
-<label x="134.62" y="17.78" size="1.778" layer="95" xref="yes"/>
-</segment>
-<segment>
-<pinref part="U$2" gate="G$1" pin="AC1"/>
-<wire x1="200.66" y1="50.8" x2="177.8" y2="50.8" width="0.1524" layer="91"/>
-<label x="177.8" y="50.8" size="1.778" layer="95" rot="R180" xref="yes"/>
-</segment>
-</net>
 <net name="RX" class="0">
 <segment>
 <pinref part="U2" gate="G$1" pin="RX"/>
@@ -9450,23 +9419,6 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <label x="180.34" y="93.98" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
-<net name="FASE_IN" class="1">
-<segment>
-<pinref part="X3" gate="-2" pin="KL"/>
-<wire x1="50.8" y1="68.58" x2="63.5" y2="68.58" width="0.1524" layer="91"/>
-<label x="63.5" y="68.58" size="1.778" layer="95" xref="yes"/>
-</segment>
-<segment>
-<pinref part="U$2" gate="G$1" pin="AC2"/>
-<wire x1="200.66" y1="45.72" x2="180.34" y2="45.72" width="0.1524" layer="91"/>
-<label x="182.88" y="45.72" size="1.778" layer="95" rot="R180" xref="yes"/>
-</segment>
-<segment>
-<pinref part="U$1" gate="G$1" pin="P$2"/>
-<wire x1="119.38" y1="38.1" x2="104.14" y2="38.1" width="0.1524" layer="91"/>
-<label x="104.14" y="38.1" size="1.778" layer="95" rot="R180" xref="yes"/>
-</segment>
-</net>
 <net name="CT_1" class="0">
 <segment>
 <pinref part="X3" gate="-3" pin="KL"/>
@@ -9512,6 +9464,54 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <pinref part="J3" gate="G$1" pin="1"/>
 <wire x1="17.78" y1="38.1" x2="10.16" y2="38.1" width="0.1524" layer="91"/>
 <wire x1="10.16" y1="38.1" x2="10.16" y2="17.78" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="LINE" class="0">
+<segment>
+<pinref part="U$2" gate="G$1" pin="AC1"/>
+<wire x1="200.66" y1="50.8" x2="177.8" y2="50.8" width="0.1524" layer="91"/>
+<label x="177.8" y="50.8" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="U$1" gate="G$1" pin="P$2"/>
+<wire x1="119.38" y1="38.1" x2="104.14" y2="38.1" width="0.1524" layer="91"/>
+<label x="104.14" y="38.1" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="X3" gate="-2" pin="KL"/>
+<wire x1="50.8" y1="68.58" x2="63.5" y2="68.58" width="0.1524" layer="91"/>
+<label x="63.5" y="68.58" size="1.778" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="NEUTRAL_FUSED" class="1">
+<segment>
+<pinref part="U$2" gate="G$1" pin="AC2"/>
+<wire x1="200.66" y1="45.72" x2="180.34" y2="45.72" width="0.1524" layer="91"/>
+<label x="182.88" y="45.72" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="F1" gate="G$1" pin="2"/>
+<wire x1="121.92" y1="17.78" x2="134.62" y2="17.78" width="0.1524" layer="91"/>
+<label x="134.62" y="17.78" size="1.778" layer="95" xref="yes"/>
+</segment>
+</net>
+<net name="NEUTRAL" class="1">
+<segment>
+<wire x1="111.76" y1="17.78" x2="109.22" y2="17.78" width="0.1524" layer="91"/>
+<pinref part="F1" gate="G$1" pin="1"/>
+<junction x="109.22" y="17.78"/>
+<wire x1="109.22" y1="17.78" x2="101.6" y2="17.78" width="0.1524" layer="91"/>
+<label x="101.6" y="17.78" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<wire x1="119.38" y1="48.26" x2="104.14" y2="48.26" width="0.1524" layer="91"/>
+<pinref part="U$1" gate="G$1" pin="P$1"/>
+<label x="104.14" y="48.26" size="1.778" layer="95" rot="R180" xref="yes"/>
+</segment>
+<segment>
+<pinref part="X3" gate="-1" pin="KL"/>
+<wire x1="50.8" y1="73.66" x2="66.04" y2="73.66" width="0.1524" layer="91"/>
+<label x="66.04" y="73.66" size="1.778" layer="95" xref="yes"/>
 </segment>
 </net>
 </nets>
