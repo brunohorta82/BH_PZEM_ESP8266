@@ -1,3 +1,5 @@
+
+#include <Timing.h> //https://github.com/scargill/Timing
 //MQTT
 #include <PubSubClient.h>
 //ESP
@@ -14,6 +16,12 @@
 #include <SoftwareSerial.h>
 //https://github.com/olehs/PZEM004T
 #include <PZEM004T.h>
+//TEMPERATURA
+#include <OneWire.h>
+#include <DallasTemperature.h> //https://github.com/milesburton/Arduino-Temperature-Control-Library
+
+#define ONE_WIRE_BUS 12  // DS18B20 pin
+#define DELAY_TEMPERATURE_NOTIFICATION 1000 //1second
 
 //----------> CONFIGURAR O SERVIDOR MQTT
 #define MQTT_BROKER_IP "0.0.0.0"
@@ -21,10 +29,12 @@
 #define MQTT_AUTH false
 #define MQTT_USERNAME ""
 #define MQTT_PASSWORD ""
+
 //IP POR DEFEITO do PZEM 192.168.1.1
 IPAddress pzemIP(192, 168, 1, 1);
 PZEM004T pzem(4, 5);
-
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature DS18B20(&oneWire);
 //CONTROL FLAGS
 bool OTA = false;
 bool OTABegin = false;
@@ -48,7 +58,7 @@ const char* fingerprint = "1D 08 43 BC B4 9C FB B1 61 37 F7 05 D6 6B B7 38 28 93
 WiFiClient wclient;
 
 PubSubClient client(MQTT_BROKER_IP, MQTT_BROKER_PORT, wclient);
-
+Timing notifyTempTimer;
 void setup() {
   
   Serial.begin(115200);
@@ -115,6 +125,10 @@ void loop() {
   if (WiFi.status() == WL_CONNECTED) {
     if (checkMqttConnection()) {
       client.loop();
+
+      if (notifyTempTimer.onTimeout(DELAY_TEMPERATURE_NOTIFICATION)) {
+        notifyTemperature();
+      }   
       if(OTA){
         if(OTABegin){
           setupOTA();
@@ -130,7 +144,7 @@ void loop() {
       String amperagem = String(i);
       String potencia = String(p);
       String energia = String(e);
-       Serial.print(v); 
+      Serial.print(v); 
       Serial.print("V; ");
       Serial.print(i);
       Serial.print("A; ");
@@ -172,7 +186,15 @@ void loop() {
     }
   }
 }
-
+void notifyTemperature(){
+  float temp = 0;
+   do {
+    DS18B20.requestTemperatures(); 
+    temp = DS18B20.getTempCByIndex(0);
+    Serial.print("Temperature: ");
+    Serial.println(temp);
+  } while (temp == 85.0 || temp == (-127.0));
+}
 //Setup do OTA para permitir updates de Firmware via Wi-Fi
 void setupOTA(){
   if (WiFi.status() == WL_CONNECTED && checkMqttConnection()) {
