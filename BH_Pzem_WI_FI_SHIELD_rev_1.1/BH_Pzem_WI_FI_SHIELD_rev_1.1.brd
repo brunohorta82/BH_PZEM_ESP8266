@@ -200,7 +200,7 @@
 <hole x="27.4" y="71.374" drill="3.39"/>
 <hole x="2.595" y="71.374" drill="3.39"/>
 <text x="6.096" y="71.374" size="1.778" layer="25">BH PZEM WI-Fi</text>
-<text x="20.574" y="70.104" size="1.016" layer="25">rev1.0</text>
+<text x="20.574" y="70.104" size="1.016" layer="25">rev1.1</text>
 <text x="19.026778125" y="68.085096875" size="1.016" layer="25" font="vector" ratio="13" rot="SR90">GND</text>
 <text x="11.1129125" y="68.348" size="1.016" layer="25" font="vector" ratio="13" rot="SR90">5V</text>
 <text x="16.169725" y="68.094" size="1.016" layer="25" font="vector" ratio="13" rot="SR90">04</text>

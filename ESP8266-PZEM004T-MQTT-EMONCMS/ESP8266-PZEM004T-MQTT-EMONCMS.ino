@@ -1,10 +1,10 @@
 
 #include <Timing.h> //https://github.com/scargill/Timing
 //MQTT
-#include <PubSubClient.h>
+#include <PubSubClient.h> //https://www.youtube.com/watch?v=GMMH6qT8_f4
 //ESP
 #include <ESP8266WiFi.h>
-//Wi-Fi Manger library
+//Wi-Fi Manger library https://www.youtube.com/watch?v=wWO9n5DnuLA
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>//https://github.com/tzapu/WiFiManager
@@ -14,8 +14,9 @@
 #include <WiFiClientSecure.h>
 
 #include <SoftwareSerial.h>
-//https://github.com/olehs/PZEM004T
-#include <PZEM004T.h>
+
+#include <PZEM004T.h> //https://github.com/olehs/PZEM004T
+
 //TEMPERATURA
 #include <OneWire.h>
 #include <DallasTemperature.h> //https://github.com/milesburton/Arduino-Temperature-Control-Library
@@ -24,7 +25,7 @@
 #define DELAY_TEMPERATURE_NOTIFICATION 1000 //1second
 
 //----------> CONFIGURAR O SERVIDOR MQTT
-#define MQTT_BROKER_IP "0.0.0.0"
+#define MQTT_BROKER_IP "192.168.187.203"
 #define MQTT_BROKER_PORT 1883
 #define MQTT_AUTH false
 #define MQTT_USERNAME ""
@@ -48,13 +49,13 @@ const String MQTT_SYSTEM_CONTROL_TOPIC = "system/set/"+HOSTNAME;
 
 //EMONCMS 
 //-----------> Altera para a tua API KEY
-const String API_KEY = "API_KEY";
+const String API_KEY = "";
 const String NODE_ID = "pzem";
 const char* host = "emoncms.org";
 const int httpsPort = 443;
 //--------- Altera o Finger print se necessário https://www.youtube.com/watch?v=RgCi0luav1I
 const char* fingerprint = "1D 08 43 BC B4 9C FB B1 61 37 F7 05 D6 6B B7 38 28 93 26 E6";
-
+float temperature = 0;
 WiFiClient wclient;
 
 PubSubClient client(MQTT_BROKER_IP, MQTT_BROKER_PORT, wclient);
@@ -127,7 +128,7 @@ void loop() {
       client.loop();
 
       if (notifyTempTimer.onTimeout(DELAY_TEMPERATURE_NOTIFICATION)) {
-        notifyTemperature();
+        temperature = requestTemperature();
       }   
       if(OTA){
         if(OTABegin){
@@ -139,11 +140,12 @@ void loop() {
 
       if (v < 0 || i < 0 || p < 0 || e < 0) return;
 
-      
+     
       String voltagem = String(v);
       String amperagem = String(i);
       String potencia = String(p);
       String energia = String(e);
+      String temp = String(temperature);
       Serial.print(v); 
       Serial.print("V; ");
       Serial.print(i);
@@ -160,40 +162,40 @@ void loop() {
       client.publish("/pzem/power", potencia.c_str());
       client.publish("/pzem/amperage", amperagem.c_str());
       client.publish("/pzem/voltage", voltagem.c_str());
+      client.publish("/pzem/temperature", temp.c_str());
 
-    // Use WiFiClientSecure class to create TLS connection
-      WiFiClientSecure clienthttps;
+      if(!API_KEY.equals("")){
+        WiFiClientSecure clienthttps;
       
-      if (!clienthttps.connect(host,httpsPort)) {
-        Serial.println("connection failed");
-        return;
-      }
-      client.loop();
-      String url = "/api/post?node="+NODE_ID+"&apikey="+API_KEY+"&json={voltagem:" + String(v) + ",amperagem:" + String(i) + ",potencia:" + String(p) + ",energia:" + String(e)+ "}";
-      clienthttps.print(String("GET ") + url + " HTTP/1.1\r\n" +
-                   "Host: " + host + "\r\n" +
-                   "Connection: close\r\n\r\n");
-      unsigned long timeout = millis();
-      while (clienthttps.available() == 0) {
-        client.loop();
-        if (millis() - timeout > 5000) {
-          Serial.println(">>> Client Timeout !");
-          clienthttps.stop();
+        if (!clienthttps.connect(host,httpsPort)) {
+          Serial.println("connection failed");
           return;
         }
+      
+        String url = "/api/post?node="+NODE_ID+"&apikey="+API_KEY+"&json={temperature:"+temp+",voltagem:" + voltagem + ",amperagem:" + amperagem + ",potencia:" + potencia + ",energia:" + energia+ "}";
+        clienthttps.print(String("GET ") + url + " HTTP/1.1\r\n" +
+                   "Host: " + host + "\r\n" +
+                   "Connection: close\r\n\r\n");
+        unsigned long timeout = millis();
+        while (clienthttps.available() == 0) {
+          client.loop();
+          if (millis() - timeout > 5000) {
+            Serial.println(">>> Client Timeout !");
+            clienthttps.stop();
+            return;
+          }
+        }
       }
-
     }
   }
 }
-void notifyTemperature(){
+float requestTemperature(){
   float temp = 0;
    do {
     DS18B20.requestTemperatures(); 
     temp = DS18B20.getTempCByIndex(0);
-    Serial.print("Temperature: ");
-    Serial.println(temp);
   } while (temp == 85.0 || temp == (-127.0));
+  return temp;
 }
 //Setup do OTA para permitir updates de Firmware via Wi-Fi
 void setupOTA(){
