@@ -8,10 +8,11 @@
 #include <DNSServer.h>
 #include <ESP8266WebServer.h>
 #include <WiFiManager.h>//https://github.com/tzapu/WiFiManager
-//OTA
-#include <WiFiUdp.h>
-#include <ArduinoOTA.h>  
+
 #include <WiFiClientSecure.h>
+
+#include <ESP8266HTTPUpdateServer.h>
+#include <ESP8266mDNS.h>
 
 #include <SoftwareSerial.h>
 
@@ -27,9 +28,8 @@
 //----------> CONFIGURAR O SERVIDOR MQTT
 #define MQTT_BROKER_IP "192.168.187.203"
 #define MQTT_BROKER_PORT 1883
-#define MQTT_AUTH false
-#define MQTT_USERNAME ""
-#define MQTT_PASSWORD ""
+#define MQTT_USERNAME "homeassistant"
+#define MQTT_PASSWORD "moscasMoscas82"
 
 //IP POR DEFEITO do PZEM 192.168.1.1
 IPAddress pzemIP(192, 168, 1, 1);
@@ -40,26 +40,38 @@ DallasTemperature DS18B20(&oneWire);
 bool OTA = false;
 bool OTABegin = false;
 //Constantes
-const String HOSTNAME  = "pzem-bh";
-const char * OTA_PASSWORD  = "otapower";
-
-//-----------> Altera para o teu broker mqtt
-const String MQTT_LOG = "system/log";
-const String MQTT_SYSTEM_CONTROL_TOPIC = "system/set/"+HOSTNAME;
+const String HOSTNAME  = "pzem-solar-bh";
 
 //EMONCMS 
 //-----------> Altera para a tua API KEY
-const String API_KEY = "";
-const String NODE_ID = "pzem";
-const char* host = "emoncms.org";
+const String API_KEY = "f4651ce96d4098d57375d960c612e081";
+const String NODE_ID = "pzem-solar";
+const char* host = "192.168.187.203";
 const int httpsPort = 443;
-//--------- Altera o Finger print se necessário https://www.youtube.com/watch?v=RgCi0luav1I
-const char* fingerprint = "1D 08 43 BC B4 9C FB B1 61 37 F7 05 D6 6B B7 38 28 93 26 E6";
 float temperature = 0;
 WiFiClient wclient;
+ESP8266WebServer httpServer(80);
+ESP8266HTTPUpdateServer httpUpdater;
+
+const char* update_path = "/firmware";
+const char* update_username = "admin";
+const char* update_password = "admin";
 
 PubSubClient client(MQTT_BROKER_IP, MQTT_BROKER_PORT, wclient);
 Timing notifyTempTimer;
+
+
+void prepareWebserverUpdate(){
+  MDNS.begin(HOSTNAME.c_str());
+  httpUpdater.setup(&httpServer, update_path, update_username, update_password);
+  httpServer.begin();
+  MDNS.addService("http", "tcp", 80);
+  Serial.printf("HTTPUpdateServer ready! Open http://%s.local%s in your browser and login with username '%s' and password '%s'\n", HOSTNAME.c_str(), update_path, update_username, update_password);
+}
+
+void otaLoop(){
+  httpServer.handleClient();
+}
 void setup() {
   
   Serial.begin(115200);
@@ -80,6 +92,7 @@ void setup() {
   
   //PZEM SETUP
   pzem.setAddress(pzemIP);
+  prepareWebserverUpdate();
 }
 //Chamada de recepção de mensagens MQTT
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -89,64 +102,42 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
   Serial.println(payloadStr);
   String topicStr = String(topic);
-  if(topicStr.equals(MQTT_SYSTEM_CONTROL_TOPIC)){
-    if(payloadStr.equals("OTA_ON_"+String(HOSTNAME))){
-      OTA = true;
-      OTABegin = true;
-    }else if (payloadStr.equals("OTA_OFF_"+String(HOSTNAME))){
-      OTA = true;
-      OTABegin = true;
-    }else if (payloadStr.equals("REBOOT_"+String(HOSTNAME))){
-      ESP.restart();
-    }
-  } 
 }
 
 
 //Verifica se a ligação está ativa, caso não este liga-se e subscreve aos tópicos de interesse
 bool checkMqttConnection(){
   if (!client.connected()) {
-    if (MQTT_AUTH ? client.connect(HOSTNAME.c_str(),MQTT_USERNAME, MQTT_PASSWORD) : client.connect(HOSTNAME.c_str())) {
-      //SUBSCRIÇÃO DE TOPICOS
-      Serial.println("CONNECTED ON MQTT");
-      client.subscribe(MQTT_SYSTEM_CONTROL_TOPIC.c_str());
-      //Envia uma mensagem por MQTT para o tópico de log a informar que está ligado
-      client.publish(MQTT_LOG.c_str(),(String(HOSTNAME)+" CONNECTED").c_str());
+    if (client.connect(HOSTNAME.c_str(),MQTT_USERNAME, MQTT_PASSWORD)) {
     }
   }
   return client.connected();
 }
 
 void loop() {
-  float v = pzem.voltage(pzemIP);
-  float i = pzem.current(pzemIP);
-  float p = pzem.power(pzemIP); 
-  float e = pzem.energy(pzemIP);
+  float v = _max(pzem.voltage(pzemIP),0.0);
+  float i =  _max(pzem.current(pzemIP),0.0);
+  float p =  _max(pzem.power(pzemIP),0.0);
+  float e =  _max(pzem.energy(pzemIP),0.0);
   
   if (WiFi.status() == WL_CONNECTED) {
-    if (checkMqttConnection()) {
-      client.loop();
+    otaLoop();
+    //if (checkMqttConnection()) {
+     // client.loop();
 
       if (notifyTempTimer.onTimeout(DELAY_TEMPERATURE_NOTIFICATION)) {
         temperature = requestTemperature();
       }   
-      if(OTA){
-        if(OTABegin){
-          setupOTA();
-          OTABegin= false;
-        }
-        ArduinoOTA.handle();
-      }
-
-      if (v < 0 || i < 0 || p < 0 || e < 0) return;
-
-     
+   
+ 
       String voltagem = String(v);
       String amperagem = String(i);
       String potencia = String(p);
       String energia = String(e);
       String temp = String(temperature);
-      Serial.print(v); 
+     /* Serial.print(temp); 
+      Serial.print("T; ");
+      Serial.print(v);  
       Serial.print("V; ");
       Serial.print(i);
       Serial.print("A; ");
@@ -154,17 +145,38 @@ void loop() {
       Serial.print("W; ");
       Serial.print(e);
       Serial.print("Wh; ");
-      Serial.println();
+      Serial.println();*/
       
      
       
-      client.publish("/pzem/energy", energia.c_str());
-      client.publish("/pzem/power", potencia.c_str());
-      client.publish("/pzem/amperage", amperagem.c_str());
-      client.publish("/pzem/voltage", voltagem.c_str());
-      client.publish("/pzem/temperature", temp.c_str());
-
+     // client.publish("/pzem1/energy", energia.c_str());
+     // client.publish("/pzem1/power", potencia.c_str());
+     // client.publish("/pzem1/amperage", amperagem.c_str());
+     // client.publish("/pzem1/voltage", voltagem.c_str());
+     // client.publish("/pzem1/temperature", temp.c_str());
+      
       if(!API_KEY.equals("")){
+         WiFiClient clienthttp;
+      
+        if (!clienthttp.connect(host,80)) {
+          Serial.println("connection failed");
+          return;
+        }
+      
+        String url = "/emoncms/input/post?node="+NODE_ID+"&apikey="+API_KEY+"&json={temperature:"+temp+",voltagem:" + voltagem + ",amperagem:" + amperagem + ",potencia:" + potencia + ",energia:" + energia+ "}";
+        clienthttp.print(String("GET ") + url + " HTTP/1.1\r\n" +
+                   "Host: " + host + "\r\n" +
+                   "Connection: close\r\n\r\n");
+        unsigned long timeout = millis();
+        while (clienthttp.available() == 0) {
+          client.loop();
+          if (millis() - timeout > 5000) {
+            Serial.println(">>> Client Timeout !");
+            clienthttp.stop();
+            return;
+          }
+        }
+        /**
         WiFiClientSecure clienthttps;
       
         if (!clienthttps.connect(host,httpsPort)) {
@@ -184,8 +196,8 @@ void loop() {
             clienthttps.stop();
             return;
           }
-        }
-      }
+        }*/
+     // }
     }
   }
 }
@@ -197,13 +209,5 @@ float requestTemperature(){
   } while (temp == 85.0 || temp == (-127.0));
   return temp;
 }
-//Setup do OTA para permitir updates de Firmware via Wi-Fi
-void setupOTA(){
-  if (WiFi.status() == WL_CONNECTED && checkMqttConnection()) {
-    client.publish(MQTT_LOG.c_str(),(String(HOSTNAME)+" OTA IS SETUP").c_str());
-    ArduinoOTA.setHostname(HOSTNAME.c_str());
-    ArduinoOTA.setPassword((const char *)OTA_PASSWORD);
-    ArduinoOTA.begin();
-    client.publish(MQTT_LOG.c_str(),(String(HOSTNAME)+" OTA IS READY").c_str());
-  }  
-}
+
+
