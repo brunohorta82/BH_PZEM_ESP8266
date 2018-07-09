@@ -40,7 +40,7 @@ Os dados são enviados via Wi-Fi
   
 ## Hardware <a name="id2"></a>
 
-![BHPZem](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/fotos/IMG_4417.JPG?raw=true)
+![BHPZem](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/IMG_4417.JPG?raw=true)
 
 
 
@@ -87,9 +87,9 @@ Qtd | Item | Imagem
 ## Exemplos de BH-PZEM <a name="id5"></a>
 
 ### BH PZEM-004 Wi-Fi <a name="id6"></a>
-![](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/fotos/IMG_4417.JPG?raw=true)
-![](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/fotos/IMG_4418.JPG?raw=true)
-![](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/fotos/IMG_4419.JPG?raw=true)
+![](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/IMG_4417.JPG?raw=true)
+![](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/IMG_4418.JPG?raw=true)
+![](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/IMG_4419.JPG?raw=true)
 
 ## Donativos
 
