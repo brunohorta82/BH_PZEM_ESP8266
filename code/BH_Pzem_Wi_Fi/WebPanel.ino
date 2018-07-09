@@ -5,8 +5,6 @@
 ESP8266WebServer httpServer(80);
 ESP8266HTTPUpdateServer httpUpdater;
 const char* update_path = "/firmware";
-const char* update_username = "admin";
-const char* update_password = "admin";
 const char index_html[] PROGMEM={"<!DOCTYPE html>\n"
 "<html>\n"
 "<head>\n"
@@ -136,7 +134,7 @@ void prepareWebserver(){
   httpServer.on("/", handleRoot);
   httpServer.onNotFound(handleNotFound);
   httpServer.begin();
-  Serial.printf("BH PZEM - Configuration Panel ready! Open http://%s.local%s in your browser'\n", HOSTNAME, update_path);
+  Serial.printf("BH PZEM - Configuration Panel ready! Open http://%s.localin your browser'\n", HOSTNAME);
 }
 
 void webServerLoop(){
