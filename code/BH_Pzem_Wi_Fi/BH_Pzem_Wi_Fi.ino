@@ -42,7 +42,7 @@ void setup() {
   
   //PZEM SETUP
   pzem.setAddress(pzemIP);
-  prepareWebserverUpdate();
+  prepareWebserver();
   pinMode(DIRECTION_PIN,INPUT);
   #if MQTT
   Serial.println("*MQTT: ON");
@@ -70,7 +70,7 @@ void loop() {
   }       
   #endif
   if (WiFi.status() == WL_CONNECTED) {
-      webUpdateServerLoop() ;
+      webServerLoop() ;
       if (timerRead.onTimeout(DELAY_NOTIFICATION)){
         float v =  getVoltage();
         float i =  getCurrent();
