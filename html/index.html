@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="jquery.min.js"></script>
+    <script src="js-index.js"></script>
+    <link rel="stylesheet" href="bootstrap.css">
+
+</head>
+<style>
+    input[type=text], select {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    input[type=password], select {
+        width: 100%;
+        padding: 12px 20px;
+        margin: 8px 0;
+        display: inline-block;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .save-btn[type=submit] {
+        width: 100%;
+        background-color: #08c;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        text-transform: uppercase;
+        font-weight: bold;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+
+    .firm-btn[type=button] {
+        width: 100%;
+        color: white;
+        padding: 14px 20px;
+        margin: 8px 0;
+        border: none;
+        text-transform: uppercase;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .save-btn[type=submit]:hover {
+        background-color: #005580;
+
+    }
+    .box-config {
+        border-radius: 5px;
+        background-color: #333;
+        padding: 20px;
+    }
+</style>
+<body style="background-color: rgb(34, 34, 34); color: white; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif">
+<div style="height: 70px; text-align: center; padding:  10px;">
+<h2 style="color: #fff;">BH PZEM - Configuration Panel v1</h2>
+</div>
+<form action="/saveconfig" method="post">
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <div class="box-config">
+                <div style="background: #333;">
+                    <h3 style="color: white">NODE CONFIG</h3>
+                </div>
+                <label for="node_id">NODE ID</label>
+                <input type="text" name="nodeId" id="node_id" placeholder="ex: Pzem Solar">
+                <label for="delay_notification">Notification interval</label>
+                <select name="notificationInterval" id="delay_notification" >
+                    <option value="5">5 seconds</option>
+                    <option value="10">10 seconds</option>
+                    <option value="15">15 seconds</option>
+                </select>
+                <div class="form-check">
+                    <input type="checkbox" name="directionCurrentDetection" class="form-check-input" id="exampleCheck1">
+                    <label class="form-check-label" for="exampleCheck1">Detect Current Direction</label>
+                </div>
+                <div style="background: inherit;" class="card">
+                    <div class="card-header">
+                        Readings:
+                    </div>
+                    <ul style="background: inherit;" class="list-group list-group-flush">
+                        <li style="background: inherit;" class="list-group-item"><h6>Power: <span id="power" class="badge badge-secondary">0 W</span></h6></li>
+                        <li style="background: inherit;" class="list-group-item"><h6>Voltage: <span id="voltage" class="badge badge-secondary">0 V</span></h6></li>
+                        <li style="background: inherit;" class="list-group-item"><h6>Current: <span id="current" class="badge badge-secondary">0 A</span></h6></li>
+                        <li style="background: inherit;" class="list-group-item"><h6>Temperature: <span id="temperature" class="badge badge-secondary">0 &#186;C</span></h6></li>
+                    </ul>
+                </div>
+                <input onclick="handleFirmwareUpdate();" class="firm-btn btn btn-warning" type="button" value="Update Firmware"/>
+                <input class="save-btn" type="submit" value="Save All"/>
+                <h7>Current Firmware version <span id="firmwareVersion" class="badge badge-secondary">1.0</span></h7>
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="box-config" >
+                <div style="background: #333;">
+                    <h3 style="color: white">EMONCMS</h3>
+                </div>
+                <label for="emoncms_api_url">API Url</label>
+                <input name="emoncmsUrl" type="text" id="emoncms_api_url" placeholder="ex: emoncms.org">
+                <label  for="emoncms_api_prefix">API Prefix (leave black if your url have direct access)</label>
+                <input name="emoncmsPrefix" type="text" id="emoncms_api_prefix" placeholder="ex: /emoncms">
+                <label for="emoncms_api_key">API Key</label>
+                <input name="emoncmsApiKey" type="text" id="emoncms_api_key" placeholder="ex: f4651ce9swq098d57375d960c612e081">
+            </div>
+        </div>
+        <div class="col-sm">
+            <div class="box-config" >
+                <div style="background: #333;">
+                    <h3 style="color: white">MQTT</h3>
+                </div>
+                <label for="mqtt_ip">Broker IP/DNS</label>
+                <input name="mqttIpDns" type="text" id="mqtt_ip" placeholder="ex: 192.168.1.30">
+                <label for="mqtt_username">Username</label>
+                <input name="mqttUsername" type="text" id="mqtt_username" placeholder="ex: iam">
+                <label for="mqtt_password">Password</label>
+                <input name="mqttPassword" type="password" id="mqtt_password" placeholder="ex: superstrongpassword">
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+</body>
+</html>
