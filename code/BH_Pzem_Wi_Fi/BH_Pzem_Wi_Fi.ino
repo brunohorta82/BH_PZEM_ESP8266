@@ -26,6 +26,7 @@ DallasTemperature DS18B20(&oneWire);
 void setup() {
   
   Serial.begin(115200);
+  prepareWebserver();
   timerRead.begin(0);
   WiFiManager wifiManager;
   //reset saved settings
@@ -39,10 +40,8 @@ void setup() {
     ESP.restart();
     delay(5000);
   } 
-  
   //PZEM SETUP
   pzem.setAddress(pzemIP);
-  prepareWebserver();
   pinMode(DIRECTION_PIN,INPUT);
   #if MQTT
   Serial.println("*MQTT: ON");
