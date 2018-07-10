@@ -1,7 +1,7 @@
 
 #define CONFIG_VERSION 1
-#define HOSTNAME "pzem-bh"
-#define NODE_ID "pzem"
+#define HOSTNAME "pzem-bh-teste"
+#define NODE_ID "pzem-teste"
 #define MAX_ATTEMPTS 5
 #define DELAY_NOTIFICATION 5000 //5 seconds
 
@@ -23,7 +23,7 @@
 //   | _|| _| (__  | | | |_| |   / _|\__ \
 //   |_| |___\___| |_|  \___/|_|_\___|___/
 // 
-#define DETECT_DIRECTION true
+#define DETECT_DIRECTION false
 #define PRINT_TO_SERIAL_MONITOR false
 
 //    ___  ___  ___ _____ _    
