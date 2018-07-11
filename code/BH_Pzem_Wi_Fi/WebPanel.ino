@@ -30,6 +30,7 @@ void  prepareWebserver(){
           "\"directionCurrentDetection\":"+request->hasArg("directionCurrentDetection")+","+
           "\"firmwareVersion\":"+firmwareVersion+","+
           "\"emoncmsApiKey\": \""+request->arg("emoncmsApiKey")+"\","+
+          "\"CONFIG_VERSION\": "+String(CONFIG_VERSION)+","+
           "\"emoncmsPrefix\": \""+request->arg("emoncmsPrefix")+"\","+
           "\"emoncmsUrl\": \""+request->arg("emoncmsUrl")+"\","+
           "\"mqttIpDns\": \""+request->arg("mqttIpDns")+"\","+
@@ -97,6 +98,28 @@ String loadConfiguration(){
 void loadLastConfig(String json) {
     StaticJsonBuffer<512> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(json);
+    int cv = root["CONFIG_VERSION"] | -1;
+    if(cv != CONFIG_VERSION){
+      Serial.println("[CONFIG] New Version of config has detected");
+     cachedConfigJson= "{\"nodeId\":\""+String(nodeId)+"\","+
+          "\"notificationInterval\":"+String(notificationInterval)+","+
+          "\"directionCurrentDetection\":"+String(directionCurrentDetection)+","+
+          "\"firmwareVersion\":"+firmwareVersion+","+
+          "\"emoncmsApiKey\": \""+emoncmsApiKey+"\","+
+          "\"CONFIG_VERSION\": "+String(CONFIG_VERSION)+","+
+          "\"emoncmsPrefix\": \""+emoncmsPrefix+"\","+
+          "\"emoncmsUrl\": \""+emoncmsUrl+"\","+
+          "\"mqttIpDns\": \""+mqttIpDns+"\","+
+          "\"mqttUsername\": \""+mqttUsername+"\","+
+          "\"mqttPassword\": \""+mqttPassword+"\","+
+          "\"wifiSSID\": \""+wifiSSID+"\","+
+          "\"wifiSecret\": \""+wifiSecret+"\""+
+          "}";
+          saveConfig();
+          configChanged = true;
+          ESP.restart();
+          return;
+    }
     nodeId = root["nodeId"] | NODE_ID;
     notificationInterval=root["notificationInterval"] | DELAY_NOTIFICATION;
     directionCurrentDetection=root["directionCurrentDetection"] | DETECT_DIRECTION;

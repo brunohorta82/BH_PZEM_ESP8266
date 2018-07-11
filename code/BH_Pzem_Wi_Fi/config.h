@@ -1,13 +1,14 @@
 
 #define FIRMWARE_VERSION 1.1
+#define CONFIG_VERSION 4
 #define HOSTNAME "bhpzem-mynode"
 #define NODE_ID "mynode"
 #define MAX_ATTEMPTS 5
 #define DELAY_NOTIFICATION 5000 //5 seconds
 #define TEMPERATURE_PRECISION 9
 
-#define WIFI_SSID "VOID SOFTWARE"
-#define WIFI_SECRET "blackiscool"
+#define WIFI_SSID "MAKER_IOT"
+#define WIFI_SECRET "xptoxpto"
 //     ___ ___ ___ ___  _    
 //    / __| _ \_ _/ _ \( )___
 //   | (_ |  _/| | (_) |/(_-<
@@ -64,6 +65,7 @@
 //
 //#define D_SSD1306
 String nodeId = NODE_ID;
+int relayCount = 2;
 int notificationInterval = DELAY_NOTIFICATION;
 bool directionCurrentDetection = DETECT_DIRECTION;
 String emoncmsApiKey = EMONCMS_API_KEY;

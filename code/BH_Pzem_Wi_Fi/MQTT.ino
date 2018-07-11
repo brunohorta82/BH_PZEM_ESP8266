@@ -9,6 +9,9 @@ Ticker wifiReconnectTimer;
 
 void onMqttConnect(bool sessionPresent) {
   Serial.println("[MQTT] Connected to MQTT.");
+  for(int i = 0; i < relayCount; i++){
+    mqttClient.subscribe(("bhpzem/"+nodeId+"/relay_"+String(i)).c_str(),0);
+  }
 }
 void connectToMqtt() {
   Serial.println("[MQTT] Connecting to MQTT...");
@@ -24,6 +27,21 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
 
 
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
+Serial.println("Publish received.");
+  Serial.print("  topic: ");
+  Serial.println(topic);
+  Serial.print("  qos: ");
+  Serial.println(properties.qos);
+  Serial.print("  dup: ");
+  Serial.println(properties.dup);
+  Serial.print("  retain: ");
+  Serial.println(properties.retain);
+  Serial.print("  len: ");
+  Serial.println(len);
+  Serial.print("  index: ");
+  Serial.println(index);
+  Serial.print("  total: ");
+  Serial.println(total);
 }
 
 void setupMQTT() {
