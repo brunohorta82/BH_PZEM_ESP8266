@@ -30,28 +30,24 @@ $('input[name="nodeId"]').val(response.nodeId);
     })
 }
 function loadReadings() {
-  /*  var someUrl = "/readings";
+ var someUrl = "/readings";
     $.ajax({
         url: someUrl,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function(response) {*/
+        success: function(response) {
 
     var response =  JSON.parse('{"temp_28ff5002511704e9":27.19,"temp_28ff810bf3317049c":26.87,"temp_28ffe7059321801dd":33.06,"voltagem":-1.00,"amperagem":-1.00,"potencia":-1.00,"contador":-1.00,"config":1.10}');
     console.log(response);
-          //  $("#power").text(response.potencia+" W");
-        //    $("#voltage").text(response.voltagem+" V");
-      //      $("#current").text(response.amperagem + " A");
-    //        $("#temperature").text(response.temperatura +" \u00BAC");
     $('#sensors').empty();
     Object.keys(response).forEach(function (key) {
         $('#sensors').append('<li  class="list-group-item"><h6>'+key+': <span id="'+key+'" class="badge badge-secondary">'+response[key]+' '+map[key.split("_")[0]]+'</span></h6></li>');
     })
 
 
-     //   },
-      //  timeout: 2000
-    //})
+        },
+        timeout: 2000
+    })
 }
 
 function handleFirmwareUpdate(){

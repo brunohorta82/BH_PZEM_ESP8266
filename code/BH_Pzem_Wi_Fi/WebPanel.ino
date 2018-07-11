@@ -95,14 +95,8 @@ String loadConfiguration(){
    return cachedConfigJson;
 }
 void loadLastConfig(String json) {
-    StaticJsonDocument<512> jsonBuffer;
-     DeserializationError error = deserializeJson(jsonBuffer, json);
-      if (error) {
-    Serial.print(F("deserializeJson() failed: "));
-    Serial.println(error.c_str());
-    return;
-  }
-    JsonObject root = jsonBuffer.as<JsonObject>();
+    StaticJsonBuffer<512> jsonBuffer;
+    JsonObject &root = jsonBuffer.parseObject(json);
     nodeId = root["nodeId"] | NODE_ID;
     notificationInterval=root["notificationInterval"] | DELAY_NOTIFICATION;
     directionCurrentDetection=root["directionCurrentDetection"] | DETECT_DIRECTION;
