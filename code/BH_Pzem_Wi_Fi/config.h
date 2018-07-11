@@ -6,6 +6,8 @@
 #define DELAY_NOTIFICATION 5000 //5 seconds
 #define TEMPERATURE_PRECISION 9
 
+#define WIFI_SSID "VOID SOFTWARE"
+#define WIFI_SECRET "blackiscool"
 //     ___ ___ ___ ___  _    
 //    / __| _ \_ _/ _ \( )___
 //   | (_ |  _/| | (_) |/(_-<
@@ -73,3 +75,5 @@ String mqttPassword = MQTT_PASSWORD;
 float firmwareVersion = FIRMWARE_VERSION;
 bool emoncmshttp = EMONCMS_PROTOCOL ==  0;
 String fileName = "/bconfig.json";
+String wifiSSID = WIFI_SSID;
+String wifiSecret = WIFI_SECRET;

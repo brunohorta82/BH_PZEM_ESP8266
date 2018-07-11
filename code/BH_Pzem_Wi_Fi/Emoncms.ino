@@ -1,12 +1,14 @@
 #include <WiFiClientSecure.h>
+
 void publishOnEmoncms(String json){
-  if(emoncmsUrl.equals("") || emoncmsApiKey.equals(""))
-    return;
+  if(WiFi.status() != WL_CONNECTED || emoncmsUrl.equals("") || emoncmsApiKey.equals(""))return;
+  
      String url = emoncmsPrefix+ "/input/post?node="+nodeId+"&apikey="+emoncmsApiKey+"&json="+json;
           if(emoncmshttp){
             WiFiClient clienthttp;
             if (!clienthttp.connect(emoncmsUrl,HTTP_PORT)) {
               Serial.println("connection failed");
+              
               return;
             }
             clienthttp.print(String("GET ") + url + " HTTP/1.1\r\n" +
@@ -14,7 +16,6 @@ void publishOnEmoncms(String json){
                        "Connection: close\r\n\r\n");
             unsigned long timeout = millis();
             while (clienthttp.available() == 0) {
-              
               if (millis() - timeout > 5000) {
                 Serial.println(">>> Client Timeout !");
                 clienthttp.stop();
@@ -27,6 +28,7 @@ void publishOnEmoncms(String json){
       
         if (!clienthttps.connect(emoncmsUrl,HTTPS_PORT)) {
           Serial.println("connection failed");
+         
           return;
         }
       
@@ -41,5 +43,5 @@ void publishOnEmoncms(String json){
             return;
           }
         }
-          }
+       }
 }

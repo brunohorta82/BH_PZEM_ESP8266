@@ -1,30 +1,42 @@
 
-#include <PubSubClient.h> //https://www.youtube.com/watch?v=GMMH6qT8_f4
-WiFiClient wclient;
-PubSubClient client(mqttIpDns.c_str(), MQTT_BROKER_PORT, wclient);
-bool checkMqttConnection(){
-  if(mqttIpDns.equals(""))
-    return false;
-  if(WiFi.status() == WL_CONNECTED){
-    if (!client.connected()) {
-      if (client.connect(HOSTNAME, mqttUsername.c_str(),mqttPassword.c_str())) {
-        #if PRINT_TO_SERIAL_MONITOR
-        Serial.println("CONNECTED ON MQTT");
-        #endif
-      }
-    }
-    return client.connected();
-    }
-  return false;
+#include <Ticker.h>
+
+
+AsyncMqttClient mqttClient;
+Ticker mqttReconnectTimer;
+
+Ticker wifiReconnectTimer;
+
+void onMqttConnect(bool sessionPresent) {
+  Serial.println("[MQTT] Connected to MQTT.");
+}
+void connectToMqtt() {
+  Serial.println("[MQTT] Connecting to MQTT...");
+  mqttClient.connect();
 }
 
-void mqttLoop(){
-  client.loop();
-}
-void publishOnMqtt(String json){
-  if (checkMqttConnection()) {
-    client.publish(String(MQTT_TOPIC).c_str(),json.c_str());
+void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
+  Serial.println("Disconnected from MQTT.");
+  if (WiFi.isConnected()) {
+    mqttReconnectTimer.once(2, connectToMqtt);
   }
 }
 
 
+void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
+}
+
+void setupMQTT() {
+  if(WiFi.status() != WL_CONNECTED || mqttIpDns.equals(""))return;
+  mqttClient.disconnect();
+  mqttClient.onConnect(onMqttConnect);
+  mqttClient.onDisconnect(onMqttDisconnect);
+  mqttClient.onMessage(onMqttMessage);
+  mqttClient.setCredentials(mqttUsername.c_str(),mqttPassword.c_str());
+  mqttClient.setServer( mqttIpDns.c_str(), MQTT_BROKER_PORT);
+ connectToMqtt();
+}
+
+  void publishOnMqtt(String json){
+     mqttClient.publish(String(MQTT_TOPIC).c_str(), 0,false,json.c_str());
+ }

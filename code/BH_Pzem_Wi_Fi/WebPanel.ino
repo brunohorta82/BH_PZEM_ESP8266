@@ -1,64 +1,71 @@
 
-#include <ESP8266WebServer.h>
-#include <ESP8266HTTPUpdateServer.h>
-#include <ESP8266mDNS.h>
 #include <ArduinoJson.h>
 #include <FS.h> 
-ESP8266WebServer server(80);
-ESP8266HTTPUpdateServer httpUpdater;
-const char* update_path = "/firmware";
+#include <ESPAsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+
 String cachedConfigJson = "";
 String lastReadings= "{}";
-void handleNotFound(){
-  String message = "File Not Found\n\n";
-  message += "URI: ";
-  message += server.uri();
-  message += "\nMethod: ";
-  message += (server.method() == HTTP_GET)?"GET":"POST";
-  message += "\nArguments: ";
-  message += server.args();
-  message += "\n";
-  for (uint8_t i=0; i<server.args(); i++){
-    message += " " +server.argName(i) + ": " +server.arg(i) + "\n";
-  }
-  server.send(404, "text/plain", message);
-  
-}
+bool configChanged = false;
+// SKETCH BEGIN
+AsyncWebServer server(80);
 
-String configToJson(){
-  cachedConfigJson =  "{\"nodeId\":\""+nodeId+"\","+
-          "\"notificationInterval\":"+notificationInterval+","+
-          "\"directionCurrentDetection\":"+directionCurrentDetection+","+
+void  prepareWebserver(){
+  //MDNS.addService("http","tcp",80);
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/html",index_html);
+  });
+
+  server.on("/readings", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200, "application/json",lastReadings);
+  });
+ server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200,  "application/json",loadConfiguration());
+  });
+
+   server.on("/saveconfig", HTTP_POST, [](AsyncWebServerRequest *request){
+   cachedConfigJson= "{\"nodeId\":\""+request->arg("nodeId")+"\","+
+          "\"notificationInterval\":"+String(request->arg("notificationInterval").toInt())+","+
+          "\"directionCurrentDetection\":"+request->hasArg("directionCurrentDetection")+","+
           "\"firmwareVersion\":"+firmwareVersion+","+
-          "\"emoncmsApiKey\": \""+emoncmsApiKey+"\","+
-          "\"emoncmsPrefix\": \""+emoncmsPrefix+"\","+
-          "\"emoncmsUrl\": \""+emoncmsUrl+"\","+
-          "\"mqttIpDns\": \""+mqttIpDns+"\","+
-          "\"mqttUsername\": \""+mqttUsername+"\","+
-          "\"mqttPassword\": \""+mqttPassword+"\""+
+          "\"emoncmsApiKey\": \""+request->arg("emoncmsApiKey")+"\","+
+          "\"emoncmsPrefix\": \""+request->arg("emoncmsPrefix")+"\","+
+          "\"emoncmsUrl\": \""+request->arg("emoncmsUrl")+"\","+
+          "\"mqttIpDns\": \""+request->arg("mqttIpDns")+"\","+
+          "\"mqttUsername\": \""+request->arg("mqttUsername")+"\","+
+          "\"mqttPassword\": \""+request->arg("mqttPassword")+"\","+
+          "\"wifiSSID\": \""+request->arg("wifiSSID")+"\","+
+          "\"wifiSecret\": \""+request->arg("wifiSecret")+"\""+
           "}";
-  return  cachedConfigJson;
+    saveConfig();
+    request->redirect("/");
+    configChanged = true;
+  });
+  server.on("/js-index.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "application/js",js);
+  });
+  server.on("/jquery.min.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "application/js", jQuery,sizeof(jQuery));
+    response->addHeader("Content-Encoding", "gzip");
+    response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    request->send(response);
+  });
+  
+   server.on("/bootstrap.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", css,sizeof(css));
+    response->addHeader("Content-Encoding", "gzip");
+    response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    request->send(response);
+  });
+  server.begin();
 }
-
-void saveConfig() {
-   if(SPIFFS.begin()){
-      File rFile = SPIFFS.open(fileName,"w+");
-      if(!rFile){
-        Serial.println("Open config file Error!");
-      } else {
-        rFile.print(configToJson());
-      }
-      rFile.close();
-   }else{
-     Serial.println("Open file system Error!");
-  }
-  SPIFFS.end();
+void publishOnPanel(String json){
+lastReadings = json;
 }
-
-
-
 String loadConfiguration(){
   if(!cachedConfigJson.equals("")){
+    Serial.println(cachedConfigJson);
     return cachedConfigJson;
    }
 
@@ -68,7 +75,7 @@ String loadConfiguration(){
     cFile = SPIFFS.open(fileName,"r+"); 
      }else{
       cFile = SPIFFS.open(fileName,"w+"); 
-      cFile.print(configToJson());
+      cFile.print(cachedConfigJson);
       }
      if(!cFile){
         Serial.println("Create file config Error!");
@@ -87,45 +94,6 @@ String loadConfiguration(){
    SPIFFS.end();
    return cachedConfigJson;
 }
- 
-void handleJQuery() {
-  server.sendHeader("content-encoding","gzip");
-  server.sendHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
-  server.send_P(200, "application/js",jQuery,sizeof(jQuery));
-}
-void handleCss() {
-  server.sendHeader("content-encoding","gzip");
-  server.sendHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
-  server.send_P(200, "text/css",css,sizeof(css));
-}
-void handleJs() {
-  server.send_P(200, "application/js",js);
-}
-void handleRoot() {
-  server.send_P(200, "text/html", index_html);
-}
-void handleReadings(){
-  server.send(200, "application/json",lastReadings);
-}
-void handleSaveConfig() {
-    nodeId = server.arg("nodeId");
-    Serial.println(nodeId);
-    notificationInterval=server.arg("notificationInterval").toInt();
-    Serial.println( notificationInterval);
-    directionCurrentDetection= server.hasArg("directionCurrentDetection");
-    Serial.println( directionCurrentDetection);
-    emoncmsApiKey=server.arg("emoncmsApiKey");
-    Serial.println(   emoncmsApiKey);
-    emoncmsUrl=server.arg("emoncmsUrl");
-    emoncmsPrefix=server.arg("emoncmsPrefix");
-    mqttIpDns=server.arg("mqttIpDns");
-    mqttUsername=server.arg("mqttUsername");
-    mqttPassword=server.arg("mqttPassword");
-    Serial.println(configToJson());
-    saveConfig();
-    server.sendHeader("Location", String("/"), true);
-    server.send ( 302);
-}
 void loadLastConfig(String json) {
     StaticJsonBuffer<512> jsonBuffer;
     JsonObject &root = jsonBuffer.parseObject(json);
@@ -138,30 +106,35 @@ void loadLastConfig(String json) {
     mqttIpDns=root["mqttIpDns"] | MQTT_BROKER_IP;
     mqttUsername = root["mqttUsername"] | MQTT_USERNAME;
     mqttPassword = root["mqttPassword"] | MQTT_PASSWORD;
-}
-void handleConfig() {
-  server.send(200, "application/json",loadConfiguration());
+    wifiSSID = root["wifiSSID"] | WIFI_SSID;
+    wifiSecret = root["wifiSecret"] | WIFI_SECRET;
 }
 
-void prepareWebserver(){
-  MDNS.begin(HOSTNAME);
-  httpUpdater.setup(&server, update_path);
-  MDNS.addService("http", "tcp", 80);
-  loadConfiguration();
-  server.on("/", handleRoot);
-  server.on("/jquery.min.js", handleJQuery);
-  server.on("/js-index.js", handleJs);
-  server.on("/bootstrap.css", handleCss);
-  server.on("/readings", handleReadings);
-  server.on("/config", handleConfig);
-  server.on("/saveconfig", handleSaveConfig);
-  server.onNotFound(handleNotFound);
-  server.begin();
-  Serial.printf("BH PZEM - Configuration Panel ready! Open http://%s.local in your browser'\n", HOSTNAME);
+void saveConfig() {
+   if(SPIFFS.begin()){
+      File rFile = SPIFFS.open(fileName,"w+");
+      if(!rFile){
+        Serial.println("Open config file Error!");
+      } else {
+        rFile.print(cachedConfigJson);
+      }
+      rFile.close();
+   }else{
+     Serial.println("Open file system Error!");
+  }
+  SPIFFS.end();
+
 }
-void webServerLoop(){
- server.handleClient();
+
+void loadNewConfig(){
+if(configChanged){
+  Serial.println("[CONFIG] New config loaded.");
+  loadLastConfig(cachedConfigJson);
+  setupMQTT();
+  configChanged = false;
+  if(!WiFi.isConnected()){
+    ESP.restart();
+    }
+ }
 }
-void publishOnPanel(String json){
-lastReadings = json;
-}
+

@@ -1,44 +1,38 @@
+#include <JustWifi.h>
 #include "config.h"
 #include "static_site.h"
 #include <Timing.h> //https://github.com/scargill/Timing
-//ESP
-#include <ESP8266WiFi.h>
-//Wi-Fi Manger library https://www.youtube.com/watch?v=wWO9n5DnuLA
-#include <DNSServer.h>
-#include <ESP8266WebServer.h>
-#include <WiFiManager.h>//https://github.com/tzapu/WiFiManager
-
+#include <AsyncMqttClient.h> //https://github.com/marvinroger/async-mqtt-client
 #include <PZEM004T.h> //https://github.com/olehs/PZEM004T
-
 //TEMPERATURA
 #include <OneWire.h>
 #include <DallasTemperature.h> //https://github.com/milesburton/Arduino-Temperature-Control-Library
-DeviceAddress sensores[] = {};
+DeviceAddress sensores[8];
 IPAddress pzemIP(192, 168, 1, 1);
 PZEM004T pzem(RX_PIN, TX_PIN);
 Timing timerRead;
 //DALLAS
 OneWire oneWire(DS18B20_PIN);
 DallasTemperature sensors(&oneWire);
-
+DeviceAddress devAddr[15];  // array of (up to) 15 temperature sensors
+String devAddrNames[15];  // array of (up to) 15 temperature sensors
+int sensorsCount = 0;
 void setup() {
   
   Serial.begin(115200);
-  
+  loadConfiguration();
+  jw.setHostname(HOSTNAME);
+  jw.subscribe(infoCallback);
+  jw.enableAP(false);
+  jw.enableAPFallback(true);
+  jw.enableSTA(true);
+
+  // Clean existing network configuration
+  //jw.cleanNetworks();
+  // Add a network with password
+  jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
+ 
   timerRead.begin(0);
-  WiFiManager wifiManager;
-  //reset saved settings
-  //wifiManager.resetSettings();
-  /*define o tempo limite até o portal de configuração ficar novamente inátivo,
-   útil para quando alteramos a password do AP*/
-  wifiManager.setTimeout(180);
-  wifiManager.setAPStaticIPConfig(IPAddress(1,1,1,1), IPAddress(1,1,1,1), IPAddress(255,255,255,0));
-  if(!wifiManager.autoConnect(HOSTNAME)) {
-    Serial.println("failed to connect and hit timeout");
-    delay(3000);
-    ESP.restart();
-    delay(5000);
-  } 
   prepareWebserver();
   //PZEM SETUP
   pzem.setAddress(pzemIP);
@@ -46,28 +40,39 @@ void setup() {
   #ifdef D_SSD1306
   setupDisplay();
   #endif
-  Serial.print("DS18 ");
   sensors.begin();
- Serial.println(sensors.getDS18Count());
+  sensorsCount = sensors.getDeviceCount();
+  oneWire.reset_search();
+  for (int i=0; i<sensorsCount; i++){
+   if (!oneWire.search(devAddr[i])) 
+   Serial.print("Unable to find temperature sensors address "); Serial.println(i);
+  }
+  for (int a=0; a<sensorsCount; a++){ 
+  String addr  = "";
+    for (uint8_t i = 0; i < 8; i++){
+      if (devAddr[0][i] < 16) addr+="0";
+      addr+=String(devAddr[a][i], HEX);
+   }
+  devAddrNames[a] = addr;
+  }
 }
 
 void loop() {
-  if (checkMqttConnection()) {
-    mqttLoop();
-  }       
- 
-  if (WiFi.status() == WL_CONNECTED) {
-      webServerLoop() ;
+      jw.loop();
+      loadNewConfig();
+      float t = 0;
+
       if (timerRead.onTimeout(notificationInterval)){
         float v = getVoltage();
         float i = getCurrent();
         float p =  getPower()*directionSignal();
         float e = getEnergy();
         sensors.requestTemperatures();
-        float t = 0;
-        for(int i = 0 ; i<  (sizeof(sensores)/sizeof(DeviceAddress)); i++){
-           t =  requestTemperature(sensores[i]);
+        String temperatures= "";
+        for(int a = 0 ;a < sensorsCount; a++){
+          temperatures += "\"temp_"+devAddrNames[a]+"\":"+String(requestTemperature(devAddr[a]))+",";
         }
+        
       #ifdef D_SSD1306
       printOnDisplay(v,i,p);
       #endif  
@@ -84,18 +89,18 @@ void loop() {
         Serial.print("Wh; ");
         Serial.println();
       #endif
-      String json = "{\"temperatura\":"+String(t)+",\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
-      publishOnPanel(json);
+      String json = "{"+ temperatures+"\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
+     publishOnPanel(json);
       publishOnMqtt(json);
       publishOnEmoncms(json);
     }
-  }
+  
 }
 
 float requestTemperature(DeviceAddress deviceAddress){
   float temp = 0;
    do {
-    temp = sensors.getTempC(deviceAddress);
+    temp = sensors.getTempC( deviceAddress);
   } while (temp == 85.0 || temp == (-127.0));
   return temp;
 }
@@ -114,7 +119,6 @@ float getVoltage() {
   do {
     r = pzem.voltage(pzemIP);
     i++;
-webServerLoop() ;
   } while ( i < MAX_ATTEMPTS && r < 0.0);
   return r;
 }
@@ -125,7 +129,6 @@ float getCurrent() {
   do {
     r = pzem.current(pzemIP);
     i++;
-webServerLoop() ;
   } while ( i < MAX_ATTEMPTS && r < 0.0);
   return r;
 }
@@ -135,7 +138,7 @@ float getPower() {
   float r = -1.0;
   do {
     r = pzem.power(pzemIP);
-    i++;webServerLoop() ;
+    i++;
   } while ( i < MAX_ATTEMPTS && r < 0.0);
   return r;
 }
@@ -146,7 +149,6 @@ float getEnergy() {
   do {
     r = pzem.energy(pzemIP);
     i++;
-webServerLoop() ;
   } while ( i < MAX_ATTEMPTS && r < 0.0);
   return r;
 }

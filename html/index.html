@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <script src="jquery.min.js"></script>
     <script src="js-index.js"></script>
     <link rel="stylesheet" href="bootstrap.css">
 
 </head>
 <style>
+    li{
+        background: inherit !important;
+    }
     input[type=text], select {
         width: 100%;
         padding: 12px 20px;
@@ -62,7 +66,7 @@
 </style>
 <body style="background-color: rgb(34, 34, 34); color: white; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif">
 <div style="height: 70px; text-align: center; padding:  10px;">
-<h2 style="color: #fff;">BH PZEM - Configuration Panel v1</h2>
+<h2 style="color: #fff;">BH PZEM - Painel de Configuração v1</h2>
 </div>
 <form action="/saveconfig" method="post">
 <div class="container">
@@ -70,36 +74,49 @@
         <div class="col-sm">
             <div class="box-config">
                 <div style="background: #333;">
-                    <h3 style="color: white">NODE CONFIG</h3>
+                    <h3 style="color: white">DETALHES DO NÓ</h3>
                 </div>
-                <label for="node_id">NODE ID</label>
+                <label for="node_id">ID</label>
                 <input type="text" name="nodeId" id="node_id" placeholder="ex: Pzem Solar">
-                <label for="delay_notification">Notification interval</label>
+                <label for="delay_notification">Intervalo entre leituras</label>
                 <select name="notificationInterval" id="delay_notification" >
-                    <option value="5">5 seconds</option>
-                    <option value="10">10 seconds</option>
-                    <option value="15">15 seconds</option>
+                    <option value="5">5 segundos</option>
+                    <option value="10">10 segundos</option>
+                    <option value="15">15 segundos</option>
                 </select>
                 <div class="form-check">
                     <input type="checkbox" name="directionCurrentDetection" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Detect Current Direction</label>
+                    <label class="form-check-label" for="exampleCheck1">Deteção de sentido de corrente</label>
                 </div>
+
+                <div style="margin-top: 10px; height: 1px; width: 100%; background: #fff;">
+
+                </div>
+                <div style="margin-top: 10px; background: #333;">
+                   <h4>Wi-Fi</h4>
+                </div>
+                <label for="ssid">SSID</label>
+                <input type="text" name="wifiSSID" id="ssid" placeholder="ex: meuwifi">
+                <label for="wifi_secret">Password</label>
+                <input name="wifiSecret" type="password" id="wifi_secret" placeholder="ex: superpassword">
                 <div style="background: inherit;" class="card">
-                    <div class="card-header">
-                        Readings:
+                    <div style="margin-top: 10px; height: 1px; width: 100%; background: #fff;">
+
                     </div>
-                    <ul style="background: inherit;" class="list-group list-group-flush">
-                        <li style="background: inherit;" class="list-group-item"><h6>Power: <span id="power" class="badge badge-secondary">0 W</span></h6></li>
-                        <li style="background: inherit;" class="list-group-item"><h6>Voltage: <span id="voltage" class="badge badge-secondary">0 V</span></h6></li>
-                        <li style="background: inherit;" class="list-group-item"><h6>Current: <span id="current" class="badge badge-secondary">0 A</span></h6></li>
-                        <li style="background: inherit;" class="list-group-item"><h6>Temperature: <span id="temperature" class="badge badge-secondary">0 &#186;C</span></h6></li>
+                    <div style="margin-top: 10px; background: #333;">
+                        <h4>Sensores</h4>
+                    </div>
+                    <ul id="sensors" style="background: inherit;" class="list-group list-group-flush">
                     </ul>
                 </div>
                 <input onclick="handleFirmwareUpdate();" class="firm-btn btn btn-warning" type="button" value="Update Firmware"/>
                 <input class="save-btn" type="submit" value="Save All"/>
-                <h7>Current Firmware version <span id="firmwareVersion" class="badge badge-secondary">1.0</span></h7>
+                <h7>Versão do firmware <span id="firmwareVersion" class="badge badge-secondary">1.0</span></h7>
+                <br>
+                <h8>Desenvolvido por Bruno Horta @ 2018</h8>
             </div>
         </div>
+
         <div class="col-sm">
             <div class="box-config" >
                 <div style="background: #333;">
@@ -107,7 +124,7 @@
                 </div>
                 <label for="emoncms_api_url">API Url</label>
                 <input name="emoncmsUrl" type="text" id="emoncms_api_url" placeholder="ex: emoncms.org">
-                <label  for="emoncms_api_prefix">API Prefix (leave black if your url have direct access)</label>
+                <label  for="emoncms_api_prefix">Prefixo (deixar em branco no caso do url ser directo)</label>
                 <input name="emoncmsPrefix" type="text" id="emoncms_api_prefix" placeholder="ex: /emoncms">
                 <label for="emoncms_api_key">API Key</label>
                 <input name="emoncmsApiKey" type="text" id="emoncms_api_key" placeholder="ex: f4651ce9swq098d57375d960c612e081">

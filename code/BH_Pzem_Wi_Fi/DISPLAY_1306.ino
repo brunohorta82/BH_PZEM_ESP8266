@@ -18,6 +18,5 @@ void printOnDisplay(float voltagem, float amperage, float power){
   //display.drawString(3,2, String(amperage)+"A");
   //display.drawString(5,0, String(power)+"W");
   display.display();
- 
 }
 #endif
