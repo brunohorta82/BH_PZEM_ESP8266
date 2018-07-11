@@ -1,5 +1,5 @@
 
-#define CONFIG_VERSION 1
+#define FIRMWARE_VERSION 1.1
 #define HOSTNAME "bhpzem-mynode"
 #define NODE_ID "mynode"
 #define MAX_ATTEMPTS 5
@@ -69,6 +69,6 @@ String emoncmsPrefix = EMONCMS_URL_PREFIX;
 String mqttIpDns = MQTT_BROKER_IP;
 String mqttUsername = MQTT_USERNAME;
 String mqttPassword = MQTT_PASSWORD;
-float firmwareVersion = CONFIG_VERSION;
+float firmwareVersion = FIRMWARE_VERSION;
 bool emoncmshttp = EMONCMS_PROTOCOL ==  0;
 String fileName = "/bconfig.json";

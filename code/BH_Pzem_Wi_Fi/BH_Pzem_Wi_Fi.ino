@@ -78,7 +78,7 @@ void loop() {
         Serial.print("Wh; ");
         Serial.println();
       #endif
-      String json = "{\"temperatura\":"+String(t)+",\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(CONFIG_VERSION) +"}";
+      String json = "{\"temperatura\":"+String(t)+",\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
       publishOnPanel(json);
       publishOnMqtt(json);
       publishOnEmoncms(json);
