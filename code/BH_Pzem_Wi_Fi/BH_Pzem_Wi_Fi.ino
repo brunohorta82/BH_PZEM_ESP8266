@@ -13,13 +13,13 @@
 //TEMPERATURA
 #include <OneWire.h>
 #include <DallasTemperature.h> //https://github.com/milesburton/Arduino-Temperature-Control-Library
-
+DeviceAddress sensores[] = {};
 IPAddress pzemIP(192, 168, 1, 1);
 PZEM004T pzem(RX_PIN, TX_PIN);
 Timing timerRead;
 //DALLAS
 OneWire oneWire(DS18B20_PIN);
-DallasTemperature DS18B20(&oneWire);
+DallasTemperature sensors(&oneWire);
 
 void setup() {
   
@@ -46,7 +46,9 @@ void setup() {
   #ifdef D_SSD1306
   setupDisplay();
   #endif
- 
+  Serial.print("DS18 ");
+  sensors.begin();
+ Serial.println(sensors.getDS18Count());
 }
 
 void loop() {
@@ -61,7 +63,11 @@ void loop() {
         float i = getCurrent();
         float p =  getPower()*directionSignal();
         float e = getEnergy();
-        float t =  requestTemperature();
+        sensors.requestTemperatures();
+        float t = 0;
+        for(int i = 0 ; i<  (sizeof(sensores)/sizeof(DeviceAddress)); i++){
+           t =  requestTemperature(sensores[i]);
+        }
       #ifdef D_SSD1306
       printOnDisplay(v,i,p);
       #endif  
@@ -86,11 +92,10 @@ void loop() {
   }
 }
 
-float requestTemperature(){
+float requestTemperature(DeviceAddress deviceAddress){
   float temp = 0;
    do {
-    DS18B20.requestTemperatures(); 
-    temp = DS18B20.getTempCByIndex(0);
+    temp = sensors.getTempC(deviceAddress);
   } while (temp == 85.0 || temp == (-127.0));
   return temp;
 }
@@ -145,4 +150,5 @@ webServerLoop() ;
   } while ( i < MAX_ATTEMPTS && r < 0.0);
   return r;
 }
+
 

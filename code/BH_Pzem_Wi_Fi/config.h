@@ -4,6 +4,7 @@
 #define NODE_ID "mynode"
 #define MAX_ATTEMPTS 5
 #define DELAY_NOTIFICATION 5000 //5 seconds
+#define TEMPERATURE_PRECISION 9
 
 //     ___ ___ ___ ___  _    
 //    / __| _ \_ _/ _ \( )___
