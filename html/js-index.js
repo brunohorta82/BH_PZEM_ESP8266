@@ -8,7 +8,7 @@ function loadConfig() {
             console.log(response);
 
             $('input[name="nodeId"]').val(response.nodeId);
-            $('input[name="directionCurrentDetection"]').val(response.directionCurrentDetection);
+            $('input[name="directionCurrentDetection"]').prop("checked",response.directionCurrentDetection);
             $('select[name="notificationInterval"] option[value="'+response.notificationInterval+'"]').attr("selected","selected");
 
             $('input[name="emoncmsApiKey"]').val(response.emoncmsApiKey);

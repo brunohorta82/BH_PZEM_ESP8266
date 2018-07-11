@@ -1,7 +1,7 @@
 
 #define CONFIG_VERSION 1
-#define HOSTNAME "pzem-bh-teste"
-#define NODE_ID "pzem-teste"
+#define HOSTNAME "bhpzem-mynode"
+#define NODE_ID "mynode"
 #define MAX_ATTEMPTS 5
 #define DELAY_NOTIFICATION 5000 //5 seconds
 
@@ -39,17 +39,16 @@
 //   |___|_|  |_|\___/|_|\_|\___|_|\_|___/
 //   
 #define EMONCMS_PROTOCOL 0 //usar 0 para HTTP ou 1 HTTPS para servidores com certificado
-#define EMONCMS_HOST  "192.168.187.203"
-#define EMONCMS_URL_PREFIX  "/emoncms"
-#define EMONCMS_API_KEY "f4651ce96d4098d57375d960c612e081"
+#define EMONCMS_HOST  ""
+#define EMONCMS_URL_PREFIX  ""
+#define EMONCMS_API_KEY ""
 
 //    __  __  ___ _____ _____ 
 //   |  \/  |/ _ \_   _|_   _|
 //   | |\/| | (_) || |   | |  
 //   |_|  |_|\__\_\|_|   |_|  
 //  
-#define MQTT false
-#define MQTT_BROKER_IP "192.168.187.227"
+#define MQTT_BROKER_IP ""
 #define MQTT_BROKER_PORT 1883
 #define MQTT_USERNAME ""
 #define MQTT_PASSWORD ""
@@ -61,3 +60,15 @@
 //   |___/___|___/_| |____/_/ \_\_|   /__/
 //
 //#define D_SSD1306
+String nodeId = NODE_ID;
+int notificationInterval = DELAY_NOTIFICATION;
+bool directionCurrentDetection = DETECT_DIRECTION;
+String emoncmsApiKey = EMONCMS_API_KEY;
+String emoncmsUrl = EMONCMS_HOST;
+String emoncmsPrefix = EMONCMS_URL_PREFIX;
+String mqttIpDns = MQTT_BROKER_IP;
+String mqttUsername = MQTT_USERNAME;
+String mqttPassword = MQTT_PASSWORD;
+float firmwareVersion = CONFIG_VERSION;
+bool emoncmshttp = EMONCMS_PROTOCOL ==  0;
+String fileName = "/bconfig.json";
