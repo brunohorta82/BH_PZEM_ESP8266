@@ -52,10 +52,8 @@ function loadReadings() {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (response) {
-            var i = 0;
-            console.log($('#sensors'));
+             $('#sensors').empty();
             Object.keys(response).reverse().forEach(function (key) {
-                i++;
                 if (key !== "config" && key !== "contador") {
                     $('#sensors').append(' <div id="' + key + '" class="GaugeMeter" data-animationstep = 0 data-total="' + limits[key.split("_")[0]] + '" data-used="' + Math.round(response[key]) + '" data-text="' + response[key] + '" data-size="150" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff" data-label="' + map[key.split("_")[0]] + '"></div>');
                     $('#' + key).gaugeMeter();
@@ -68,11 +66,11 @@ function loadReadings() {
 
 
 $(document).ready(function () {
-    $('#node_id').on('keypress', function(e) {
-        if (e.which === 32)
-            return false;
-    });
     loadConfig();
     loadReadings();
     setInterval(loadReadings, 3000);
+     $('#node_id').on('keypress', function(e) {
+        if (e.which === 32)
+            return false;
+    });
 });
