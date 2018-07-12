@@ -7,6 +7,7 @@
 String cachedConfigJson = "";
 String lastReadings= "{}";
 bool configChanged = false;
+
 // SKETCH BEGIN
 AsyncWebServer server(80);
 
@@ -18,7 +19,9 @@ void  prepareWebserver(){
   });
 
   server.on("/readings", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "application/json",lastReadings);
+     AsyncWebServerResponse *response = request->beginResponse(200, "application/json", lastReadings);
+    response->addHeader("Access-Control-Allow-Origin", "*");
+    request->send(response);
   });
  server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200,  "application/json",loadConfiguration());
@@ -28,7 +31,6 @@ void  prepareWebserver(){
    cachedConfigJson= "{\"nodeId\":\""+request->arg("nodeId")+"\","+
           "\"notificationInterval\":"+String(request->arg("notificationInterval").toInt())+","+
           "\"directionCurrentDetection\":"+request->hasArg("directionCurrentDetection")+","+
-          "\"firmwareVersion\":"+firmwareVersion+","+
           "\"emoncmsApiKey\": \""+request->arg("emoncmsApiKey")+"\","+
           "\"CONFIG_VERSION\": "+String(CONFIG_VERSION)+","+
           "\"emoncmsPrefix\": \""+request->arg("emoncmsPrefix")+"\","+
@@ -64,6 +66,50 @@ void  prepareWebserver(){
     response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
     request->send(response);
   });
+
+
+  server.on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
+    shouldReboot = !Update.hasError();
+    AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", shouldReboot?"OK":"FAIL");
+    response->addHeader("Connection", "close");
+    request->send(response);
+  },[](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
+    if(!index){
+      Serial.printf("Update Start: %s\n", filename.c_str());
+      Update.runAsync(true);
+      if(!Update.begin((ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000)){
+        Update.printError(Serial);
+      }
+    }
+    if(!Update.hasError()){
+      if(Update.write(data, len) != len){
+        Update.printError(Serial);
+      }
+    }
+    if(final){
+      if(Update.end(true)){
+        Serial.printf("Update Success: %uB\n", index+len);
+      } else {
+        Update.printError(Serial);
+      }
+    }
+  });
+
+server.onNotFound([](AsyncWebServerRequest *request) {
+  if (request->method() == HTTP_OPTIONS) {
+    request->send(200);
+  } else {
+    request->send(404);
+  }
+});
+ server.onNotFound([](AsyncWebServerRequest *request){  
+  if(request->method() == HTTP_OPTIONS)
+     request->send(200);
+    else
+    request->send(404);
+});
+
+  DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
   server.begin();
 }
 void publishOnPanel(String json){
@@ -71,7 +117,6 @@ lastReadings = json;
 }
 String loadConfiguration(){
   if(!cachedConfigJson.equals("")){
-    Serial.println(cachedConfigJson);
     return cachedConfigJson;
    }
 
@@ -98,6 +143,7 @@ String loadConfiguration(){
      Serial.println("Open file system Error!");
   }
    SPIFFS.end();
+  cachedConfigJson =  "["+cachedConfigJson+",{\"firmwareVersion\":"+String(FIRMWARE_VERSION)+"}]";
    return cachedConfigJson;
 }
 
@@ -110,7 +156,6 @@ void loadLastConfig(String json) {
      cachedConfigJson= "{\"nodeId\":\""+String(nodeId)+"\","+
           "\"notificationInterval\":"+String(notificationInterval)+","+
           "\"directionCurrentDetection\":"+String(directionCurrentDetection)+","+
-          "\"firmwareVersion\":"+firmwareVersion+","+
           "\"emoncmsApiKey\": \""+emoncmsApiKey+"\","+
           "\"CONFIG_VERSION\": "+String(CONFIG_VERSION)+","+
           "\"emoncmsPrefix\": \""+emoncmsPrefix+"\","+
@@ -126,7 +171,6 @@ void loadLastConfig(String json) {
           "\"IO_02\": \""+IO_02+"\","+
           "\"IO_15\": \""+IO_15+"\""+
           "}";
-          Serial.println(cachedConfigJson);
           saveConfig();
           configChanged = true;
           ESP.restart();
@@ -167,13 +211,14 @@ void saveConfig() {
 }
 
 void loadNewConfig(){
+  
 if(configChanged){
   Serial.println("[CONFIG] New config loaded.");
   loadLastConfig(cachedConfigJson);
   setupMQTT();
   configChanged = false;
   if(!WiFi.isConnected()){
-    ESP.restart();
+   shouldReboot = true;
     }
  }
 }

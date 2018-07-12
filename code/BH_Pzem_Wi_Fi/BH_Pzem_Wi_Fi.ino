@@ -58,6 +58,13 @@ void setup() {
 }
 
 void loop() {
+  if(shouldReboot){
+    Serial.println("Rebooting...");
+    delay(100);
+    ESP.restart();
+    return;
+  }
+      
       jw.loop();
       loadNewConfig();
       float t = 0;

@@ -8,39 +8,39 @@ function loadConfig() {
         success: function(response) {
             console.log(response);
 
-$('input[name="nodeId"]').val(response.nodeId);
-            $('input[name="directionCurrentDetection"]').prop("checked",response.directionCurrentDetection);
-            $('select[name="notificationInterval"] option[value="'+response.notificationInterval+'"]').attr("selected","selected");
+            $('input[name="nodeId"]').val(response[0].nodeId);
+            $('input[name="directionCurrentDetection"]').prop("checked",response[0].directionCurrentDetection);
+            $('select[name="notificationInterval"] option[value="'+response[0].notificationInterval+'"]').attr("selected","selected");
 
-            $('input[name="emoncmsApiKey"]').val(response.emoncmsApiKey);
-            $('input[name="emoncmsUrl"]').val(response.emoncmsUrl);
-            $('input[name="emoncmsPrefix"]').val(response.emoncmsPrefix);
+            $('input[name="emoncmsApiKey"]').val(response[0].emoncmsApiKey);
+            $('input[name="emoncmsUrl"]').val(response[0].emoncmsUrl);
+            $('input[name="emoncmsPrefix"]').val(response[0].emoncmsPrefix);
 
-            $('input[name="mqttIpDns"]').val(response.mqttIpDns);
-            $('input[name="mqttUsername"]').val(response.mqttUsername);
-            $('input[name="mqttPassword"]').val(response.mqttPassword);
+            $('input[name="mqttIpDns"]').val(response[0].mqttIpDns);
+            $('input[name="mqttUsername"]').val(response[0].mqttUsername);
+            $('input[name="mqttPassword"]').val(response[0].mqttPassword);
 
-            $('input[name="wifiSSID"]').val(response.wifiSSID);
-            $('input[name="wifiSecret"]').val(response.wifiSecret);
+            $('input[name="wifiSSID"]').val(response[0].wifiSSID);
+            $('input[name="wifiSecret"]').val(response[0].wifiSecret);
 
-            $("#firmwareVersion").text(response.firmwareVersion);
+            $("#firmwareVersion").text(response[1].firmwareVersion);
 
         },
         timeout: 2000
     })
 }
 function loadReadings() {
- var someUrl = "/readings";
+    var someUrl = "/readings";
     $.ajax({
         url: someUrl,
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function(response) {
 
-    $('#sensors').empty();
-    Object.keys(response).forEach(function (key) {
-        $('#sensors').append('<li  class="list-group-item"><h6>'+key+': <span id="'+key+'" class="badge badge-secondary">'+response[key]+' '+map[key.split("_")[0]]+'</span></h6></li>');
-    })
+            $('#sensors').empty();
+            Object.keys(response).forEach(function (key) {
+                $('#sensors').append('<li  class="list-group-item"><h6>'+key+': <span id="'+key+'" class="badge badge-secondary">'+response[key]+' '+map[key.split("_")[0]]+'</span></h6></li>');
+            })
 
 
         },
@@ -48,9 +48,7 @@ function loadReadings() {
     })
 }
 
-function handleFirmwareUpdate(){
-    window.location.href = "/firmware";
-}
+
 $(document).ready(function(){
     loadConfig();
     loadReadings();

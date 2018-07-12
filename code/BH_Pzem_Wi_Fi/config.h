@@ -1,14 +1,14 @@
 
-#define FIRMWARE_VERSION 1.1
-#define CONFIG_VERSION 1 //alterar para outro valor para rescrever as alterações
+#define FIRMWARE_VERSION 1.4
+#define CONFIG_VERSION 2 //alterar para outro valor para rescrever as alterações
 #define HOSTNAME "bhpzem-mynode"
 #define NODE_ID "mynode"
 #define MAX_ATTEMPTS 5
 #define DELAY_NOTIFICATION 5000 //5 seconds
 #define TEMPERATURE_PRECISION 9
 
-#define WIFI_SSID "MAKER_IOT"
-#define WIFI_SECRET "xptoxpto"
+#define WIFI_SSID "VOID SOFTWARE"
+#define WIFI_SECRET "blackiscool"
 //     ___ ___ ___ ___  _    
 //    / __| _ \_ _/ _ \( )___
 //   | (_ |  _/| | (_) |/(_-<
@@ -72,7 +72,7 @@ String emoncmsPrefix = EMONCMS_URL_PREFIX;
 String mqttIpDns = MQTT_BROKER_IP;
 String mqttUsername = MQTT_USERNAME;
 String mqttPassword = MQTT_PASSWORD;
-float firmwareVersion = FIRMWARE_VERSION;
+
 bool emoncmshttp = EMONCMS_PROTOCOL ==  0;
 String fileName = "/bconfig.json";
 String wifiSSID = WIFI_SSID;
@@ -86,7 +86,7 @@ String IO_02 = "02|DISPLAY|SCL";
 String IO_15 = "";
 const int totalAvailableGPIOs = 5;
 String availableGPIOS[] = {IO_16, IO_13,IO_00 ,IO_02,IO_15};
-
+bool shouldReboot = false;
 String getValue(String data, char separator, int index)
 {
     int found = 0;

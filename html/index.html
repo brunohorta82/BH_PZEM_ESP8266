@@ -68,7 +68,7 @@
 <div style="height: 70px; text-align: center; padding:  10px;">
 <h2 style="color: #fff;">BH PZEM - Painel de Configuração v1</h2>
 </div>
-<form action="/saveconfig" method="post">
+<form action="http://192.168.1.83/saveconfig" method="post">
 <div class="container">
     <div class="row">
         <div class="col-sm">
@@ -109,7 +109,7 @@
                     <ul id="sensors" style="background: inherit;" class="list-group list-group-flush">
                     </ul>
                 </div>
-                <input onclick="handleFirmwareUpdate();" class="firm-btn btn btn-warning" type="button" value="Update Firmware"/>
+
                 <input class="save-btn" type="submit" value="Save All"/>
                 <h7>Versão do firmware <span id="firmwareVersion" class="badge badge-secondary">1.0</span></h7>
                 <br>
@@ -146,5 +146,6 @@
     </div>
 </div>
 </form>
+<form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Atualizar Firmware'></form>
 </body>
 </html>
