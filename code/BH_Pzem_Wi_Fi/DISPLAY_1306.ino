@@ -1,7 +1,7 @@
 #ifdef D_SSD1306
 #include <Wire.h>  
 #include "SSD1306.h"
-SSD1306  display(0x3c, SDA_PIN, SCL_PIN);
+SSD1306  display(0x3c, 2, 0);
 void setupDisplay(){
   display.init();
   display.flipScreenVertically();

@@ -37,7 +37,12 @@ void  prepareWebserver(){
           "\"mqttUsername\": \""+request->arg("mqttUsername")+"\","+
           "\"mqttPassword\": \""+request->arg("mqttPassword")+"\","+
           "\"wifiSSID\": \""+request->arg("wifiSSID")+"\","+
-          "\"wifiSecret\": \""+request->arg("wifiSecret")+"\""+
+          "\"wifiSecret\": \""+request->arg("wifiSecret")+"\","+
+          "\"IO_16\": \""+request->arg("IO_16")+"\","+
+          "\"IO_13\": \""+request->arg("IO_13")+"\","+
+          "\"IO_00\": \""+request->arg("IO_00")+"\","+
+          "\"IO_02\": \""+request->arg("IO_02")+"\","+
+          "\"IO_15\": \""+request->arg("IO_15")+"\""+
           "}";
     saveConfig();
     request->redirect("/");
@@ -95,11 +100,12 @@ String loadConfiguration(){
    SPIFFS.end();
    return cachedConfigJson;
 }
+
 void loadLastConfig(String json) {
-    StaticJsonBuffer<512> jsonBuffer;
+    DynamicJsonBuffer jsonBuffer(1024);
     JsonObject &root = jsonBuffer.parseObject(json);
     int cv = root["CONFIG_VERSION"] | -1;
-    if(cv != CONFIG_VERSION){
+    if( !root.success() || cv != CONFIG_VERSION ){
       Serial.println("[CONFIG] New Version of config has detected");
      cachedConfigJson= "{\"nodeId\":\""+String(nodeId)+"\","+
           "\"notificationInterval\":"+String(notificationInterval)+","+
@@ -113,8 +119,14 @@ void loadLastConfig(String json) {
           "\"mqttUsername\": \""+mqttUsername+"\","+
           "\"mqttPassword\": \""+mqttPassword+"\","+
           "\"wifiSSID\": \""+wifiSSID+"\","+
-          "\"wifiSecret\": \""+wifiSecret+"\""+
+          "\"wifiSecret\": \""+wifiSecret+"\","+
+          "\"IO_16\": \""+IO_16+"\","+
+          "\"IO_13\": \""+IO_13+"\","+
+          "\"IO_00\": \""+IO_00+"\","+
+          "\"IO_02\": \""+IO_02+"\","+
+          "\"IO_15\": \""+IO_15+"\""+
           "}";
+          Serial.println(cachedConfigJson);
           saveConfig();
           configChanged = true;
           ESP.restart();
@@ -131,6 +143,11 @@ void loadLastConfig(String json) {
     mqttPassword = root["mqttPassword"] | MQTT_PASSWORD;
     wifiSSID = root["wifiSSID"] | WIFI_SSID;
     wifiSecret = root["wifiSecret"] | WIFI_SECRET;
+    IO_16 = root["IO_16"] | "";
+    IO_13 =root["IO_13"] | "";
+    IO_00 = root["IO_00"] | "";
+    IO_02 = root["IO_01"] | "";
+    IO_15 =root["IO_15"] |"";
 }
 
 void saveConfig() {

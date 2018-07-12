@@ -1,6 +1,7 @@
 
 #include <Ticker.h>
 
+#include <ArduinoJson.h>
 
 AsyncMqttClient mqttClient;
 Ticker mqttReconnectTimer;
@@ -9,9 +10,16 @@ Ticker wifiReconnectTimer;
 
 void onMqttConnect(bool sessionPresent) {
   Serial.println("[MQTT] Connected to MQTT.");
-  for(int i = 0; i < relayCount; i++){
-    mqttClient.subscribe(("bhpzem/"+nodeId+"/relay_"+String(i)).c_str(),0);
-  }
+    for(int i = 0; i <  totalAvailableGPIOs; i++){
+      String relayName = availableGPIOS[i];
+      if(relayName.equals(""))return;
+      String actuator = getValue(String(relayName),'|',1);
+      if(actuator.startsWith("relay_")){
+        String topic  = "bhpzem/"+nodeId+"/"+actuator+"/set";
+        Serial.println("[MQTT] "+topic);
+        mqttClient.subscribe(topic.c_str(),0);
+      }
+    }
 }
 void connectToMqtt() {
   Serial.println("[MQTT] Connecting to MQTT...");
@@ -27,23 +35,36 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
 
 
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
-Serial.println("Publish received.");
-  Serial.print("  topic: ");
-  Serial.println(topic);
-  Serial.print("  qos: ");
-  Serial.println(properties.qos);
-  Serial.print("  dup: ");
-  Serial.println(properties.dup);
-  Serial.print("  retain: ");
-  Serial.println(properties.retain);
-  Serial.print("  len: ");
-  Serial.println(len);
-  Serial.print("  index: ");
-  Serial.println(index);
-  Serial.print("  total: ");
-  Serial.println(total);
+  //RELAYS
+  String topicStr = String(topic);
+  if(topicStr.startsWith("bhpzem/"+nodeId+"/relay")){
+     String payloadStr = "";
+  for (int i=0; i<len; i++) {
+    payloadStr += payload[i];
+  }
+  String relay = getValue(topicStr,'/',2);
+  int gpio = -1;
+   for(int i = 0; i <  totalAvailableGPIOs; i++){
+      String relayName = availableGPIOS[i];
+      if(relayName.equals(""))continue;
+      if(getValue(relayName,'|',1).startsWith(relay)){
+        gpio = getValue(relayName,'|',0).toInt();
+        break;
+      }
+    }
+   
+  if(payloadStr.equals("ON")){
+  turnOnNormal(gpio);
+  }else if (payloadStr.equals("OFF")){
+      turnOffNormal(gpio);
+  }else if (payloadStr.equals("OFF_PULSE")){
+      pulseOff(gpio,false,2);
+  }else if (payloadStr.equals("ON_PULSE")){
+    pulseOn(gpio,false,2);
+  }
+  Serial.println( payloadStr);
+  }
 }
-
 void setupMQTT() {
   if(WiFi.status() != WL_CONNECTED || mqttIpDns.equals(""))return;
   mqttClient.disconnect();

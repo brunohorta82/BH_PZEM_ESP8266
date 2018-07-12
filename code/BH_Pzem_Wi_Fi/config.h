@@ -1,6 +1,6 @@
 
 #define FIRMWARE_VERSION 1.1
-#define CONFIG_VERSION 4
+#define CONFIG_VERSION 1 //alterar para outro valor para rescrever as alterações
 #define HOSTNAME "bhpzem-mynode"
 #define NODE_ID "mynode"
 #define MAX_ATTEMPTS 5
@@ -16,9 +16,7 @@
 //     
 #define DIRECTION_PIN 14
 #define RX_PIN 4
-#define TX_PIN 5
-#define SDA_PIN 2
-#define SCL_PIN 0  
+#define TX_PIN 5 
 #define DS18B20_PIN 12
 
 
@@ -52,11 +50,11 @@
 //   | |\/| | (_) || |   | |  
 //   |_|  |_|\__\_\|_|   |_|  
 //  
-#define MQTT_BROKER_IP ""
+#define MQTT_BROKER_IP "192.168.187.227"
 #define MQTT_BROKER_PORT 1883
 #define MQTT_USERNAME ""
 #define MQTT_PASSWORD ""
-#define MQTT_TOPIC "/pzem/"+String(NODE_ID)+"/readings"
+#define MQTT_TOPIC "/bhpzem/"+String(NODE_ID)+"/readings/status"
 
 //    ___ ___ ___ ___ _      ___   ___    
 //   |   \_ _/ __| _ \ |    /_\ \ / ( )___
@@ -79,3 +77,28 @@ bool emoncmshttp = EMONCMS_PROTOCOL ==  0;
 String fileName = "/bconfig.json";
 String wifiSSID = WIFI_SSID;
 String wifiSecret = WIFI_SECRET;
+int reservedGPIOS[] = {RX_PIN, TX_PIN,DIRECTION_PIN,DS18B20_PIN};
+
+String IO_16 = "16|relay_2|INVERTED";
+String IO_13 = "13|relay_1|NORMAL";
+String IO_00 = "00|DISPLAY|SDA";
+String IO_02 = "02|DISPLAY|SCL";
+String IO_15 = "";
+const int totalAvailableGPIOs = 5;
+String availableGPIOS[] = {IO_16, IO_13,IO_00 ,IO_02,IO_15};
+
+String getValue(String data, char separator, int index)
+{
+    int found = 0;
+    int strIndex[] = { 0, -1 };
+    int maxIndex = data.length() - 1;
+
+    for (int i = 0; i <= maxIndex && found <= index; i++) {
+        if (data.charAt(i) == separator || i == maxIndex) {
+            found++;
+            strIndex[0] = strIndex[1] + 1;
+            strIndex[1] = (i == maxIndex) ? i+1 : i;
+        }
+    }
+    return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+}

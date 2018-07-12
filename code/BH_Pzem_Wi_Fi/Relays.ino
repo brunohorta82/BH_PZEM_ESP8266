@@ -1,35 +1,41 @@
 #include <Ticker.h>
 Ticker pulseTicker;
+
+
 void turnOn(int gpio, bool inverted) {
+  pinMode(gpio,OUTPUT);
+  Serial.println(gpio);
  if(inverted){
-      turnOnInverted( gpio);
+      digitalWrite( gpio,LOW);
     }else{
-      turnOnNormal( gpio);
+      digitalWrite( gpio,HIGH);
     }
 }
 
 void turnOff(int gpio, bool inverted) {
+    pinMode(gpio,OUTPUT);
   if(inverted){
-      turnOffInverted( gpio);
+      digitalWrite( gpio,HIGH);
     }else{
-      turnOffNormal( gpio);
+      digitalWrite( gpio,LOW);
     }
 }
 
 void turnOnInverted(int gpio) {
-  digitalWrite(gpio, 0);
+  turnOn(gpio,true);
+  
 }
 
 void turnOffInverted(int gpio) {
-  digitalWrite(gpio,  1);
+  turnOff(gpio,true);
 }
 
 void turnOnNormal(int gpio) {
-  digitalWrite(gpio, 1);
+  turnOn(gpio,false);
 }
 
 void turnOffNormal(int gpio) {
-  digitalWrite(gpio,  0);
+  turnOff(gpio,false);
 }
 
 // FIRST ON AFTER DELAY OFF
