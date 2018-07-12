@@ -4,7 +4,7 @@ var map = {
     "amperagem": "Amperes",
     "voltagem": "Volts",
     "temp": "\u00BAC",
-    "contador": ""
+    "contador": "kWh"
 };
 var limits = {"config": "0", "potencia": "2700", "amperagem": "32", "voltagem": "270", "temp": "180", "contador": "0"};
 

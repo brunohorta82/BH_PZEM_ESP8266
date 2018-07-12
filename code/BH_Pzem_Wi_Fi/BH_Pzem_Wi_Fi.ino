@@ -74,7 +74,7 @@ void loop() {
         float v = getVoltage();
         float i = getCurrent();
         float p =  getPower()*directionSignal();
-        float e = getEnergy();
+        float e = getEnergy()/1000;
         sensors.requestTemperatures();
         String temperatures= "";
         for(int a = 0 ;a < sensorsCount; a++){
@@ -94,7 +94,7 @@ void loop() {
         Serial.print(p);
         Serial.print("W; ");
         Serial.print(e);
-        Serial.print("Wh; ");
+        Serial.print("kWh; ");
         Serial.println();
       #endif
       String json = "{"+ temperatures+"\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
