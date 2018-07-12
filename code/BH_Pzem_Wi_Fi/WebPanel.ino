@@ -19,9 +19,7 @@ void  prepareWebserver(){
   });
 
   server.on("/readings", HTTP_GET, [](AsyncWebServerRequest *request){
-     AsyncWebServerResponse *response = request->beginResponse(200, "application/json", lastReadings);
-    response->addHeader("Access-Control-Allow-Origin", "*");
-    request->send(response);
+    request->send(200, "application/json", lastReadings);
   });
  server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200,  "application/json","["+cachedConfigJson+",{\"firmwareVersion\":"+String(FIRMWARE_VERSION)+"}]");

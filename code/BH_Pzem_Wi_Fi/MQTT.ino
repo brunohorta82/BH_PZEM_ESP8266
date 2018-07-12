@@ -1,6 +1,5 @@
 
 #include <Ticker.h>
-
 #include <ArduinoJson.h>
 
 AsyncMqttClient mqttClient;
@@ -19,6 +18,8 @@ void onMqttConnect(bool sessionPresent) {
         String topic  = "bhpzem/"+nodeId+"/"+actuator+"/set";
         Serial.println("[MQTT] "+topic);
         mqttClient.subscribe(topic.c_str(),0);
+        //mqttClient.publish("homeassistant/switch/"+nodeId+"/"+actuator+"/config",0,true,)
+        
       }
     }
 }
