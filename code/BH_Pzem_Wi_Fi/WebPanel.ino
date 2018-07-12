@@ -24,7 +24,7 @@ void  prepareWebserver(){
     request->send(response);
   });
  server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200,  "application/json",loadConfiguration());
+    request->send(200,  "application/json","["+cachedConfigJson+",{\"firmwareVersion\":"+String(FIRMWARE_VERSION)+"}]");
   });
 
    server.on("/saveconfig", HTTP_POST, [](AsyncWebServerRequest *request){
@@ -32,7 +32,6 @@ void  prepareWebserver(){
           "\"notificationInterval\":"+String(request->arg("notificationInterval").toInt())+","+
           "\"directionCurrentDetection\":"+request->hasArg("directionCurrentDetection")+","+
           "\"emoncmsApiKey\": \""+request->arg("emoncmsApiKey")+"\","+
-          "\"CONFIG_VERSION\": "+String(CONFIG_VERSION)+","+
           "\"emoncmsPrefix\": \""+request->arg("emoncmsPrefix")+"\","+
           "\"emoncmsUrl\": \""+request->arg("emoncmsUrl")+"\","+
           "\"mqttIpDns\": \""+request->arg("mqttIpDns")+"\","+
@@ -117,7 +116,7 @@ lastReadings = json;
 }
 String loadConfiguration(){
   if(!cachedConfigJson.equals("")){
-    return cachedConfigJson;
+    cachedConfigJson;
    }
 
   if(SPIFFS.begin()){
@@ -142,8 +141,7 @@ String loadConfiguration(){
   }else{
      Serial.println("Open file system Error!");
   }
-   SPIFFS.end();
-  cachedConfigJson =  "["+cachedConfigJson+",{\"firmwareVersion\":"+String(FIRMWARE_VERSION)+"}]";
+   SPIFFS.end(); 
    return cachedConfigJson;
 }
 
@@ -151,13 +149,13 @@ void loadLastConfig(String json) {
     DynamicJsonBuffer jsonBuffer(1024);
     JsonObject &root = jsonBuffer.parseObject(json);
     int cv = root["CONFIG_VERSION"] | -1;
-    if( !root.success() || cv != CONFIG_VERSION ){
+    if( !root.success() || loadDefaults ){
+       loadDefaults  = false;
       Serial.println("[CONFIG] New Version of config has detected");
      cachedConfigJson= "{\"nodeId\":\""+String(nodeId)+"\","+
           "\"notificationInterval\":"+String(notificationInterval)+","+
           "\"directionCurrentDetection\":"+String(directionCurrentDetection)+","+
           "\"emoncmsApiKey\": \""+emoncmsApiKey+"\","+
-          "\"CONFIG_VERSION\": "+String(CONFIG_VERSION)+","+
           "\"emoncmsPrefix\": \""+emoncmsPrefix+"\","+
           "\"emoncmsUrl\": \""+emoncmsUrl+"\","+
           "\"mqttIpDns\": \""+mqttIpDns+"\","+
@@ -165,11 +163,11 @@ void loadLastConfig(String json) {
           "\"mqttPassword\": \""+mqttPassword+"\","+
           "\"wifiSSID\": \""+wifiSSID+"\","+
           "\"wifiSecret\": \""+wifiSecret+"\","+
-          "\"IO_16\": \""+IO_16+"\","+
-          "\"IO_13\": \""+IO_13+"\","+
-          "\"IO_00\": \""+IO_00+"\","+
-          "\"IO_02\": \""+IO_02+"\","+
-          "\"IO_15\": \""+IO_15+"\""+
+          "\"IO_16\": \""+availableGPIOS[0]+"\","+
+          "\"IO_13\": \""+availableGPIOS[1]+"\","+
+          "\"IO_00\": \""+availableGPIOS[2]+"\","+
+          "\"IO_02\": \""+availableGPIOS[3]+"\","+
+          "\"IO_15\": \""+availableGPIOS[4]+"\""+
           "}";
           saveConfig();
           configChanged = true;
@@ -187,11 +185,14 @@ void loadLastConfig(String json) {
     mqttPassword = root["mqttPassword"] | MQTT_PASSWORD;
     wifiSSID = root["wifiSSID"] | WIFI_SSID;
     wifiSecret = root["wifiSecret"] | WIFI_SECRET;
-    IO_16 = root["IO_16"] | "";
-    IO_13 =root["IO_13"] | "";
-    IO_00 = root["IO_00"] | "";
-    IO_02 = root["IO_01"] | "";
-    IO_15 =root["IO_15"] |"";
+    availableGPIOS[0] = root["IO_16"] | "";
+    availableGPIOS[1] =root["IO_13"] | "";
+    availableGPIOS[2] = root["IO_00"] | "";
+    availableGPIOS[3] = root["IO_01"] | "";
+    availableGPIOS[4] =root["IO_15"] |"";
+
+    Serial.print("IO ");
+    Serial.println(availableGPIOS[2]);
 }
 
 void saveConfig() {

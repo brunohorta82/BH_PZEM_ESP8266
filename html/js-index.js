@@ -25,6 +25,12 @@ function loadConfig() {
 
             $("#firmwareVersion").text(response[1].firmwareVersion);
 
+            $('select[name="IO_00"] option[value="'+response[0].IO_00+'"]').attr("selected","selected");
+            $('select[name="IO_02"] option[value="'+response[0].IO_02+'"]').attr("selected","selected");
+            $('select[name="IO_13"] option[value="'+response[0].IO_13+'"]').attr("selected","selected");
+            $('select[name="IO_15"] option[value="'+response[0].IO_15+'"]').attr("selected","selected");
+            $('select[name="IO_16"] option[value="'+response[0].IO_16+'"]').attr("selected","selected");
+
         },
         timeout: 2000
     })

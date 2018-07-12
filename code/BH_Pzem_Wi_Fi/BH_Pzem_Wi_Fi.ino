@@ -21,7 +21,7 @@ void setup() {
   
   Serial.begin(115200);
   loadConfiguration();
-  jw.setHostname(HOSTNAME);
+  jw.setHostname(String(HOSTNAME).c_str());
   jw.subscribe(infoCallback);
   jw.enableAP(false);
   jw.enableAPFallback(true);

@@ -1,8 +1,7 @@
 
 #define FIRMWARE_VERSION 1.4
-#define CONFIG_VERSION 2 //alterar para outro valor para rescrever as alterações
-#define HOSTNAME "bhpzem-mynode"
 #define NODE_ID "mynode"
+#define HOSTNAME "bhpzem-"+String(NODE_ID)
 #define MAX_ATTEMPTS 5
 #define DELAY_NOTIFICATION 5000 //5 seconds
 #define TEMPERATURE_PRECISION 9
@@ -78,15 +77,10 @@ String fileName = "/bconfig.json";
 String wifiSSID = WIFI_SSID;
 String wifiSecret = WIFI_SECRET;
 int reservedGPIOS[] = {RX_PIN, TX_PIN,DIRECTION_PIN,DS18B20_PIN};
-
-String IO_16 = "16|relay_2|INVERTED";
-String IO_13 = "13|relay_1|NORMAL";
-String IO_00 = "00|DISPLAY|SDA";
-String IO_02 = "02|DISPLAY|SCL";
-String IO_15 = "";
 const int totalAvailableGPIOs = 5;
-String availableGPIOS[] = {IO_16, IO_13,IO_00 ,IO_02,IO_15};
+String availableGPIOS[] = {"", "","" ,"",""};
 bool shouldReboot = false;
+bool loadDefaults = false;
 String getValue(String data, char separator, int index)
 {
     int found = 0;

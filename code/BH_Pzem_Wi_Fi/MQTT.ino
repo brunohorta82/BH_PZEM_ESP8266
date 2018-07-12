@@ -12,6 +12,8 @@ void onMqttConnect(bool sessionPresent) {
   Serial.println("[MQTT] Connected to MQTT.");
     for(int i = 0; i <  totalAvailableGPIOs; i++){
       String relayName = availableGPIOS[i];
+      Serial.print("#");
+      Serial.println(relayName);
       if(relayName.equals(""))return;
       String actuator = getValue(String(relayName),'|',1);
       if(actuator.startsWith("relay_")){
