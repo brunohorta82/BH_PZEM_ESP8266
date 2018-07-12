@@ -2,107 +2,13 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <script src="jquery.min.js"></script>
-    <script src="js-index.js"></script>
-    <script src="GaugeMeter.js"></script>
     <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-<style>
-    .GaugeMeter {
-        position: Relative;
-        text-align: Center;
-        overflow: Hidden;
-        cursor: Default;
-        display: inline-block;
-    }
 
-    .GaugeMeter SPAN, .GaugeMeter B {
-        width: 60%;
-
-        position: Absolute;
-        text-align: Center;
-        display: Inline-Block;
-        color: #fff;
-        font-weight: 100;
-        font-family: "Open Sans", Arial;
-        overflow: Hidden;
-        white-space: NoWrap;
-        text-overflow: Ellipsis;
-        margin: 0 23%;
-    }
-
-    .GaugeMeter[data-style="Semi"] B {
-        width: 80%;
-        margin: 0 10%;
-    }
-
-    .GaugeMeter S, .GaugeMeter U {
-        text-decoration: None;
-        font-size: .60em;
-        font-weight: 200;
-        opacity: .6;
-    }
-
-    .GaugeMeter B {
-        color: #000;
-        font-weight: 200;
-        opacity: .8;
-    }
-
-    li {
-        background: inherit !important;
-    }
-
-    input[type=text],
-    select {
-        width: 100%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        display: inline-block;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-
-    input[type=password],
-    select {
-        width: 100%;
-        padding: 12px 20px;
-        margin: 8px 0;
-        display: inline-block;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-
-    .save-btn[type=submit] {
-        width: 100%;
-        background-color: #08c;
-        color: white;
-        padding: 14px 20px;
-        margin: 8px 0;
-        border: none;
-        text-transform: uppercase;
-        font-weight: bold;
-        border-radius: 4px;
-        cursor: pointer;
-    }
-
-    .save-btn[type=submit]:hover {
-        background-color: #005580;
-
-    }
-
-    .box-config {
-        border-radius: 5px;
-        background-color: #333;
-        padding: 20px;
-    }
-</style>
-
-<body style="background-color: rgb(34, 34, 34); color: white; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif">
-<div style="height: 70px; text-align: center; padding:  10px;">
-    <h2 style="color: #fff;">BH PZEM - Painel de Configuração v1</h2>
+<body>
+<div class="title-wrapper">
+    <h2>BH PZEM - Painel de Configuração v1</h2>
 </div>
 <form action="/saveconfig" method="post">
 
@@ -315,9 +221,10 @@
     <div class="row">
         <div class="col-sm">
             <div class="box-config">
-                <form method='POST' action='/update' enctype='multipart/form-data'><input type='file'
-                                                                                          name='update'><input
-                        type='submit' value='Atualizar Firmware'></form>
+                <form method='POST' action='/update' enctype='multipart/form-data'>
+                    <input type='file' name='update'>
+                    <input type='submit' value='Atualizar Firmware'>
+                </form>
                 <h6>Versão do firmware
                     <span id="firmwareVersion" class="badge badge-secondary">1.0</span>
                 </h6>
@@ -325,6 +232,10 @@
         </div>
     </div>
 </div>
+
+<script src="jquery.min.js"></script>
+<script src="GaugeMeter.js"></script>
+<script src="index.js"></script>
 
 </body>
 
