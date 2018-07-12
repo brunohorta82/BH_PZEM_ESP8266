@@ -1,17 +1,19 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <script src="jquery.min.js"></script>
     <script src="js-index.js"></script>
     <link rel="stylesheet" href="bootstrap.css">
-
 </head>
 <style>
-    li{
+    li {
         background: inherit !important;
     }
-    input[type=text], select {
+
+    input[type=text],
+    select {
         width: 100%;
         padding: 12px 20px;
         margin: 8px 0;
@@ -20,7 +22,9 @@
         border-radius: 4px;
         box-sizing: border-box;
     }
-    input[type=password], select {
+
+    input[type=password],
+    select {
         width: 100%;
         padding: 12px 20px;
         margin: 8px 0;
@@ -29,6 +33,7 @@
         border-radius: 4px;
         box-sizing: border-box;
     }
+
     .save-btn[type=submit] {
         width: 100%;
         background-color: #08c;
@@ -41,7 +46,6 @@
         border-radius: 4px;
         cursor: pointer;
     }
-
 
     .firm-btn[type=button] {
         width: 100%;
@@ -58,94 +62,122 @@
         background-color: #005580;
 
     }
+
     .box-config {
         border-radius: 5px;
         background-color: #333;
         padding: 20px;
     }
 </style>
+
 <body style="background-color: rgb(34, 34, 34); color: white; font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif">
-<div style="height: 70px; text-align: center; padding:  10px;">
-<h2 style="color: #fff;">BH PZEM - Painel de Configuração v1</h2>
-</div>
-<form action="http://192.168.1.83/saveconfig" method="post">
-<div class="container">
-    <div class="row">
-        <div class="col-sm">
-            <div class="box-config">
-                <div style="background: #333;">
-                    <h3 style="color: white">DETALHES DO NÓ</h3>
-                </div>
-                <label for="node_id">ID</label>
-                <input type="text" name="nodeId" id="node_id" placeholder="ex: Pzem Solar">
-                <label for="delay_notification">Intervalo entre leituras</label>
-                <select name="notificationInterval" id="delay_notification" >
-                    <option value="5">5 segundos</option>
-                    <option value="10">10 segundos</option>
-                    <option value="15">15 segundos</option>
-                </select>
-                <div class="form-check">
-                    <input type="checkbox" name="directionCurrentDetection" class="form-check-input" id="exampleCheck1">
-                    <label class="form-check-label" for="exampleCheck1">Deteção de sentido de corrente</label>
-                </div>
-
-                <div style="margin-top: 10px; height: 1px; width: 100%; background: #fff;">
-
-                </div>
-                <div style="margin-top: 10px; background: #333;">
-                   <h4>Wi-Fi</h4>
-                </div>
-                <label for="ssid">SSID</label>
-                <input type="text" name="wifiSSID" id="ssid" placeholder="ex: meuwifi">
-                <label for="wifi_secret">Password</label>
-                <input name="wifiSecret" type="password" id="wifi_secret" placeholder="ex: superpassword">
-                <div style="background: inherit;" class="card">
-                    <div style="margin-top: 10px; height: 1px; width: 100%; background: #fff;">
-
-                    </div>
-                    <div style="margin-top: 10px; background: #333;">
-                        <h4>Sensores</h4>
-                    </div>
-                    <ul id="sensors" style="background: inherit;" class="list-group list-group-flush">
-                    </ul>
-                </div>
-
-                <input class="save-btn" type="submit" value="Save All"/>
-                <h7>Versão do firmware <span id="firmwareVersion" class="badge badge-secondary">1.0</span></h7>
-                <br>
-                <h8>Desenvolvido por Bruno Horta @ 2018</h8>
-            </div>
-        </div>
-
-        <div class="col-sm">
-            <div class="box-config" >
-                <div style="background: #333;">
-                    <h3 style="color: white">EMONCMS</h3>
-                </div>
-                <label for="emoncms_api_url">API Url</label>
-                <input name="emoncmsUrl" type="text" id="emoncms_api_url" placeholder="ex: emoncms.org">
-                <label  for="emoncms_api_prefix">Prefixo (deixar em branco no caso do url ser directo)</label>
-                <input name="emoncmsPrefix" type="text" id="emoncms_api_prefix" placeholder="ex: /emoncms">
-                <label for="emoncms_api_key">API Key</label>
-                <input name="emoncmsApiKey" type="text" id="emoncms_api_key" placeholder="ex: f4651ce9swq098d57375d960c612e081">
-            </div>
-        </div>
-        <div class="col-sm">
-            <div class="box-config" >
-                <div style="background: #333;">
-                    <h3 style="color: white">MQTT</h3>
-                </div>
-                <label for="mqtt_ip">Broker IP/DNS</label>
-                <input name="mqttIpDns" type="text" id="mqtt_ip" placeholder="ex: 192.168.1.30">
-                <label for="mqtt_username">Username</label>
-                <input name="mqttUsername" type="text" id="mqtt_username" placeholder="ex: iam">
-                <label for="mqtt_password">Password</label>
-                <input name="mqttPassword" type="password" id="mqtt_password" placeholder="ex: superstrongpassword">
-            </div>
-        </div>
+    <div style="height: 70px; text-align: center; padding:  10px;">
+        <h2 style="color: #fff;">BH PZEM - Painel de Configuração v1</h2>
     </div>
-</div>
-</form>
-<form method='POST' action='/update' enctype='multipart/form-data'><input type='file' name='update'><input type='submit' value='Atualizar Firmware'></form>
+    <form action="/saveconfig" method="post">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm">
+                    <div class="box-config">
+                        <div style="background: #333;">
+                            <div style="margin-top: 10px; background: #333;">
+                                <h4>Sensores</h4>
+                            </div>
+                            <ul id="sensors" style="background: inherit;" class="list-group list-group-flush">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="box-config">
+                        <div style="background: #333;">
+                            <h3 style="color: white">DETALHES DO NÓ</h3>
+                        </div>
+                        <label for="hostname">Hostname</label>
+                        <input type="text" name="hostname" id="hostname" placeholder="ex: Pzem Solar">
+                        <label for="node_id">ID</label>
+                        <input type="text" name="nodeId" id="node_id" placeholder="Id do Nó (Valor Numérico)">
+                        <label for="delay_notification">Intervalo entre leituras</label>
+                        <select name="notificationInterval" id="delay_notification">
+                            <option value="5">5 segundos</option>
+                            <option value="10">10 segundos</option>
+                            <option value="15">15 segundos</option>
+                        </select>
+                        <div class="form-check">
+                            <input type="checkbox" name="directionCurrentDetection" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">Deteção de sentido de corrente</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm">
+                    <div class="box-config">
+                        <div style="background: #333;">
+                            <div style="margin-top: 10px; background: #333;">
+                                <h4>Wi-Fi</h4>
+                            </div>
+                            <label for="ssid">SSID</label>
+                            <input type="text" name="wifiSSID" id="ssid" placeholder="ex: meuwifi">
+                            <label for="wifi_secret">Password</label>
+                            <input name="wifiSecret" type="password" id="wifi_secret" placeholder="ex: superpassword">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p>
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm">
+                        <div class="box-config">
+                            <div style="background: #333;">
+                                <h3 style="color: white">EMONCMS</h3>
+                            </div>
+                            <label for="emoncms_api_url">API Url</label>
+                            <input name="emoncmsUrl" type="text" id="emoncms_api_url" placeholder="ex: emoncms.org">
+                            <label for="emoncms_api_prefix">Prefixo (deixar em branco no caso do url ser directo)</label>
+                            <input name="emoncmsPrefix" type="text" id="emoncms_api_prefix" placeholder="ex: /emoncms">
+                            <label for="emoncms_api_key">API Key</label>
+                            <input name="emoncmsApiKey" type="text" id="emoncms_api_key" placeholder="ex: f4651ce9swq098d57375d960c612e081">
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="box-config">
+                            <div style="background: #333;">
+                                <h3 style="color: white">MQTT</h3>
+                            </div>
+                            <label for="mqtt_ip">Broker IP/DNS</label>
+                            <input name="mqttIpDns" type="text" id="mqtt_ip" placeholder="ex: 192.168.1.30">
+                            <label for="mqtt_username">Username</label>
+                            <input name="mqttUsername" type="text" id="mqtt_username" placeholder="ex: iam">
+                            <label for="mqtt_password">Password</label>
+                            <input name="mqttPassword" type="password" id="mqtt_password" placeholder="ex: superstrongpassword">
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="box-config">
+                            <form method="post" action="/update" enctype="multipart/form-data">
+                                <input class="firm-btn btn btn-warning" type="file" accept=".bin" value="Atualizar Firmware" />
+                                <p>
+                                    <div>
+                                        <button class="firm-btn btn btn-warning" style="color: white">Atualizar Firmware</button>
+                                    </div>
+                            </form>
+                        </div>
+                        <p>
+                            <div class="box-config">
+                                <div>
+                                    <input class="save-btn" type="submit" value="Guardar Configuração" />
+                                </div>
+                                <h7>Versão do firmware
+                                    <span id="firmwareVersion" class="badge badge-secondary">1.0</span>
+                                </h7>
+                                <br>
+                                <h8>Desenvolvido por Bruno Horta @ 2018</h8>
+                            </div>
+                    </div>
+                </div>
+            </div>
+    </form>
 </body>
+
 </html>
