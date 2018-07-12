@@ -188,11 +188,8 @@ void loadLastConfig(String json) {
     availableGPIOS[0] = root["IO_16"] | "";
     availableGPIOS[1] =root["IO_13"] | "";
     availableGPIOS[2] = root["IO_00"] | "";
-    availableGPIOS[3] = root["IO_01"] | "";
+    availableGPIOS[3] = root["IO_02"] | "";
     availableGPIOS[4] =root["IO_15"] |"";
-
-    Serial.print("IO ");
-    Serial.println(availableGPIOS[2]);
 }
 
 void saveConfig() {

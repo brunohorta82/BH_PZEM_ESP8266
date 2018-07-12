@@ -10,11 +10,10 @@ Ticker wifiReconnectTimer;
 
 void onMqttConnect(bool sessionPresent) {
   Serial.println("[MQTT] Connected to MQTT.");
+ 
     for(int i = 0; i <  totalAvailableGPIOs; i++){
       String relayName = availableGPIOS[i];
-      Serial.print("#");
-      Serial.println(relayName);
-      if(relayName.equals(""))return;
+      if(relayName.equals(""))continue;
       String actuator = getValue(String(relayName),'|',1);
       if(actuator.startsWith("relay_")){
         String topic  = "bhpzem/"+nodeId+"/"+actuator+"/set";
@@ -46,6 +45,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   }
   String relay = getValue(topicStr,'/',2);
   int gpio = -1;
+  
    for(int i = 0; i <  totalAvailableGPIOs; i++){
       String relayName = availableGPIOS[i];
       if(relayName.equals(""))continue;

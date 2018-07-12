@@ -76,11 +76,14 @@ bool emoncmshttp = EMONCMS_PROTOCOL ==  0;
 String fileName = "/bconfig.json";
 String wifiSSID = WIFI_SSID;
 String wifiSecret = WIFI_SECRET;
-int reservedGPIOS[] = {RX_PIN, TX_PIN,DIRECTION_PIN,DS18B20_PIN};
+
 const int totalAvailableGPIOs = 5;
-String availableGPIOS[] = {"", "","" ,"",""};
+String availableGPIOS[totalAvailableGPIOs]  ;
 bool shouldReboot = false;
 bool loadDefaults = false;
+
+
+
 String getValue(String data, char separator, int index)
 {
     int found = 0;

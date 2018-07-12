@@ -17,6 +17,7 @@ DallasTemperature sensors(&oneWire);
 DeviceAddress devAddr[15];  // array of (up to) 15 temperature sensors
 String devAddrNames[15];  // array of (up to) 15 temperature sensors
 int sensorsCount = 0;
+
 void setup() {
   
   Serial.begin(115200);
