@@ -15,10 +15,10 @@ void onMqttConnect(bool sessionPresent) {
       if(relayName.equals(""))continue;
       String actuator = getValue(String(relayName),'|',1);
       if(actuator.startsWith("relay_")){
-        String topic  = "bhpzem/"+nodeId+"/"+actuator+"/set";
+        String topic  = "bhpzem/"+nodeId+"/"+actuator;
         Serial.println("[MQTT] "+topic);
-        mqttClient.subscribe(topic.c_str(),0);
-        //mqttClient.publish("homeassistant/switch/"+nodeId+"/"+actuator+"/config",0,true,)
+        mqttClient.subscribe((topic+"/set").c_str(),0);
+        mqttClient.publish(("homeassistant/switch/"+nodeId+"/"+actuator+"/config").c_str(),0,true,("{\"name\": \"bhpzem_"+nodeId+"_"+actuator+"\", \"state_topic\": \""+topic+"/status\", \"command_topic\": \""+topic+"/set\", \"retain\": true}").c_str());
         
       }
     }
@@ -39,6 +39,7 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
 void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
   //RELAYS
   String topicStr = String(topic);
+  Serial.println(topicStr);
   if(topicStr.startsWith("bhpzem/"+nodeId+"/relay")){
      String payloadStr = "";
   for (int i=0; i<len; i++) {
@@ -46,22 +47,25 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   }
   String relay = getValue(topicStr,'/',2);
   int gpio = -1;
-  
+  bool inverted = false;
    for(int i = 0; i <  totalAvailableGPIOs; i++){
       String relayName = availableGPIOS[i];
       if(relayName.equals(""))continue;
       if(getValue(relayName,'|',1).startsWith(relay)){
         gpio = getValue(relayName,'|',0).toInt();
+        inverted = getValue(relayName,'|',2);
         break;
       }
     }
-   
+  topicStr.replace("/set","/status");
   if(payloadStr.equals("ON")){
-  turnOnNormal(gpio);
+    inverted  ? turnOnInverted(gpio) :   turnOnNormal(gpio);
+    mqttClient.publish(topicStr.c_str(),0,true,"ON");
   }else if (payloadStr.equals("OFF")){
-      turnOffNormal(gpio);
+   inverted  ? turnOffInverted(gpio) :   turnOffNormal(gpio);
+   mqttClient.publish(topicStr.c_str(),0,true,"OFF");
   }else if (payloadStr.equals("OFF_PULSE")){
-      pulseOff(gpio,false,2);
+    pulseOff(gpio,false,2);
   }else if (payloadStr.equals("ON_PULSE")){
     pulseOn(gpio,false,2);
   }
