@@ -58,7 +58,12 @@ void  prepareWebserver(){
     response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
     request->send(response);
   });
-  
+  server.on("/GaugeMeter.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "application/js", gauge,sizeof(gauge));
+    response->addHeader("Content-Encoding", "gzip");
+    response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    request->send(response);
+  });
    server.on("/bootstrap.css", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", css,sizeof(css));
     response->addHeader("Content-Encoding", "gzip");
