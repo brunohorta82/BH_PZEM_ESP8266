@@ -178,7 +178,7 @@ void loadLastConfig(String json) {
           "}";
           saveConfig();
           configChanged = true;
-          ESP.restart();
+           shouldReboot = true;
           return;
     }
     nodeId = root["nodeId"] | NODE_ID;
@@ -190,6 +190,8 @@ void loadLastConfig(String json) {
     mqttIpDns=root["mqttIpDns"] | MQTT_BROKER_IP;
     mqttUsername = root["mqttUsername"] | MQTT_USERNAME;
     mqttPassword = root["mqttPassword"] | MQTT_PASSWORD;
+    String lastSSID =  wifiSSID;
+    String lastWifiSecrect =  wifiSecret;
     wifiSSID = root["wifiSSID"] | WIFI_SSID;
     wifiSecret = root["wifiSecret"] | WIFI_SECRET;
     availableGPIOS[0] = root["IO_16"] | "";
@@ -197,6 +199,9 @@ void loadLastConfig(String json) {
     availableGPIOS[2] = root["IO_00"] | "";
     availableGPIOS[3] = root["IO_02"] | "";
     availableGPIOS[4] =root["IO_15"] |"";
+    if(wifiSSID != lastSSID ||  wifiSecret != lastWifiSecrect){
+      shouldReboot = true;
+    }
 }
 
 void saveConfig() {
@@ -216,7 +221,6 @@ void saveConfig() {
 }
 
 void loadNewConfig(){
-  
 if(configChanged){
   Serial.println("[CONFIG] New config loaded.");
   loadLastConfig(cachedConfigJson);
