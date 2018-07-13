@@ -4,17 +4,18 @@ body {
     font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif
 }
 
+
 h1, h2, h3, h4, h5, h6 {
     color: #fff;
 }
 
-.title-wrapper {
+.dashboard-container .title-wrapper {
     height: 70px;
     text-align: center;
     padding:  10px;
 }
 
-.GaugeMeter {
+.dashboard-container .GaugeMeter {
     position: Relative;
     text-align: Center;
     overflow: Hidden;
@@ -22,7 +23,7 @@ h1, h2, h3, h4, h5, h6 {
     display: inline-block;
 }
 
-.GaugeMeter SPAN, .GaugeMeter B {
+.dashboard-container .GaugeMeter SPAN, .dashboard-container .GaugeMeter B {
     width: 60%;
 
     position: Absolute;
@@ -37,30 +38,31 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0 23%;
 }
 
-.GaugeMeter[data-style="Semi"] B {
+.dashboard-container .GaugeMeter[data-style="Semi"] B {
     width: 80%;
     margin: 0 10%;
 }
 
-.GaugeMeter S, .GaugeMeter U {
+.dashboard-container .GaugeMeter S, .dashboard-container .GaugeMeter U {
     text-decoration: None;
     font-size: .60em;
     font-weight: 200;
     opacity: .6;
 }
 
-.GaugeMeter B {
+.dashboard-container .GaugeMeter B {
     color: #000;
     font-weight: 200;
     opacity: .8;
 }
 
-li {
+.dashboard-container  li {
     background: inherit !important;
 }
 
-input[type=text],
-select {
+.dashboard-container input[type=text],
+.dashboard-container input[type=password],
+.dashboard-container select {
     width: 100%;
     padding: 12px 20px;
     margin: 8px 0;
@@ -70,18 +72,7 @@ select {
     box-sizing: border-box;
 }
 
-input[type=password],
-select {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-}
-
-.save-btn[type=submit] {
+.dashboard-container .save-btn[type=submit] {
     width: 100%;
     background-color: #08c;
     color: white;
@@ -94,12 +85,12 @@ select {
     cursor: pointer;
 }
 
-.save-btn[type=submit]:hover {
+.dashboard-container .save-btn[type=submit]:hover {
     background-color: #005580;
 
 }
 
-.box-config {
+.dashboard-container .box-config {
     border-radius: 5px;
     background-color: #333;
     padding: 20px;
