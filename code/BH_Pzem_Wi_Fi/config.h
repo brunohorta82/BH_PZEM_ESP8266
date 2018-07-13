@@ -2,7 +2,7 @@
 #include <FS.h> 
 #define EMPTY  ""
 #define HARDWARE "bhpzem" 
-#define FIRMWARE_VERSION 1.5
+#define FIRMWARE_VERSION 1.6
 #define NODE_ID "mynode"
 #define HOSTNAME String(HARDWARE)+"-"+String(NODE_ID)
 #define MAX_ATTEMPTS 5
@@ -92,7 +92,7 @@ String nextConfigJson = "";
 
 String buildConfigToJson(String _nodeId, int _notificationInterval, bool _directionCurrentDetection, String  _emoncmsApiKey, String _emoncmsPrefix, String  _emoncmsUrl, String _mqttIpDns, String _mqttUsername,String _mqttPassword ,String _wifiSSID, String _wifiSecret, String _IO_00, String  _IO_02, String _IO_13, String _IO_15, String _IO_16, String _hostname ){
           return "{\"nodeId\":\""+_nodeId+"\","+
-          "\"hostname\":"+String(_hostname)+","+
+          "\"hostname\":\""+String(_hostname)+"\","+
           "\"notificationInterval\":"+String(_notificationInterval)+","+
           "\"directionCurrentDetection\":"+String(_directionCurrentDetection)+","+
           "\"emoncmsApiKey\": \""+_emoncmsApiKey+"\","+
@@ -178,9 +178,15 @@ void loadStoredConfiguration(){
 }
 
 
-bool checkRebootRules(){
-  //TODO CHECK OLD AND NEW CONFIG CHANGES
-  return false;
+bool checkRebootRules(String newConfig){
+   DynamicJsonBuffer jsonBuffer(1024);
+    JsonObject &root = jsonBuffer.parseObject(newConfig);
+    if( !root.success()){
+      Serial.println("[CONFIG] ERROR ON JSON VALIDATION!");
+      return true;
+    }    
+   
+  return nodeId != (root["nodeId"]  | NODE_ID) ||    hostname != String(HARDWARE) +"-"+String((root["nodeId"]  | NODE_ID)) || (WiFi.status() == WL_CONNECTED && (wifiSSID != (root["wifiSSID"] | WIFI_SSID) ||  wifiSecret != (root["wifiSecret"] | WIFI_SECRET)));
 }
 
 void updateServices(){
@@ -203,7 +209,7 @@ void saveConfig(String newConfig) {
   configNeedsUpdate = false;
   
   Serial.println("[CONFIG] New config loaded.");
-  shouldReboot = checkRebootRules();
+  shouldReboot = checkRebootRules(newConfig);
   if(!shouldReboot){
    applyJsonConfig(nextConfigJson);
    updateServices();
