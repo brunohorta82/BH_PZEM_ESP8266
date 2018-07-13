@@ -1,18 +1,15 @@
 #include <ESP8266mDNS.h>
-#include <ArduinoJson.h>
-#include <FS.h> 
+
 #include <ESPAsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
-String cachedConfigJson = "";
 String lastReadings= "{}";
-bool configChanged = false;
 
 // SKETCH BEGIN
 AsyncWebServer server(80);
 
 void  prepareWebserver(){
-  MDNS.begin(String(HOSTNAME).c_str());
+  MDNS.begin(hostname.c_str());
   MDNS.addService("http","tcp",80);
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
@@ -30,26 +27,25 @@ void  prepareWebserver(){
   });
 
    server.on("/saveconfig", HTTP_POST, [](AsyncWebServerRequest *request){
-   cachedConfigJson= "{\"nodeId\":\""+request->arg("nodeId")+"\","+
-          "\"notificationInterval\":"+String(request->arg("notificationInterval").toInt())+","+
-          "\"directionCurrentDetection\":"+request->hasArg("directionCurrentDetection")+","+
-          "\"emoncmsApiKey\": \""+request->arg("emoncmsApiKey")+"\","+
-          "\"emoncmsPrefix\": \""+request->arg("emoncmsPrefix")+"\","+
-          "\"emoncmsUrl\": \""+request->arg("emoncmsUrl")+"\","+
-          "\"mqttIpDns\": \""+request->arg("mqttIpDns")+"\","+
-          "\"mqttUsername\": \""+request->arg("mqttUsername")+"\","+
-          "\"mqttPassword\": \""+request->arg("mqttPassword")+"\","+
-          "\"wifiSSID\": \""+request->arg("wifiSSID")+"\","+
-          "\"wifiSecret\": \""+request->arg("wifiSecret")+"\","+
-          "\"IO_16\": \""+request->arg("IO_16")+"\","+
-          "\"IO_13\": \""+request->arg("IO_13")+"\","+
-          "\"IO_00\": \""+request->arg("IO_00")+"\","+
-          "\"IO_02\": \""+request->arg("IO_02")+"\","+
-          "\"IO_15\": \""+request->arg("IO_15")+"\""+
-          "}";
-    saveConfig();
-    request->redirect("/");
-    configChanged = true;
+   String newConfig=buildConfigToJson(
+    request->arg("nodeId"),
+   request->arg("notificationInterval").toInt(),
+   request->hasArg("directionCurrentDetection"),
+   request->arg("emoncmsApiKey"),
+   request->arg("emoncmsPrefix"),
+   request->arg("emoncmsUrl"),
+   request->arg("mqttIpDns"),
+   request->arg("mqttUsername"),
+   request->arg("mqttPassword"),
+   request->arg("wifiSSID"),
+   request->arg("wifiSecret"),
+   request->arg("IO_00"),
+   request->arg("IO_02"),
+   request->arg("IO_13"),
+   request->arg("IO_15"),
+   request->arg("IO_16"),hostname);
+   requestToSaveNewConfigJson(newConfig);
+   request->redirect("/");
   });
   server.on("/index.js", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "application/js",index_js);
@@ -71,6 +67,10 @@ void  prepareWebserver(){
     response->addHeader("Content-Encoding", "gzip");
     response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
     request->send(response);
+  });
+   server.on("/reboot", HTTP_GET, [](AsyncWebServerRequest *request){
+    shouldReboot = true;
+   request->send(200);
   });
 
 
@@ -118,113 +118,11 @@ server.onNotFound([](AsyncWebServerRequest *request) {
   DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
   server.begin();
 }
+
+
 void publishOnPanel(String json){
-lastReadings = json;
-}
-String loadConfiguration(){
-  if(!cachedConfigJson.equals("")){
-    cachedConfigJson;
-   }
-
-  if(SPIFFS.begin()){
-    File cFile;   
-    if(SPIFFS.exists(fileName)){
-    cFile = SPIFFS.open(fileName,"r+"); 
-     }else{
-      cFile = SPIFFS.open(fileName,"w+"); 
-      cFile.print(cachedConfigJson);
-      }
-     if(!cFile){
-        Serial.println("Create file config Error!");
-      }else{
-        Serial.println("Read Config");
-        while(cFile.available()) {
-          String line = cFile.readStringUntil('\n');
-          cachedConfigJson+= line;
-          loadLastConfig(cachedConfigJson);
-        }
-        cFile.close();
-      }
-  }else{
-     Serial.println("Open file system Error!");
-  }
-   SPIFFS.end(); 
-   return cachedConfigJson;
+  lastReadings = json;
 }
 
-void loadLastConfig(String json) {
-    DynamicJsonBuffer jsonBuffer(1024);
-    JsonObject &root = jsonBuffer.parseObject(json);
-    int cv = root["CONFIG_VERSION"] | -1;
-    if( !root.success() || loadDefaults ){
-       loadDefaults  = false;
-      Serial.println("[CONFIG] New Version of config has detected");
-     cachedConfigJson= "{\"nodeId\":\""+String(nodeId)+"\","+
-          "\"notificationInterval\":"+String(notificationInterval)+","+
-          "\"directionCurrentDetection\":"+String(directionCurrentDetection)+","+
-          "\"emoncmsApiKey\": \""+emoncmsApiKey+"\","+
-          "\"emoncmsPrefix\": \""+emoncmsPrefix+"\","+
-          "\"emoncmsUrl\": \""+emoncmsUrl+"\","+
-          "\"mqttIpDns\": \""+mqttIpDns+"\","+
-          "\"mqttUsername\": \""+mqttUsername+"\","+
-          "\"mqttPassword\": \""+mqttPassword+"\","+
-          "\"wifiSSID\": \""+wifiSSID+"\","+
-          "\"wifiSecret\": \""+wifiSecret+"\","+
-          "\"IO_16\": \""+availableGPIOS[0]+"\","+
-          "\"IO_13\": \""+availableGPIOS[1]+"\","+
-          "\"IO_00\": \""+availableGPIOS[2]+"\","+
-          "\"IO_02\": \""+availableGPIOS[3]+"\","+
-          "\"IO_15\": \""+availableGPIOS[4]+"\""+
-          "}";
-          saveConfig();
-          configChanged = true;
-          ESP.restart();
-          return;
-    }
-    nodeId = root["nodeId"] | NODE_ID;
-    notificationInterval=root["notificationInterval"] | DELAY_NOTIFICATION;
-    directionCurrentDetection=root["directionCurrentDetection"] | DETECT_DIRECTION;
-    emoncmsApiKey=root["emoncmsApiKey"] | EMONCMS_API_KEY;
-    emoncmsUrl=root["emoncmsUrl"] | EMONCMS_HOST;
-    emoncmsPrefix=root["emoncmsPrefix"] | EMONCMS_URL_PREFIX;
-    mqttIpDns=root["mqttIpDns"] | MQTT_BROKER_IP;
-    mqttUsername = root["mqttUsername"] | MQTT_USERNAME;
-    mqttPassword = root["mqttPassword"] | MQTT_PASSWORD;
-    wifiSSID = root["wifiSSID"] | WIFI_SSID;
-    wifiSecret = root["wifiSecret"] | WIFI_SECRET;
-    availableGPIOS[0] = root["IO_16"] | "";
-    availableGPIOS[1] =root["IO_13"] | "";
-    availableGPIOS[2] = root["IO_00"] | "";
-    availableGPIOS[3] = root["IO_02"] | "";
-    availableGPIOS[4] =root["IO_15"] |"";
-}
 
-void saveConfig() {
-   if(SPIFFS.begin()){
-      File rFile = SPIFFS.open(fileName,"w+");
-      if(!rFile){
-        Serial.println("Open config file Error!");
-      } else {
-        rFile.print(cachedConfigJson);
-      }
-      rFile.close();
-   }else{
-     Serial.println("Open file system Error!");
-  }
-  SPIFFS.end();
-
-}
-
-void loadNewConfig(){
-  
-if(configChanged){
-  Serial.println("[CONFIG] New config loaded.");
-  loadLastConfig(cachedConfigJson);
-  setupMQTT();
-  configChanged = false;
-  if(!WiFi.isConnected()){
-   shouldReboot = true;
-    }
- }
-}
 

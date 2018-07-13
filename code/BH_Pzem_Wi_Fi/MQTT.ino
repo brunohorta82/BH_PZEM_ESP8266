@@ -15,10 +15,10 @@ void onMqttConnect(bool sessionPresent) {
       if(relayName.equals(""))continue;
       String actuator = getValue(String(relayName),'|',1);
       if(actuator.startsWith("relay_")){
-        String topic  = "bhpzem/"+nodeId+"/"+actuator;
+        String topic  = String(HARDWARE)+"/"+nodeId+"/"+actuator;
         Serial.println("[MQTT] "+topic);
         mqttClient.subscribe((topic+"/set").c_str(),0);
-        mqttClient.publish(("homeassistant/switch/"+nodeId+"/"+actuator+"/config").c_str(),0,true,("{\"name\": \"bhpzem_"+nodeId+"_"+actuator+"\", \"state_topic\": \""+topic+"/status\", \"command_topic\": \""+topic+"/set\", \"retain\": true}").c_str());
+        mqttClient.publish(("homeassistant/switch/"+nodeId+"/"+actuator+"/config").c_str(),0,true,("{\"name\": \""+String(HARDWARE)+"_"+nodeId+"_"+actuator+"\", \"state_topic\": \""+topic+"/status\", \"command_topic\": \""+topic+"/set\", \"retain\": true}").c_str());
         
       }
     }
@@ -40,7 +40,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
   //RELAYS
   String topicStr = String(topic);
   Serial.println(topicStr);
-  if(topicStr.startsWith("bhpzem/"+nodeId+"/relay")){
+  if(topicStr.startsWith(String(HARDWARE)+"/"+nodeId+"/relay")){
      String payloadStr = "";
   for (int i=0; i<len; i++) {
     payloadStr += payload[i];
@@ -84,5 +84,5 @@ void setupMQTT() {
 }
 
   void publishOnMqtt(String json){
-     mqttClient.publish(String(MQTT_TOPIC).c_str(), 0,false,json.c_str());
+     mqttClient.publish((String(HARDWARE)+"/"+String(NODE_ID)+"/readings/status").c_str(), 0,false,json.c_str());
  }
