@@ -1,6 +1,7 @@
 
 var config = {
-    baseUrl: ""
+    baseUrl: "http://192.168.187.219" // COMMENT THIS LINE BEFORE SENT TO PRODUCTION
+   // baseUrl: "" // UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION
 };
 
 
