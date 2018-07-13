@@ -17,6 +17,9 @@ void  prepareWebserver(){
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html",index_html);
   });
+ server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "text/css",style_css);
+  });
 
   server.on("/readings", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "application/json", lastReadings);
@@ -47,8 +50,8 @@ void  prepareWebserver(){
     request->redirect("/");
     configChanged = true;
   });
-  server.on("/js-index.js", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send_P(200, "application/js",js);
+  server.on("/index.js", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send_P(200, "application/js",index_js);
   });
   server.on("/jquery.min.js", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "application/js", jQuery,sizeof(jQuery));
@@ -62,7 +65,7 @@ void  prepareWebserver(){
     response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
     request->send(response);
   });
-   server.on("/bootstrap.css", HTTP_GET, [](AsyncWebServerRequest *request){
+   server.on("/bootstrap.min.css", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", css,sizeof(css));
     response->addHeader("Content-Encoding", "gzip");
     response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");

@@ -98,7 +98,7 @@ void loop() {
         Serial.println();
       #endif
       String json = "{"+ temperatures+"\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
-     publishOnPanel(json);
+      publishOnPanel(json);
       publishOnMqtt(json);
       publishOnEmoncms(json);
     }

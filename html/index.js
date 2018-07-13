@@ -1,9 +1,9 @@
-// configs
-var config = {
-    baseUrl: "http://192.168.187.219"
-}
 
-// map
+var config = {
+    baseUrl: ""
+};
+
+
 var map = {
     "config": "",
     "potencia": "Wats",
@@ -12,7 +12,7 @@ var map = {
     "temp": "\u00BAC",
     "contador": ""
 };
-// limits
+
 var limits = {"config": "0", "potencia": "2700", "amperagem": "32", "voltagem": "270", "temp": "180", "contador": "0"};
 
 function loadConfig() {
@@ -56,22 +56,24 @@ function loadReadings() {
         contentType: "text/plain; charset=utf-8",
         dataType: "json",
         success: function (response) {
-            var i = 0;
-            Object.keys(response).reverse().forEach(function (key) {
-                i++;
-                if (key !== "config" && key !== "contador") {
-                    $('#sensors').append(' <div id="' + key + '" class="GaugeMeter" data-animationstep = 0 data-total="' + 
-                        limits[key.split("_")[0]] + '" data-used="' + Math.round(response[key]) + '" data-text="' + 
-                        response[key] + '" data-size="150" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff" data-label="' + 
-                        map[key.split("_")[0]] + '"></div>');
-                    $('#' + key).gaugeMeter();
-                }
-            });
+            if($('#sensors .GaugeMeter').length == 0){
+                Object.keys(response).reverse().forEach(function (key) {
+                    if (key !== "config" ) {
+                        $('#sensors').append(' <div id="' + key + '" class="GaugeMeter" data-animationstep = 0 data-total="' + limits[key.split("_")[0]]  + '" data-size="150" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff" data-label="' + map[key.split("_")[0]] + '"></div>');
+                        $('#' + key).gaugeMeter({used:Math.round(response[key]),text:response[key]});
+                    }
+                });
+            }else{
+                Object.keys(response).reverse().forEach(function (key) {
+                    if (key !== "config" ) {
+                        $('#' + key).gaugeMeter({used:Math.round(response[key]),text:response[key]});
+                    }
+                });
+            }
         },
         timeout: 2000
     })
 }
-
 
 $(document).ready(function () {
     $('#node_id').on('keypress', function(e) {
