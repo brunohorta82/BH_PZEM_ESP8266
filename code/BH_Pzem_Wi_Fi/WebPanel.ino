@@ -1,4 +1,4 @@
-
+#include <ESP8266mDNS.h>
 #include <ArduinoJson.h>
 #include <FS.h> 
 #include <ESPAsyncTCP.h>
@@ -12,7 +12,8 @@ bool configChanged = false;
 AsyncWebServer server(80);
 
 void  prepareWebserver(){
-  //MDNS.addService("http","tcp",80);
+  MDNS.begin(String(HOSTNAME).c_str());
+  MDNS.addService("http","tcp",80);
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send_P(200, "text/html",index_html);

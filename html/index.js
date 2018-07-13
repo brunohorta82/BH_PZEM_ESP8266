@@ -1,7 +1,7 @@
 
 var config = {
-    baseUrl: "http://192.168.1.118" // COMMENT THIS LINE BEFORE SENT TO PRODUCTION
-   // baseUrl: "" // UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION
+   /* baseUrl: "http://192.168.1.83" // COMMENT THIS LINE BEFORE SENT TO PRODUCTION*/
+    baseUrl: "" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION*/
 };
 
 var map = {
@@ -56,7 +56,7 @@ function loadReadings() {
         contentType: "text/plain; charset=utf-8",
         dataType: "json",
         success: function (response) {
-            if($('#sensors .GaugeMeter').length == 0){
+            if($('#sensors .GaugeMeter').length === 0){
                 Object.keys(response).reverse().forEach(function (key) {
                     if (key !== "config" ) {
                         $('#sensors').append(' <div id="' + key + '" class="GaugeMeter" data-animationstep = 0 data-total="' + limits[key.split("_")[0]]  + '" data-size="150" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff" data-label="' + map[key.split("_")[0]] + '"></div>');
@@ -83,4 +83,4 @@ $(document).ready(function () {
     loadConfig();
     loadReadings();
     setInterval(loadReadings, 3000);
-});
+})
