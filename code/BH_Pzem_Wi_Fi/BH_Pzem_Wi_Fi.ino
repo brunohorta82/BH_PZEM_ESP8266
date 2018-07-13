@@ -21,18 +21,14 @@ int sensorsCount = 0;
 void setup() {
   
   Serial.begin(115200);
-  loadConfiguration();
   jw.setHostname(String(HOSTNAME).c_str());
   jw.subscribe(infoCallback);
   jw.enableAP(false);
   jw.enableAPFallback(true);
   jw.enableSTA(true);
-
-  // Clean existing network configuration
-  //jw.cleanNetworks();
-  // Add a network with password
+  loadConfiguration();
   jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
- 
+
   timerRead.begin(0);
   prepareWebserver();
   //PZEM SETUP

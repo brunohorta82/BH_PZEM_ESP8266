@@ -72,6 +72,10 @@ void  prepareWebserver(){
     response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
     request->send(response);
   });
+   server.on("/reboot", HTTP_GET, [](AsyncWebServerRequest *request){
+    shouldReboot = true;
+   request->send(200);
+  });
 
 
   server.on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
@@ -123,7 +127,7 @@ lastReadings = json;
 }
 String loadConfiguration(){
   if(!cachedConfigJson.equals("")){
-    cachedConfigJson;
+    return cachedConfigJson;
    }
 
   if(SPIFFS.begin()){
@@ -158,7 +162,7 @@ void loadLastConfig(String json) {
     int cv = root["CONFIG_VERSION"] | -1;
     if( !root.success() || loadDefaults ){
        loadDefaults  = false;
-      Serial.println("[CONFIG] New Version of config has detected");
+      Serial.println("[CONFIG] Load defaults");
      cachedConfigJson= "{\"nodeId\":\""+String(nodeId)+"\","+
           "\"notificationInterval\":"+String(notificationInterval)+","+
           "\"directionCurrentDetection\":"+String(directionCurrentDetection)+","+
@@ -200,7 +204,16 @@ void loadLastConfig(String json) {
     availableGPIOS[3] = root["IO_02"] | "";
     availableGPIOS[4] =root["IO_15"] |"";
     if(wifiSSID != lastSSID ||  wifiSecret != lastWifiSecrect){
-      shouldReboot = true;
+      Serial.println("LAST CONFIG WIFI ");
+      Serial.println(lastSSID);
+      Serial.println(wifiSecret);
+       Serial.println("NEW CONFIG WIFI ");
+      Serial.println(wifiSSID);
+      Serial.println(wifiSecret);
+       jw.cleanNetworks();
+       jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
+       jw.addCurrentNetwork(true);
+       
     }
 }
 
