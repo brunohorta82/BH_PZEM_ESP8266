@@ -226,9 +226,6 @@ if(configChanged){
   loadLastConfig(cachedConfigJson);
   setupMQTT();
   configChanged = false;
-  if(!WiFi.isConnected()){
-   shouldReboot = true;
-    }
  }
 }
 

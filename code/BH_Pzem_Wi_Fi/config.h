@@ -1,5 +1,5 @@
 
-#define FIRMWARE_VERSION 1.4
+#define FIRMWARE_VERSION 1.5
 #define NODE_ID "mynode"
 #define HOSTNAME "bhpzem-"+String(NODE_ID)
 #define MAX_ATTEMPTS 5
