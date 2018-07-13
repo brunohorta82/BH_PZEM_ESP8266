@@ -24,7 +24,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .GaugeMeter SPAN, .GaugeMeter B {
     width: 60%;
-
     position: Absolute;
     text-align: Center;
     display: Inline-Block;
@@ -34,7 +33,7 @@ h1, h2, h3, h4, h5, h6 {
     overflow: Hidden;
     white-space: NoWrap;
     text-overflow: Ellipsis;
-    margin: 0 23%;
+    margin: 0 20%;
 }
 
 .GaugeMeter[data-style="Semi"] B {
@@ -103,4 +102,11 @@ select {
     border-radius: 5px;
     background-color: #333;
     padding: 20px;
+}
+
+.box-sensors {
+    border-radius: 5px;
+    background-color: #333;
+    padding: 20px;
+    text-align: center;
 }

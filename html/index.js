@@ -1,9 +1,8 @@
 
 var config = {
-    baseUrl: "http://192.168.187.219" // COMMENT THIS LINE BEFORE SENT TO PRODUCTION
+    baseUrl: "http://192.168.1.118" // COMMENT THIS LINE BEFORE SENT TO PRODUCTION
    // baseUrl: "" // UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION
 };
-
 
 var map = {
     "config": "",
@@ -11,7 +10,7 @@ var map = {
     "amperagem": "Amperes",
     "voltagem": "Volts",
     "temp": "\u00BAC",
-    "contador": ""
+    "contador": "kWh"
 };
 
 var limits = {"config": "0", "potencia": "2700", "amperagem": "32", "voltagem": "270", "temp": "180", "contador": "0"};
@@ -47,7 +46,7 @@ function loadConfig() {
             $('select[name="IO_16"] option[value="' + response[0].IO_16 + '"]').attr("selected", "selected");
         },
         timeout: 2000
-    })
+    });
 }
 
 function loadReadings() {
@@ -73,7 +72,7 @@ function loadReadings() {
             }
         },
         timeout: 2000
-    })
+    });
 }
 
 $(document).ready(function () {
