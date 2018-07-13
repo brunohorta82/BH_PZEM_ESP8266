@@ -9,10 +9,31 @@ const gulp = require('gulp'),
     exec = require('child_process').exec,
 
     // Browser Sync
-    browserSync = require('browser-sync').create();
+    browserSync = require('browser-sync').create()
+
+//gulp sequence
+gulpSequence = require('gulp-sequence'),
+
+    //rename files
+    rename = require('gulp-rename'),
+
+    //rm files
+    rimraf = require('rimraf'),
+
+    //concat files
+    concat = require('gulp-concat'),
+
+    //gzip compressor
+    gzip = require('gulp-gzip'),
+
+    // intercept
+    intercept = require('gulp-intercept');
 
 const SRC_FOLDER = './';
 const SRC_ASSETS_FOLDER = SRC_FOLDER + '/assets';
+const DEST_HEX_FILES = SRC_FOLDER + '/hex';
+const DEST_STATIC_SITE_H = '../code/BH_Pzem_WI_FI';
+const STATIC_SITE_FILENAME = 'static_site.h';
 
 /**
  * Serve task.
@@ -48,6 +69,97 @@ gulp.task('serve', function () {
 
     });
 });
+
+/**
+ * Convert file content to hex in c like
+ * 0x12, 0xff, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01
+ * 0x12, 0xff, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01
+ * @param file
+ * @return file in hex format
+ */
+function convertFileToHexCLike(file, varName) {
+    const hexData = new Buffer(file.contents, 'ascii').toString('hex');
+    let hexString = '';
+
+    let breakLine = 0; // Max line Length 16 0x00 chars
+    let charsNumber = 0;
+    for (let i = 0; i < hexData.length; i++) {
+        breakLine++;
+        charsNumber++;
+
+        var charHex = hexData.charAt(i).toUpperCase();
+        switch (charsNumber) {
+            case 1:
+                //add 0x in first char
+                hexString += '0x' + charHex;
+                break;
+            case 2:
+                //add , to last char
+                charsNumber = 0;
+                hexString += charHex + ', ';
+                break;
+        }
+        //check if line has 16 chars 0x00
+        if (breakLine >= 32) {
+            hexString += '\n';
+            breakLine = 0;
+        }
+    }
+    const fileContent = 'const uint8_t ' + varName + '[] PROGMEM={' + hexString + '};';
+
+    file.contents = new Buffer(fileContent);
+    return file;
+}
+
+/**
+ * create Hex file ready for concat in final static_site.h file
+ * @param file
+ * @param varName
+ */
+function createHexFile(file, varName) {
+    return gulp.src(file)
+        .pipe(gzip())
+        .pipe(intercept(function (file) {
+            return convertFileToHexCLike(file, varName);
+        }))
+        .pipe(rename(function (path) {
+            //rename file to .html
+            path.basename = varName;
+            path.extname = '.hex';
+        }))
+        .pipe(gulp.dest(DEST_HEX_FILES));
+}
+
+/**
+ * Clean task.
+ * This task is responsible for removing the whole 'hex folder html'
+ */
+gulp.task('cleanHexFolder', function (callback) {
+    rimraf(DEST_HEX_FILES, {}, callback);
+});
+
+
+gulp.task('build_hex_files', function () {
+    createHexFile('./jquery.min.js', 'jQuery');
+    return createHexFile('./GaugeMeter.js', 'gauge');
+});
+
+/**
+ *  concat all .hex files and create new static_site.h file in BH_Pzem_WI_FI directory
+ */
+gulp.task('concat_file_static', function () {
+    return gulp.src(DEST_HEX_FILES + '/*.hex')
+        .pipe(rename(function (path) {
+            console.log(path);
+        }))
+        .pipe(concat(STATIC_SITE_FILENAME))
+        .pipe(gulp.dest(DEST_STATIC_SITE_H));
+});
+
+/**
+ * build static_site.h file from another files
+ */
+gulp.task('build_static_site', gulpSequence('build_hex_files', 'concat_file_static', 'cleanHexFolder'));
 
 /**
  * Default task.

@@ -26,7 +26,13 @@
     "dependencies": {},
     "devDependencies": {
         "browser-sync": "^2.24.5",
-        "gulp": "^3.9.1"
+        "gulp": "^3.9.1",
+        "gulp-concat": "^2.6.1",
+        "gulp-gzip": "^1.4.2",
+        "gulp-intercept": "^0.1.0",
+        "gulp-rename": "^1.3.0",
+        "gulp-sequence": "^1.0.0",
+        "rimraf": "^2.6.2"
     },
     "author": "Bruno Horta <brinohorta82@gmail.com>",
     "contributors": [],
