@@ -45,7 +45,7 @@ Melhorias
   - Pistas de alimentação mais largas
   - Orifícios de header 250v mais largos
   - Adicionado um header para extender o numero de sensores de temperatura (DS18b28_ext)
-![BHPZemPCB](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/current_pcb.png?raw=true)
+![BHPZemPCB](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/pcb_rev_1_2/BH_Pzem_WI_FI_SHIELD.png?raw=true)
 
 ![BHPZem](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/IMG_4417.JPG?raw=true)
 
