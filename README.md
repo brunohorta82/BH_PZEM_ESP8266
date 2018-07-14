@@ -37,8 +37,15 @@ Os dados são enviados via Wi-Fi
   - Facilmente configurado na Interface Web
   - Envio dos dados em JSON via MQTT
   - Envio dos dados para um servidor Emoncms local/remoto
-  
+
+
 ## Hardware <a name="id2"></a>
+PCB REV 1.2.
+Melhorias
+  - Pistas de alimentação mais largas
+  - Orifícios de header 250v mais largos
+  - Adicionado um header para extender o numero de sensores de temperatura (DS18b28_ext)
+![BHPZemPCB](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/current_pcb.png?raw=true)
 
 ![BHPZem](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/IMG_4417.JPG?raw=true)
 
