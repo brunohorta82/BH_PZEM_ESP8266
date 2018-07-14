@@ -85,6 +85,7 @@ Qtd | Item | Imagem
 - Configurar o `MQTT broker` e/ou a conta do `Emoncms` 
 - E tá feito, agora é só curtir :) 
 
+![BHPZemPanel](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/current_panel.png?raw=true)
 
 ## Hack para deteção de sentido de corrente <a name="id4"></a>
 
