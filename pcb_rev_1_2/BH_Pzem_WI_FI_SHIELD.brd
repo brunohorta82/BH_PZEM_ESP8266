@@ -3,7 +3,7 @@
 <eagle version="8.6.0">
 <drawing>
 <settings>
-<setting alwaysvectorfont="yes"/>
+<setting alwaysvectorfont="no"/>
 <setting verticaltext="up"/>
 </settings>
 <grid distance="0.01" unitdist="inch" unit="mm" style="lines" multiple="1" display="yes" altdistance="5" altunitdist="mil" altunit="mm"/>
@@ -215,9 +215,9 @@
 <wire x1="8.382" y1="36.322" x2="8.382" y2="29.718" width="1.27" layer="46" style="shortdash"/>
 <wire x1="8.382" y1="29.718" x2="8.128" y2="29.464" width="1.27" layer="46" style="shortdash"/>
 <wire x1="15.24" y1="17.78" x2="15.24" y2="-0.508" width="1.27" layer="46" style="shortdash"/>
-<text x="9.674" y="69.4050875" size="1.016" layer="25" font="vector" ratio="13" rot="SR0">SIG</text>
-<text x="12.468" y="69.4050875" size="1.016" layer="25" font="vector" ratio="13" rot="SR0">3V3</text>
-<text x="6.626" y="69.4050875" size="1.016" layer="25" font="vector" ratio="13" rot="SR0">GND</text>
+<text x="9.42" y="69.4050875" size="1.016" layer="25" font="vector" ratio="13" rot="SR0">DATA</text>
+<text x="13.23" y="69.4050875" size="1.016" layer="25" font="vector" ratio="13" rot="SR0">3V3</text>
+<text x="6.118" y="69.4050875" size="1.016" layer="25" font="vector" ratio="13" rot="SR0">GND</text>
 </plain>
 <libraries>
 <library name="SparkFun-Connectors" urn="urn:adsk.eagle:library:513">
