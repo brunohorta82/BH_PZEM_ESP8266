@@ -1,5 +1,6 @@
-#include <ArduinoJson.h>
+#include <ArduinoJson.h> ////Install from Arduino IDE Library Manager
 #include <FS.h> 
+#include <Ticker.h>
 
 #define EMPTY  ""
 #define HARDWARE "bhpzem" 
@@ -139,6 +140,7 @@ void applyJsonConfig(String json) {
     
     nodeId = root["nodeId"] | NODE_ID;
     hostname = String(HARDWARE) +"-"+String(nodeId);
+    int lastNotificationInterval = notificationInterval;
     notificationInterval=root["notificationInterval"] | DELAY_NOTIFICATION;
     directionCurrentDetection=root["directionCurrentDetection"] | DETECT_DIRECTION;
     emoncmsApiKey=root["emoncmsApiKey"] | EMONCMS_API_KEY;
@@ -158,10 +160,14 @@ void applyJsonConfig(String json) {
     availableGPIOS[4] =root["IO_15"] |"";
     
     if(wifiSSID != lastSSID ||  wifiSecret != lastWifiSecrect){
+       jw.disconnect();
        jw.cleanNetworks();
        jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
-       jw.disconnect();
     }
+    if(lastNotificationInterval != notificationInterval){
+      //timerRead.detach();
+      //timerRead.attach(notificationInterval,readAndPublish);
+      }
     cachedConfigJson = json ;
 }
 

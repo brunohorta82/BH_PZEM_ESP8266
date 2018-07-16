@@ -29,15 +29,13 @@ void setup() {
 
   jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
 
-  timerRead.begin(0);
+
   prepareWebserver();
   //PZEM SETUP
   pzem.setAddress(pzemIP);
   delay(1000);// WAITING FOR PZEM CONECTION
   pinMode(DIRECTION_PIN,INPUT);
-  
   setupDisplay();
-  
   sensors.begin();
   sensorsCount = sensors.getDeviceCount();
   oneWire.reset_search();
@@ -53,6 +51,7 @@ void setup() {
    }
   devAddrNames[a] = addr;
   }
+  timerRead.begin(0);
 }
 
 void loop() {
@@ -70,6 +69,7 @@ void loop() {
   if(restartMqtt){
     restartMqtt = false;
     setupMQTT() ;
+    setupDisplay();
   }
   
       if (timerRead.onTimeout(notificationInterval)){

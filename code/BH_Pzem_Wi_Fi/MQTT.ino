@@ -1,17 +1,13 @@
-
-#include <Ticker.h>
-#include <ArduinoJson.h>
-
-AsyncMqttClient mqttClient;
+AsyncMqttClient mqttClient; 
 Ticker mqttReconnectTimer;
 
 
 void onMqttConnect(bool sessionPresent) {
   Serial.println("[MQTT] Connected to MQTT.");
-   mqttClient.publish(("homeassistant/sensor/"+nodeId+"/counter/config").c_str(),0,true,("{\"name\": \""+(String(HARDWARE)+"_"+nodeId)+"_counter\", \"state_topic\": \""+(String(HARDWARE)+"/"+nodeId)+"/counter/status\", \"value_template\": \"{{ value_json.contador }}\", \"unit_of_measurement\": \"ºkWh\",\"icon\":\"mdi:power-socket-eu\"}").c_str());
-   mqttClient.publish(("homeassistant/sensor/"+nodeId+"/voltage/config").c_str(),0,true,("{\"name\": \""+(String(HARDWARE)+"_"+nodeId)+"_voltage\", \"state_topic\": \""+(String(HARDWARE)+"/"+nodeId)+"/voltage/status\", \"value_template\": \"{{ value_json.voltagem }}\", \"unit_of_measurement\": \"V\",\"icon\":\"mdi:power-socket-eu\"}").c_str());
-   mqttClient.publish(("homeassistant/sensor/"+nodeId+"/amperage/config").c_str(),0,true,("{\"name\": \""+(String(HARDWARE)+"_"+nodeId)+"_amperage\", \"state_topic\": \""+(String(HARDWARE)+"/"+nodeId)+"/amperage/status\", \"value_template\": \"{{ value_json.amperagem }}\", \"unit_of_measurement\": \"A\",\"icon\":\"mdi:power-socket-eu\"}").c_str());
-   mqttClient.publish(("homeassistant/sensor/"+nodeId+"/power/config").c_str(),0,true,("{\"name\": \""+(String(HARDWARE)+"_"+nodeId)+"_power\", \"state_topic\": \""+(String(HARDWARE)+"/"+nodeId)+"/power/status\", \"value_template\": \"{{ value_json.potencia }}\", \"unit_of_measurement\": \"W\",\"icon\":\"mdi:power-socket-eu\"}").c_str());
+   mqttClient.publish(("homeassistant/sensor/"+nodeId+"/counter/config").c_str(),0,true,("{\"name\": \""+(String(HARDWARE)+"_"+nodeId)+"_counter\", \"state_topic\": \""+(String(HARDWARE)+"/"+nodeId)+"/readings/status\", \"value_template\": \"{{ value_json.contador }}\", \"unit_of_measurement\": \"ºkWh\",\"icon\":\"mdi:power-socket-eu\"}").c_str());
+   mqttClient.publish(("homeassistant/sensor/"+nodeId+"/voltage/config").c_str(),0,true,("{\"name\": \""+(String(HARDWARE)+"_"+nodeId)+"_voltage\", \"state_topic\": \""+(String(HARDWARE)+"/"+nodeId)+"/readings/status\", \"value_template\": \"{{ value_json.voltagem }}\", \"unit_of_measurement\": \"V\",\"icon\":\"mdi:power-socket-eu\"}").c_str());
+   mqttClient.publish(("homeassistant/sensor/"+nodeId+"/amperage/config").c_str(),0,true,("{\"name\": \""+(String(HARDWARE)+"_"+nodeId)+"_amperage\", \"state_topic\": \""+(String(HARDWARE)+"/"+nodeId)+"/readings/status\", \"value_template\": \"{{ value_json.amperagem }}\", \"unit_of_measurement\": \"A\",\"icon\":\"mdi:power-socket-eu\"}").c_str());
+   mqttClient.publish(("homeassistant/sensor/"+nodeId+"/power/config").c_str(),0,true,("{\"name\": \""+(String(HARDWARE)+"_"+nodeId)+"_power\", \"state_topic\": \""+(String(HARDWARE)+"/"+nodeId)+"/readings/status\", \"value_template\": \"{{ value_json.potencia }}\", \"unit_of_measurement\": \"W\",\"icon\":\"mdi:power-socket-eu\"}").c_str());
     for(int i = 0; i <  totalAvailableGPIOs; i++){
       String gpioConfig = availableGPIOS[i];
       if(gpioConfig.equals(""))continue;
@@ -86,5 +82,5 @@ void setupMQTT() {
 }
 
   void publishOnMqtt(String json){
-     mqttClient.publish((String(HARDWARE)+"/"+String(NODE_ID)+"/readings/status").c_str(), 0,false,json.c_str());
+     mqttClient.publish((String(HARDWARE)+"/"+String(nodeId)+"/readings/status").c_str(), 0,false,json.c_str());
  }

@@ -19,7 +19,7 @@ void setupDisplay(){
         }
       }
       }
-      
+      Serial.println(displaySDA,displaySCL);
   if(displaySDA == -1 || displaySCL == -1)return;
     display.init();
     display.flipScreenVertically();
