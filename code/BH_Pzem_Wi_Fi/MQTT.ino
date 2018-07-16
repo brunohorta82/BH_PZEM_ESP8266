@@ -13,14 +13,14 @@ void onMqttConnect(bool sessionPresent) {
    mqttClient.publish(("homeassistant/sensor/"+nodeId+"/amperage/config").c_str(),0,true,("{\"name\": \""+(String(HARDWARE)+"_"+nodeId)+"_amperage\", \"state_topic\": \""+(String(HARDWARE)+"/"+nodeId)+"/amperage/status\", \"value_template\": \"{{ value_json.amperagem }}\", \"unit_of_measurement\": \"A\",\"icon\":\"mdi:power-socket-eu\"}").c_str());
    mqttClient.publish(("homeassistant/sensor/"+nodeId+"/power/config").c_str(),0,true,("{\"name\": \""+(String(HARDWARE)+"_"+nodeId)+"_power\", \"state_topic\": \""+(String(HARDWARE)+"/"+nodeId)+"/power/status\", \"value_template\": \"{{ value_json.potencia }}\", \"unit_of_measurement\": \"W\",\"icon\":\"mdi:power-socket-eu\"}").c_str());
     for(int i = 0; i <  totalAvailableGPIOs; i++){
-      String relayName = availableGPIOS[i];
-      if(relayName.equals(""))continue;
-      String actuator = split(String(relayName),'|',1);
-      if(actuator.startsWith("relay_")){
-        String topic  = String(HARDWARE)+"/"+nodeId+"/"+actuator;
+      String gpioConfig = availableGPIOS[i];
+      if(gpioConfig.equals(""))continue;
+      String deviceTarget = split(String(gpioConfig),'|',1);
+      if(deviceTarget.startsWith("relay_")){
+        String topic  = String(HARDWARE)+"/"+nodeId+"/"+deviceTarget;
         Serial.println("[MQTT] "+topic);
         mqttClient.subscribe((topic+"/set").c_str(),0);
-        mqttClient.publish(("homeassistant/switch/"+nodeId+"/"+actuator+"/config").c_str(),0,true,("{\"name\": \""+String(HARDWARE)+"_"+nodeId+"_"+actuator+"\", \"state_topic\": \""+topic+"/status\", \"command_topic\": \""+topic+"/set\", \"retain\": true}").c_str());
+        mqttClient.publish(("homeassistant/switch/"+nodeId+"/"+deviceTarget+"/config").c_str(),0,true,("{\"name\": \""+String(HARDWARE)+"_"+nodeId+"_"+deviceTarget+"\", \"state_topic\": \""+topic+"/status\", \"command_topic\": \""+topic+"/set\", \"retain\": true}").c_str());
         
       }
     }

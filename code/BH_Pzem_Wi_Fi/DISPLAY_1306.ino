@@ -1,10 +1,25 @@
 #include <Wire.h>  
 #include "SSD1306.h" //https://github.com/ThingPulse/esp8266-oled-ssd1306
 
-
 SSD1306 display(0x3c, displaySDA, displaySCL);
 
 void setupDisplay(){
+  displaySDA = -1;
+  displaySCL = -1;
+  for(int i = 0; i <  totalAvailableGPIOs; i++){
+      String gpioConfig = availableGPIOS[i];
+      if(gpioConfig.equals(""))continue;
+      String deviceTarget = split(String(deviceTarget),'|',1);
+      if(deviceTarget.equals("DISPLAY")){
+        String gpioFunction = split(String(deviceTarget),'|',2);
+        if(gpioFunction.equals("SDA")){
+          displaySDA = gpioFunction.toInt();
+        }  else if(gpioFunction.equals("SCL")){
+          displaySCL = gpioFunction.toInt();
+        }
+      }
+      }
+      
   if(displaySDA == -1 || displaySCL == -1)return;
     display.init();
     display.flipScreenVertically();
