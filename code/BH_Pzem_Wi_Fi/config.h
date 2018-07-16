@@ -1,10 +1,12 @@
 #include <ArduinoJson.h>
 #include <FS.h> 
+
 #define EMPTY  ""
 #define HARDWARE "bhpzem" 
 #define FIRMWARE_VERSION 1.6
 #define NODE_ID "mynode"
 #define HOSTNAME String(HARDWARE)+"-"+String(NODE_ID)
+#define CONFIG_FILENAME  "/bconfig.json"
 #define MAX_ATTEMPTS 5
 #define DELAY_NOTIFICATION 5000 //5 seconds
 #define TEMPERATURE_PRECISION 9
@@ -20,6 +22,8 @@
 #define RX_PIN 4
 #define TX_PIN 5 
 #define DS18B20_PIN 12
+#define DISPLAY_SDA -1 //-1 if you don't use display
+#define DISPLAY_SCL -1 //-1 if you don't use display
 
 
 //    ___ ___ ___ _____ _   _ ___ ___ ___ 
@@ -56,41 +60,51 @@
 #define MQTT_BROKER_PORT 1883
 #define MQTT_USERNAME ""
 #define MQTT_PASSWORD ""
+#define PAYLOAD_ON "ON"
+#define PAYLOAD_OFF "OFF"
+#define PAYLOAD_PULSE_OFF_ON "PULSE_OFF"
+#define PAYLOAD_PULSE_ON_OFF "PULSE_ON"
 
-
-//    ___ ___ ___ ___ _      ___   ___    
-//   |   \_ _/ __| _ \ |    /_\ \ / ( )___
-//   | |) | |\__ \  _/ |__ / _ \ V /|/(_-<
-//   |___/___|___/_| |____/_/ \_\_|   /__/
-//
-//#define D_SSD1306
+//NODE
 String hostname = HOSTNAME;
 String nodeId = NODE_ID;
-int relayCount = 2;
+
+//RELAYS
 int notificationInterval = DELAY_NOTIFICATION;
 bool directionCurrentDetection = DETECT_DIRECTION;
+
+//EMONCMS
 String emoncmsApiKey = EMONCMS_API_KEY;
 String emoncmsUrl = EMONCMS_HOST;
 String emoncmsPrefix = EMONCMS_URL_PREFIX;
+bool emoncmshttp = EMONCMS_PROTOCOL ==  0;
+
+//MQTT
 String mqttIpDns = MQTT_BROKER_IP;
 String mqttUsername = MQTT_USERNAME;
 String mqttPassword = MQTT_PASSWORD;
 
-bool emoncmshttp = EMONCMS_PROTOCOL ==  0;
-String fileName = "/bconfig.json";
+
+//WI-FI
 String wifiSSID = WIFI_SSID;
 String wifiSecret = WIFI_SECRET;
 
+//GPIO's
 const int totalAvailableGPIOs = 5;
 String availableGPIOS[totalAvailableGPIOs]  ;
-bool shouldReboot = false;
-bool loadDefaults = false;
-bool restartMqtt = false;
-bool configNeedsUpdate = false;
+int displaySDA = -1;
+int displaySCL = -1;
+
+//CONFIG JSON
 String cachedConfigJson = "";
 String nextConfigJson = "";
 
-String buildConfigToJson(String _nodeId, int _notificationInterval, bool _directionCurrentDetection, String  _emoncmsApiKey, String _emoncmsPrefix, String  _emoncmsUrl, String _mqttIpDns, String _mqttUsername,String _mqttPassword ,String _wifiSSID, String _wifiSecret, String _IO_00, String  _IO_02, String _IO_13, String _IO_15, String _IO_16, String _hostname ){
+//CONTROL FLAGS
+bool configNeedsUpdate = false;
+bool restartMqtt = false;
+bool shouldReboot = false;
+
+String buildConfigToJson(String _nodeId, int _notificationInterval, bool _directionCurrentDetection, String  _emoncmsApiKey, String _emoncmsPrefix, String  _emoncmsUrl, String _mqttIpDns, String _mqttUsername,String _mqttPassword ,String _wifiSSID, String _wifiSecret, String _IO_00, String  _IO_02, String _IO_13, String _IO_15, String _IO_16, String _hostname){
           return "{\"nodeId\":\""+_nodeId+"\","+
           "\"hostname\":\""+String(_hostname)+"\","+
           "\"notificationInterval\":"+String(_notificationInterval)+","+
@@ -142,9 +156,11 @@ void applyJsonConfig(String json) {
     availableGPIOS[2] = root["IO_00"] | "";
     availableGPIOS[3] = root["IO_02"] | "";
     availableGPIOS[4] =root["IO_15"] |"";
+    
     if(wifiSSID != lastSSID ||  wifiSecret != lastWifiSecrect){
        jw.cleanNetworks();
        jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
+       jw.disconnect();
     }
     cachedConfigJson = json ;
 }
@@ -154,10 +170,10 @@ void loadStoredConfiguration(){
   String configJson = "";
   if(SPIFFS.begin()){
     File cFile;   
-    if(SPIFFS.exists(fileName)){
-      cFile = SPIFFS.open(fileName,"r+"); 
+    if(SPIFFS.exists(CONFIG_FILENAME)){
+      cFile = SPIFFS.open(CONFIG_FILENAME,"r+"); 
      }else{
-      cFile = SPIFFS.open(fileName,"w+"); 
+      cFile = SPIFFS.open(CONFIG_FILENAME,"w+"); 
       cFile.print(defaultConfigJson());
       }
      if(!cFile){
@@ -171,7 +187,7 @@ void loadStoredConfiguration(){
         cFile.close();
       }
   }else{
-     Serial.println("Open file system Error!");
+     Serial.println("[CONFIG] Open file system Error!");
   }
    SPIFFS.end(); 
    applyJsonConfig(configJson);
@@ -195,7 +211,7 @@ void updateServices(){
 
 void saveConfig(String newConfig) {
    if(SPIFFS.begin()){
-      File rFile = SPIFFS.open(fileName,"w+");
+      File rFile = SPIFFS.open(CONFIG_FILENAME,"w+");
       if(!rFile){
         Serial.println("[CONFIG] Open config file Error!");
       } else {
@@ -216,8 +232,6 @@ void saveConfig(String newConfig) {
    nextConfigJson = "";
   }
 }
-
-
 
 
 void requestToSaveNewConfigJson(String newConfig){

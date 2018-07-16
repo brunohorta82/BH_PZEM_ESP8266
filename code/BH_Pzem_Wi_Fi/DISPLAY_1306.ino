@@ -1,22 +1,28 @@
-#ifdef D_SSD1306
 #include <Wire.h>  
-#include "SSD1306.h"
-SSD1306  display(0x3c, 2, 0);
+#include "SSD1306.h" //https://github.com/ThingPulse/esp8266-oled-ssd1306
+
+
+SSD1306 display(0x3c, displaySDA, displaySCL);
+
 void setupDisplay(){
-  display.init();
-  display.flipScreenVertically();
-  display.setFont(ArialMT_Plain_16);
-  display.setTextAlignment(TEXT_ALIGN_LEFT);
+  if(displaySDA == -1 || displaySCL == -1)return;
+    display.init();
+    display.flipScreenVertically();
+    display.setFont(ArialMT_Plain_16);
+    display.setTextAlignment(TEXT_ALIGN_LEFT);
   
 }
 
-void printOnDisplay(float voltagem, float amperage, float power){
-  Serial.println("Print");
- // display.clear(); // clearing the display
-  display.drawString(5,0, "BH PZEM 1.0");
-  //display.drawString(3,1, String(voltagem)+"V");
-  //display.drawString(3,2, String(amperage)+"A");
-  //display.drawString(5,0, String(power)+"W");
+void printOnDisplay(float _voltage, float _amperage, float _power, float _energy, String _temperatures){
+  if(displaySDA == -1 || displaySCL == -1)return;
+  display.clear(); 
+  display.setFont(ArialMT_Plain_16);
+  display.drawString(5,0, String(_power)+"W");
+  display.setFont(ArialMT_Plain_10);
+  display.drawString(5,16, String(_energy)+" kWh");
+  display.drawString(5,26, String(_voltage)+" V");
+  display.drawString(5,36, String(_amperage)+" A");
+  display.drawString(5,46, String(_temperatures));
   display.display();
 }
-#endif
+
