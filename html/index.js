@@ -17,11 +17,15 @@ var limits = {"config": "0", "potencia": "2700", "amperagem": "32", "voltagem": 
 
 function loadConfig() {
     var someUrl = config.baseUrl + "/config";
-    $.ajax({
+    /*$.ajax({
         url: someUrl,
         contentType: "text/plain; charset=utf-8",
         dataType: "json",
-        success: function (response) {
+        success: function (response) {*/
+            var response = [{"nodeId":"mynode","notificationInterval":5,"directionCurrentDetection":0,"emoncmsApiKey": "","emoncmsPrefix": "","emoncmsUrl": "","mqttIpDns": "192.168.187.227","mqttUsername": "","mqttPassword": "","wifiSSID": "MAKER_IOT","wifiSecret": "xptoxpto","IO_16": "","IO_13": "13|relay_3|NORMAL","IO_00": "00|relay_2|NORMAL","IO_02": "02|relay_1|NORMAL","IO_15": ""},{"firmwareVersion":1.40}];
+
+            console.log('Config: ', response);
+
             $('input[name="nodeId"]').val(response[0].nodeId);
             $('input[name="directionCurrentDetection"]').prop("checked", response[0].directionCurrentDetection);
             $('select[name="notificationInterval"] option[value="' + response[0].notificationInterval + '"]').attr("selected", "selected");
@@ -44,7 +48,7 @@ function loadConfig() {
             $('select[name="IO_13"] option[value="' + response[0].IO_13 + '"]').attr("selected", "selected");
             $('select[name="IO_15"] option[value="' + response[0].IO_15 + '"]').attr("selected", "selected");
             $('select[name="IO_16"] option[value="' + response[0].IO_16 + '"]').attr("selected", "selected");
-        },
+        /*},
         timeout: 2000
     });
 }
@@ -56,7 +60,7 @@ function toggleActive(menu) {
 
 function loadReadings() {
     var someUrl = config.baseUrl + "/readings";
-    $.ajax({
+    /*$.ajax({
         url: someUrl,
         contentType: "text/plain; charset=utf-8",
         dataType: "json",
@@ -75,7 +79,7 @@ function loadReadings() {
                     }
                 });
             }
-        },
+        /*},
         timeout: 2000
     });
 }
