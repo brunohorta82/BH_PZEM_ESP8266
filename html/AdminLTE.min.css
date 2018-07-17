@@ -475,7 +475,8 @@ a:hover, a:active, a:focus {
     position: relative;
     width: 100%;
     padding: 10px;
-    overflow: hidden
+    overflow: hidden;
+    height: 60px;
 }
 
 .user-panel:before, .user-panel:after {
@@ -490,7 +491,7 @@ a:hover, a:active, a:focus {
 .user-panel > .image > img {
     width: 100%;
     max-width: 45px;
-    height: auto
+    height: auto;
 }
 
 .user-panel > .info {
