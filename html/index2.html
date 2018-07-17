@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="bootstrap.min.css">
@@ -8,26 +9,26 @@
 
 <body>
 <div class="title-wrapper">
-    <h2>BH PZEM - Painel de Configuração v1</h2>
+
+    <h2>BH PZEM - Painel de Configuração</h2>
 </div>
 <form action="/saveconfig" method="post">
 
     <div class="container">
         <div class="row">
             <div class="col-sm">
-                <div id="sensors" class="box-config">
-                    <div style="background: #333;">
-                        <div style="margin-top: 10px; background: #333;">
-                            <h4>Sensores</h4>
-                        </div>
-                    </div>
+                <div id="sensors" class="box-sensors">
+                    <h3 style="text-align: center;">Sensores</h3>
                 </div>
             </div>
+        </div>
+    </div>
+    <p>
+    <div class="container">
+        <div class="row">
             <div class="col-sm">
                 <div class="box-config">
-                    <div style="background: #333;">
-                        <h3 style="color: white">DETALHES DO NÓ</h3>
-                    </div>
+                    <h3 style="text-align: center;">DETALHES DO NÓ</h3>
                     <label for="node_id">Nome</label>
                     <input type="text" name="nodeId" id="node_id" placeholder="ex: pzem-solar">
                     <label for="delay_notification">Intervalo entre leituras</label>
@@ -37,23 +38,18 @@
                         <option value="15">15 segundos</option>
                     </select>
                     <div class="form-check">
-                        <input type="checkbox" name="directionCurrentDetection" class="form-check-input"
-                               id="exampleCheck1">
+                        <input type="checkbox" name="directionCurrentDetection" class="form-check-input" id="exampleCheck1">
                         <label class="form-check-label" for="exampleCheck1">Deteção de sentido de corrente</label>
                     </div>
                 </div>
             </div>
             <div class="col-sm">
                 <div class="box-config">
-                    <div style="background: #333;">
-                        <div style="margin-top: 10px; background: #333;">
-                            <h4>Wi-Fi</h4>
-                        </div>
-                        <label for="ssid">SSID</label>
-                        <input type="text" name="wifiSSID" id="ssid" placeholder="ex: meuwifi">
-                        <label for="wifi_secret">Password</label>
-                        <input name="wifiSecret" type="password" id="wifi_secret" placeholder="ex: superpassword">
-                    </div>
+                    <h3 style="text-align: center;">Wi-Fi</h3>
+                    <label for="ssid">SSID</label>
+                    <input type="text" name="wifiSSID" id="ssid" placeholder="ex: meuwifi">
+                    <label for="wifi_secret">Password</label>
+                    <input name="wifiSecret" type="password" id="wifi_secret" placeholder="ex: superpassword">
                 </div>
             </div>
         </div>
@@ -63,23 +59,18 @@
         <div class="row">
             <div class="col-sm">
                 <div class="box-config">
-                    <div style="background: #333;">
-                        <h3 style="color: white">EMONCMS</h3>
-                    </div>
+                    <h3 style="text-align: center;">EMONCMS</h3>
                     <label for="emoncms_api_url">API Url</label>
                     <input name="emoncmsUrl" type="text" id="emoncms_api_url" placeholder="ex: emoncms.org">
                     <label for="emoncms_api_prefix">Prefixo (deixar em branco no caso do url ser directo)</label>
                     <input name="emoncmsPrefix" type="text" id="emoncms_api_prefix" placeholder="ex: /emoncms">
                     <label for="emoncms_api_key">API Key</label>
-                    <input name="emoncmsApiKey" type="text" id="emoncms_api_key"
-                           placeholder="ex: f4651ce9swq098d57375d960c612e081">
+                    <input name="emoncmsApiKey" type="text" id="emoncms_api_key" placeholder="ex: f4651ce9swq098d57375d960c612e081">
                 </div>
             </div>
             <div class="col-sm">
                 <div class="box-config">
-                    <div style="background: #333;">
-                        <h3 style="color: white">MQTT</h3>
-                    </div>
+                    <h3 style="text-align: center;">MQTT</h3>
                     <label for="mqtt_ip">Broker IP/DNS</label>
                     <input name="mqttIpDns" type="text" id="mqtt_ip" placeholder="ex: 192.168.1.30">
                     <label for="mqtt_username">Username</label>
@@ -90,9 +81,7 @@
             </div>
             <div class="col-sm">
                 <div class="box-config">
-                    <div style="background: #333;">
-                        <h3 style="color: white">GPIO's</h3>
-                    </div>
+                    <h3 style="text-align: center;">GPIO's</h3>
                     <label for="IO_00">IO 0</label>
                     <select name="IO_00" id="IO_00">
                         <option value="">Nenhum</option>
@@ -208,7 +197,7 @@
             <div class="col-sm">
                 <div class="box-config">
                     <div>
-                        <input class="save-btn" type="submit" value="Guardar Configuração"/>
+                        <input class="save-btn" type="submit" value="Guardar Configuração" />
                     </div>
                     <h6>Desenvolvido por Bruno Horta @ 2018</h6>
                 </div>
