@@ -1,26 +1,4 @@
-/*
-
-JustWifi - Basic debugging callback utils
-
-Copyright (C) 2016-2018 by Xose Pérez <xose dot perez at gmail dot com>
-
-The JustWifi library is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-The JustWifi library is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
-
-You should have received a copy of the GNU Lesser General Public License
-along with the JustWifi library.  If not, see <http://www.gnu.org/licenses/>.
-
-*/
-
 #include <JustWifi.h>
-
 void infoWifi() {
 
     if (WiFi.isConnected()) {
@@ -39,13 +17,8 @@ void infoWifi() {
         Serial.printf("[WIFI] GW    %s\n", WiFi.gatewayIP().toString().c_str());
         Serial.printf("[WIFI] MASK  %s\n", WiFi.subnetMask().toString().c_str());
         Serial.printf("[WIFI] DNS   %s\n", WiFi.dnsIP().toString().c_str());
-        #if defined(ARDUINO_ARCH_ESP32)
-            Serial.printf("[WIFI] HOST  %s\n", WiFi.getHostname());
-        #else
-            Serial.printf("[WIFI] HOST  %s\n", WiFi.hostname().c_str());
-        #endif
+        Serial.printf("[WIFI] HOST  %s\n", WiFi.hostname().c_str());
         Serial.printf("[WIFI] ----------------------------------------------\n");
-
     }
 
     if (WiFi.getMode() & WIFI_AP) {
@@ -164,3 +137,21 @@ void infoCallback(justwifi_messages_t code, char * parameter) {
     }
 
 };
+
+
+String split(String data, char separator, int index)
+{
+    int found = 0;
+    int strIndex[] = { 0, -1 };
+    int maxIndex = data.length() - 1;
+
+    for (int i = 0; i <= maxIndex && found <= index; i++) {
+        if (data.charAt(i) == separator || i == maxIndex) {
+            found++;
+            strIndex[0] = strIndex[1] + 1;
+            strIndex[1] = (i == maxIndex) ? i+1 : i;
+        }
+    }
+    return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
+

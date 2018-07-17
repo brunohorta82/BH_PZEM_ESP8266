@@ -1,4 +1,4 @@
-#include <JustWifi.h>
+#include <JustWifi.h> //https://github.com/xoseperez/justwifi
 #include "config.h"
 #include "static_site.h"
 #include <Timing.h> //https://github.com/scargill/Timing
@@ -19,28 +19,23 @@ String devAddrNames[15];  // array of (up to) 15 temperature sensors
 int sensorsCount = 0;
 
 void setup() {
-  
   Serial.begin(115200);
-  loadConfiguration();
-  jw.setHostname(String(HOSTNAME).c_str());
+  loadStoredConfiguration();
+  jw.setHostname(hostname.c_str());
   jw.subscribe(infoCallback);
   jw.enableAP(false);
   jw.enableAPFallback(true);
   jw.enableSTA(true);
 
-  // Clean existing network configuration
-  //jw.cleanNetworks();
-  // Add a network with password
   jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
- 
-  timerRead.begin(0);
+
+
   prepareWebserver();
   //PZEM SETUP
   pzem.setAddress(pzemIP);
+  delay(1000);// WAITING FOR PZEM CONECTION
   pinMode(DIRECTION_PIN,INPUT);
-  #ifdef D_SSD1306
   setupDisplay();
-  #endif
   sensors.begin();
   sensorsCount = sensors.getDeviceCount();
   oneWire.reset_search();
@@ -56,34 +51,45 @@ void setup() {
    }
   devAddrNames[a] = addr;
   }
+  timerRead.begin(0);
 }
 
 void loop() {
+  jw.loop();
+
+ 
   if(shouldReboot){
     Serial.println("Rebooting...");
     delay(100);
     ESP.restart();
     return;
   }
-      
-      jw.loop();
-      loadNewConfig();
-      float t = 0;
-
+  
+  checkConfigChanges();
+  if(restartMqtt){
+    restartMqtt = false;
+    setupMQTT() ;
+    setupDisplay();
+  }
+  
       if (timerRead.onTimeout(notificationInterval)){
+        float t = 0;
         float v = getVoltage();
         float i = getCurrent();
         float p =  getPower()*directionSignal();
         float e = getEnergy()/1000;
         sensors.requestTemperatures();
         String temperatures= "";
+        String displayTemps = "";
         for(int a = 0 ;a < sensorsCount; a++){
-          temperatures += "\"temp_"+devAddrNames[a]+"\":"+String(requestTemperature(devAddr[a]))+",";
+          float t = requestTemperature(devAddr[a]);
+          displayTemps += "t"+String(a+1)+": "+((int)t)+ " ºC ";
+          temperatures += "\"temp_"+devAddrNames[a]+"\":"+String(t)+",";
         }
         
-      #ifdef D_SSD1306
-      printOnDisplay(v,i,p);
-      #endif  
+      //SHOW DATA ON SSD1306 DISPLAY
+      printOnDisplay(v,i,p,e,displayTemps);
+      
       #if PRINT_TO_SERIAL_MONITOR  
         Serial.print("T; ");
         Serial.print(t); 
@@ -98,13 +104,18 @@ void loop() {
         Serial.println();
       #endif
       String json = "{"+ temperatures+"\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
-      publishOnPanel(json);
-      publishOnMqtt(json);
-      publishOnEmoncms(json);
+      publishData(json);
     }
   
 }
-
+void publishData(String json){
+  //WEB PANEL
+  publishOnPanel(json);
+  //MQTT
+  publishOnMqtt(json);
+  //EMON CMS
+  publishOnEmoncms(json);
+}
 float requestTemperature(DeviceAddress deviceAddress){
   float temp = 0;
    do {
