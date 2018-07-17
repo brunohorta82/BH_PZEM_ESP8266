@@ -48,6 +48,12 @@ function loadConfig() {
         timeout: 2000
     });
 }
+function toggleActive(menu) {
+    console.log(menu);
+    $('.sidebar-menu').find('li').removeClass('active');
+    $('.menu-item[data-menu="' + menu +'"]').closest('li').addClass('active');
+
+}
 
 function loadReadings() {
     var someUrl = config.baseUrl + "/readings";
@@ -59,7 +65,7 @@ function loadReadings() {
             if($('#sensors .GaugeMeter').length === 0){
                 Object.keys(response).reverse().forEach(function (key) {
                     if (key !== "config" ) {
-                        $('#sensors').append(' <div id="' + key + '" class="GaugeMeter" data-animationstep = 0 data-total="' + limits[key.split("_")[0]]  + '" data-size="150" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff" data-label="' + map[key.split("_")[0]] + '"></div>');
+                        $('#sensors').append(' <div id="' + key + '" class="GaugeMeter" data-animationstep = 0 data-total="' + limits[key.split("_")[0]]  + '" data-size="250" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff" data-label="' + map[key.split("_")[0]] + '"></div>');
                         $('#' + key).gaugeMeter({used:Math.round(response[key]),text:response[key]});
                     }
                 });
@@ -83,4 +89,11 @@ $(document).ready(function () {
     loadConfig();
     loadReadings();
     setInterval(loadReadings, 3000);
-})
+    $('.menu-item').click(function(e) {
+        console.log(e);
+        var menu = $(e.currentTarget).data('menu');
+        //console.log(menu);
+        toggleActive(menu);
+        $( ".content" ).load(menu + ".html" );
+    });
+});
