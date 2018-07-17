@@ -49,7 +49,6 @@ function loadConfig() {
     });
 }
 function toggleActive(menu) {
-    console.log(menu);
     $('.sidebar-menu').find('li').removeClass('active');
     $('.menu-item[data-menu="' + menu +'"]').closest('li').addClass('active');
 
@@ -82,18 +81,25 @@ function loadReadings() {
 }
 
 $(document).ready(function () {
+    toggleActive("dashboard");
+    loadReadings();
+    $( ".content" ).load("dashboard.html" );
+    var read = setInterval(loadReadings, 3000);
     $('#node_id').on('keypress', function(e) {
         if (e.which === 32)
             return false;
     });
     loadConfig();
-    loadReadings();
-    setInterval(loadReadings, 3000);
+
     $('.menu-item').click(function(e) {
-        console.log(e);
         var menu = $(e.currentTarget).data('menu');
-        //console.log(menu);
         toggleActive(menu);
+        if(menu === "dashboard"){
+            loadReadings();
+             read = setInterval(loadReadings, 3000);
+        }else{
+            clearInterval(read);
+        }
         $( ".content" ).load(menu + ".html" );
     });
 });
