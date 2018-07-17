@@ -73,6 +73,7 @@ void loop() {
   }
   
       if (timerRead.onTimeout(notificationInterval)){
+        
         float t = 0;
         float v = getVoltage();
         float i = getCurrent();
