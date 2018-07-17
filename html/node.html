@@ -1,1 +1,13 @@
-<h1>NODE CONFIG</h1>
+
+    <label for="node_id">Nome</label>
+    <input type="text" name="nodeId" id="node_id" placeholder="ex: pzem-solar">
+    <label for="delay_notification">Intervalo entre leituras</label>
+    <select name="notificationInterval" id="delay_notification">
+        <option value="5">5 segundos</option>
+        <option value="10">10 segundos</option>
+        <option value="15">15 segundos</option>
+    </select>
+    <div class="form-check">
+        <input type="checkbox" name="directionCurrentDetection" class="form-check-input" id="exampleCheck1">
+        <label class="form-check-label" for="exampleCheck1">Deteção de sentido de corrente</label>
+    </div>
