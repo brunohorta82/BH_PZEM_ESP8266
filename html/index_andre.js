@@ -66,20 +66,20 @@ function loadReadings() {
             var response = {"temp_28ffe759321801dd":34.56,"voltagem":235.50,"amperagem":0.05,"potencia":13.00,"contador":0.17,"config":1.40};
             console.log('Readings: ', response);
 
-            if($('#sensors .GaugeMeter').length === 0){
+            /*if($('#sensors .GaugeMeter').length === 0){
                 Object.keys(response).reverse().forEach(function (key) {
                     if (key !== "config" ) {
                         $('#sensors').append(' <div id="' + key + '" class="GaugeMeter" data-animationstep = 0 data-total="' + limits[key.split("_")[0]]  + '" data-size="250" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff" data-label="' + map[key.split("_")[0]] + '"></div>');
                         $('#' + key).gaugeMeter({used:Math.round(response[key]),text:response[key]});
                     }
                 });
-            }else{
+            }else{*/
                 Object.keys(response).reverse().forEach(function (key) {
                     if (key !== "config" ) {
                         $('#' + key).gaugeMeter({used:Math.round(response[key]),text:response[key]});
                     }
                 });
-            }
+            /*}*/
         /*},
         timeout: 2000
     });*/
@@ -87,9 +87,10 @@ function loadReadings() {
 
 $(document).ready(function () {
     toggleActive("dashboard");
-    loadReadings();
-    $( ".content" ).load("dashboard.html" );
-    var read = setInterval(loadReadings, 3000);
+    $( ".content" ).load("dashboard_andre.html", function() {
+        loadReadings();
+    });
+    // var read = setInterval(loadReadings, 3000);
     $('#node_id').on('keypress', function(e) {
         if (e.which === 32)
             return false;
@@ -100,11 +101,13 @@ $(document).ready(function () {
         var menu = $(e.currentTarget).data('menu');
         toggleActive(menu);
         if(menu === "dashboard"){
-            loadReadings();
-             read = setInterval(loadReadings, 3000);
+            $( ".content" ).load("dashboard_andre.html", function() {
+                loadReadings();
+            });
+            //read = setInterval(loadReadings, 3000);
         }else{
-            clearInterval(read);
+            //clearInterval(read);
+            $( ".content" ).load(menu + ".html");
         }
-        $( ".content" ).load(menu + ".html" );
     });
 });
