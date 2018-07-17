@@ -1,35 +1,46 @@
 #include <Wire.h>  
 #include "SSD1306.h" //https://github.com/ThingPulse/esp8266-oled-ssd1306
 
-SSD1306 display(0x3c, displaySDA, displaySCL);
+
+
+
+SSD1306 display(0x3c,displaySDA,displaySCL);
 
 void setupDisplay(){
   displaySDA = -1;
-  displaySCL = -1;
+   displaySCL = -1;
   for(int i = 0; i <  totalAvailableGPIOs; i++){
       String gpioConfig = availableGPIOS[i];
       if(gpioConfig.equals(""))continue;
-      String deviceTarget = split(String(deviceTarget),'|',1);
+      String deviceTarget = split(String(gpioConfig),'|',1);
       if(deviceTarget.equals("DISPLAY")){
-        String gpioFunction = split(String(deviceTarget),'|',2);
+        String gpioFunction = split(String(gpioConfig),'|',2);
         if(gpioFunction.equals("SDA")){
-          displaySDA = gpioFunction.toInt();
+          displaySDA = split(String(gpioConfig),'|',0).toInt();
         }  else if(gpioFunction.equals("SCL")){
-          displaySCL = gpioFunction.toInt();
+          displaySCL = split(String(gpioConfig),'|',0).toInt();
         }
       }
       }
-      Serial.println(displaySDA,displaySCL);
+      Serial.print("SDA: ");
+      Serial.println(displaySDA);
+      Serial.print("SCL: ");
+      Serial.println(displaySCL);
   if(displaySDA == -1 || displaySCL == -1)return;
+    Serial.println("INIT DISPLAY");
+    display = SSD1306Wire(0x3c,displaySDA,displaySCL);
     display.init();
     display.flipScreenVertically();
     display.setFont(ArialMT_Plain_16);
     display.setTextAlignment(TEXT_ALIGN_LEFT);
+    display.drawString(5,0, "BH PZEM");
+    display.display();
   
 }
 
 void printOnDisplay(float _voltage, float _amperage, float _power, float _energy, String _temperatures){
   if(displaySDA == -1 || displaySCL == -1)return;
+  
   display.clear(); 
   display.setFont(ArialMT_Plain_16);
   display.drawString(5,0, String(_power)+"W");

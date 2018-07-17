@@ -173,9 +173,11 @@ void applyJsonConfig(String json) {
 
 
 void loadStoredConfiguration(){
+  
   String configJson = "";
   if(SPIFFS.begin()){
     File cFile;   
+    
     if(SPIFFS.exists(CONFIG_FILENAME)){
       cFile = SPIFFS.open(CONFIG_FILENAME,"r+"); 
      }else{
