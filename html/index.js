@@ -1,7 +1,6 @@
 
 var config = {
-    /* baseUrl: "http://192.168.1.83" // COMMENT THIS LINE BEFORE SENT TO PRODUCTION*/
-    baseUrl: "http://192.168.1.86" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION*/
+    baseUrl: "http://192.168.1.86" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
 };
 
 var map = {
@@ -22,6 +21,9 @@ function loadConfig() {
         contentType: "text/plain; charset=utf-8",
         dataType: "json",
         success: function (response) {
+            // var response = [{"nodeId":"mynode","notificationInterval":5,"directionCurrentDetection":0,"emoncmsApiKey": "","emoncmsPrefix": "","emoncmsUrl": "","mqttIpDns": "192.168.187.227","mqttUsername": "","mqttPassword": "","wifiSSID": "MAKER_IOT","wifiSecret": "xptoxpto","IO_16": "","IO_13": "13|relay_3|NORMAL","IO_00": "00|relay_2|NORMAL","IO_02": "02|relay_1|NORMAL","IO_15": ""},{"firmwareVersion":1.40}];
+            // console.log('Config: ', response);
+
             $('input[name="nodeId"]').val(response[0].nodeId);
             $('input[name="directionCurrentDetection"]').prop("checked", response[0].directionCurrentDetection);
             $('select[name="notificationInterval"] option[value="' + response[0].notificationInterval + '"]').attr("selected", "selected");
@@ -48,10 +50,10 @@ function loadConfig() {
         timeout: 2000
     });
 }
+
 function toggleActive(menu) {
     $('.sidebar-menu').find('li').removeClass('active');
     $('.menu-item[data-menu="' + menu +'"]').closest('li').addClass('active');
-
 }
 
 function loadReadings() {
