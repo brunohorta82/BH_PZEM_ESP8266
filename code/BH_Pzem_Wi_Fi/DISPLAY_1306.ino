@@ -1,9 +1,6 @@
 #include <Wire.h>  
 #include "SSD1306.h" //https://github.com/ThingPulse/esp8266-oled-ssd1306
 
-
-
-
 SSD1306 display(0x3c,displaySDA,displaySCL);
 
 void setupDisplay(){
@@ -22,12 +19,13 @@ void setupDisplay(){
         }
       }
       }
-      Serial.print("SDA: ");
-      Serial.println(displaySDA);
-      Serial.print("SCL: ");
-      Serial.println(displaySCL);
+
   if(displaySDA == -1 || displaySCL == -1)return;
-    Serial.println("INIT DISPLAY");
+    Serial.println("[DISPLAY] INIT..");
+    Serial.print("[DISPLAY] SDA: ");
+    Serial.println(displaySDA);
+    Serial.print("[DISPLAY] SCL: ");
+    Serial.println(displaySCL);
     display = SSD1306Wire(0x3c,displaySDA,displaySCL);
     display.init();
     display.flipScreenVertically();
