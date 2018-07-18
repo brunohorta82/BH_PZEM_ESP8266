@@ -4679,7 +4679,7 @@ table.text-center, table.text-center td, table.text-center th {
 }
 
 .bg-aqua, .callout.callout-info, .alert-info, .label-info, .modal-info .modal-body {
-    background-color: #00c0ef !important
+    background-color: #08c; !important
 }
 
 .bg-blue {

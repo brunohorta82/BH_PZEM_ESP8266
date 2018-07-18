@@ -1,6 +1,6 @@
 
 var config = {
-    baseUrl: "http://192.168.4.1" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
+    baseUrl: "http://192.168.187.247" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
 };
 
 var map = {
@@ -11,7 +11,22 @@ var map = {
     "temp": "\u00BAC",
     "contador": "kWh"
 };
-
+var mapTitles = {
+    "config": "",
+    "potencia": "Potência",
+    "amperagem": "Corrente",
+    "voltagem": "Tensão",
+    "temp": "Temperatura",
+    "contador": "Contador"
+};
+var mapIcons = {
+    "config": "",
+    "potencia": "fa-plug",
+    "amperagem": "fa-plug",
+    "voltagem": "fa-plug",
+    "temp": "fa-thermometer-empty",
+    "contador": "fa-dot-circle-o"
+};
 var limits = {"config": "0", "potencia": "2700", "amperagem": "32", "voltagem": "270", "temp": "180", "contador": "0"};
 
 function loadConfig() {
@@ -63,7 +78,8 @@ function loadReadings() {
             if($('#sensors .GaugeMeter').length === 0){
                 Object.keys(response).reverse().forEach(function (key) {
                     if (key !== "config" ) {
-                        $('#sensors').append(' <div id="' + key + '" class="GaugeMeter" data-animationstep = 0 data-total="' + limits[key.split("_")[0]]  + '" data-size="250" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff" data-label="' + map[key.split("_")[0]] + '"></div>');
+                        $('#sensors').append('<div class="col-lg-4 col-md-6 col-xs-12"><div class="info-box bg-aqua"><span class="info-box-icon"><i class="fa '+mapIcons[key.split("_")[0]]+'"></i></span><div class="info-box-content"><span class="info-box-text">'+mapTitles[key.split("_")[0]]+'</span><div id="' + key + '"  class="GaugeMeter" data-animationstep="0" data-total="' + limits[key.split("_")[0]]  + '"  data-size="200" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff"  data-label="' + map[key.split("_")[0]] + '"><canvas width="200" height="200"></canvas></div></div></div></div>');
+                      //  $('#sensors').append(' <div id="' + key + '" class="GaugeMeter" data-animationstep = 0 data-total="' + limits[key.split("_")[0]]  + '" data-size="250" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff" data-label="' + map[key.split("_")[0]] + '"></div>');
                         $('#' + key).gaugeMeter({used:Math.round(response[key]),text:response[key]});
                     }
                 });
@@ -81,8 +97,11 @@ function loadReadings() {
 
 $(document).ready(function () {
     toggleActive("dashboard");
-    loadReadings();
-    $( ".content" ).load("dashboard.html" );
+    $( ".content" ).load("dashboard.html" , function(){
+      loadReadings();  
+    });
+    
+
     var read = setInterval(loadReadings, 3000);
     $('#node_id').on('keypress', function(e) {
         if (e.which === 32)
