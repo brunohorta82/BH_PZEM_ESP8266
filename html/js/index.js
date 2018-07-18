@@ -1,6 +1,6 @@
 
 var config = {
-    baseUrl: "http://192.168.187.247" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
+    baseUrl: "" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
 };
 
 var map = {

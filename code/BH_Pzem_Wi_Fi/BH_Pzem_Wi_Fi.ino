@@ -1,6 +1,6 @@
 #include <JustWifi.h> //https://github.com/xoseperez/justwifi
 #include "config.h"
-#include "static_site.h"
+
 #include <Timing.h> //https://github.com/scargill/Timing
 #include <AsyncMqttClient.h> //https://github.com/marvinroger/async-mqtt-client
 #include <PZEM004T.h> //https://github.com/olehs/PZEM004T
