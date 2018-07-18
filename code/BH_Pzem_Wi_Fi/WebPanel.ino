@@ -81,8 +81,55 @@ void  prepareWebserver(){
   });
    
   /** CSS   **/
+  server.on("/css/AdminLTE.min.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", AdminLTE_min_css,sizeof(AdminLTE_min_css));
+    response->addHeader("Content-Encoding", "gzip");
+    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    request->send(response);
+  });
+  server.on("/css/bootstrap.min.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css",bootstrap_min_css,sizeof(bootstrap_min_css));
+    response->addHeader("Content-Encoding", "gzip");
+    response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    request->send(response);
+  });
+  server.on("/css/font-awesome.min.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", font_awesome_min_css,sizeof(font_awesome_min_css));
+    response->addHeader("Content-Encoding", "gzip");
+    response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    request->send(response);
+  });
+    server.on("/css/skin-blue.min.css", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", skin_blue_min_css,sizeof(skin_blue_min_css));
+    response->addHeader("Content-Encoding", "gzip");
+    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    request->send(response);
+  });
   /** FONTS **/
-
+    server.on("/fonts/fontawesome-webfont.eot", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "font/eot", fontawesome_webfont_eot,sizeof(fontawesome_webfont_eot));
+    response->addHeader("Content-Encoding", "gzip");
+    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    request->send(response);
+  });
+      server.on("/fonts/fontawesome-webfont.woff", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "font/woff", fontawesome_webfont_woff,sizeof(fontawesome_webfont_woff));
+    response->addHeader("Content-Encoding", "gzip");
+    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    request->send(response);
+  });
+      server.on("/fonts/fontawesome-webfont.woff2", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "font/woff2", fontawesome_webfont_woff2,sizeof(fontawesome_webfont_woff2));
+    response->addHeader("Content-Encoding", "gzip");
+    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    request->send(response);
+  });
+      server.on("/fonts/FontAwesome.otf", HTTP_GET, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse_P(200, "font/otf", FontAwesome_otf,sizeof(FontAwesome_otf));
+    response->addHeader("Content-Encoding", "gzip");
+    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    request->send(response);
+  });
   /** JSON **/ 
   server.on("/readings", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "application/json", lastReadings);
