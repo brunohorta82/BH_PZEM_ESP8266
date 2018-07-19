@@ -1,6 +1,6 @@
 
 var config = {
-    baseUrl: "" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
+    baseUrl: "http://192.168.1.86" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
 };
 
 var map = {
@@ -36,8 +36,10 @@ function loadConfig() {
         contentType: "text/plain; charset=utf-8",
         dataType: "json",
         success: function (response) {
+
             $('input[name="nodeId"]').val(response[0].nodeId);
             $('input[name="directionCurrentDetection"]').prop("checked", response[0].directionCurrentDetection);
+            $('input[name="nodeId"], input[name="directionCurrentDetection"]').prop('disabled', false);
             $('select[name="notificationInterval"] option[value="' + response[0].notificationInterval + '"]').attr("selected", "selected");
 
             $('input[name="emoncmsApiKey"]').val(response[0].emoncmsApiKey);
@@ -58,6 +60,11 @@ function loadConfig() {
             $('select[name="IO_13"] option[value="' + response[0].IO_13 + '"]').attr("selected", "selected");
             $('select[name="IO_15"] option[value="' + response[0].IO_15 + '"]').attr("selected", "selected");
             $('select[name="IO_16"] option[value="' + response[0].IO_16 + '"]').attr("selected", "selected");
+        },
+        error: function() {
+
+        },complete: function(){
+            $('#ff').prop('disabled', false);
         },
         timeout: 2000
     });
@@ -98,9 +105,10 @@ function loadReadings() {
 $(document).ready(function () {
     toggleActive("dashboard");
     $( ".content" ).load("dashboard.html" , function(){
-      loadReadings();  
+      loadReadings();
     });
-    
+
+
 
     var read = setInterval(loadReadings, 3000);
     $('#node_id').on('keypress', function(e) {
@@ -118,6 +126,8 @@ $(document).ready(function () {
         }else{
             clearInterval(read);
         }
+
         $( ".content" ).load(menu + ".html" );
+        loadConfig();
     });
 });

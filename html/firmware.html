@@ -6,23 +6,26 @@
     </div>
 
     <form role="form" method="POST" action="/update" enctype="multipart/form-data">
-        <div class="box-body">
-            <div class="row">
-                <div class="col-xs-12">
-                    Versão actual do Firmware <span id="firmwareVersion" class="label label-info">1.0</span>
-                    <br/><br/>
-                </div>
-                <div class="col-xs-12">
-                    <div class="form-group">
-                        <label for="firmwareInputFile">Ficheiro do Novo Firmware</label>
-                        <input id="firmwareInputFile" name="update" type="file">
+
+        <fieldset id="ff" disabled>
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        Versão actual do Firmware <span id="firmwareVersion" class="label label-info">1.0</span>
+                        <br/><br/>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="form-group">
+                            <label for="firmwareInputFile">Ficheiro do Novo Firmware</label>
+                            <input id="firmwareInputFile" name="update" type="file">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="box-footer">
-            <button type="submit" class="btn btn-primary">Carregar Firmware</button>
-        </div>
+            <div class="box-footer">
+                <button type="submit" class="btn btn-primary">Carregar Firmware</button>
+            </div>
+        </fieldset>
     </form>
 </div>

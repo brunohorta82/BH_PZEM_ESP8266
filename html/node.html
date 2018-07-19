@@ -5,13 +5,14 @@
         </h3>
     </div>
 
-    <form role="form">
+    <form class="needs-validation" novalidate>
+        <fieldset id="ff" disabled>
         <div class="box-body">
             <div class="row">
                 <div class="col-md-6 col-xs-12">
                     <div class="form-group">
                         <label for="node_id">Nome</label>
-                        <input class="form-control" type="text" name="nodeId" id="node_id" placeholder="ex: pzem-solar">
+                        <input  class="form-control" type="text" name="nodeId" id="node_id" placeholder="ex: pzem-solar" disabled required>
                     </div>
                 </div>
                 <div class="col-md-6 col-xs-12">
@@ -27,7 +28,7 @@
                 <div class="col-xs-12">
                     <div class="checkbox">
                         <label for="exampleCheck1">
-                            <input type="checkbox" name="directionCurrentDetection" class="form-check-input" id="exampleCheck1"> Deteção de sentido de corrente
+                            <input type="checkbox" name="directionCurrentDetection" class="form-check-input" id="exampleCheck1" disabled> Deteção de sentido de corrente
                         </label>
                     </div>
                 </div>
@@ -38,5 +39,6 @@
             <button type="reset" class="btn btn-default">Repor Valores de Origem</button>
             <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
+        </fieldset>
     </form>
 </div>
