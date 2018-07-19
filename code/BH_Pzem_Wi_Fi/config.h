@@ -4,7 +4,7 @@
 
 #define EMPTY  ""
 #define HARDWARE "bhpzem" 
-#define FIRMWARE_VERSION 1.6
+#define FIRMWARE_VERSION 2.0
 #define NODE_ID "mynode"
 #define HOSTNAME String(HARDWARE)+"-"+String(NODE_ID)
 #define CONFIG_FILENAME  "/bconfig.json"
@@ -153,16 +153,18 @@ void applyJsonConfig(String json) {
     String lastWifiSecrect =  wifiSecret;
     wifiSSID = root["wifiSSID"] | WIFI_SSID;
     wifiSecret = root["wifiSecret"] | WIFI_SECRET;
-    availableGPIOS[0] = root["IO_16"] | "";
-    availableGPIOS[1] =root["IO_13"] | "";
-    availableGPIOS[2] = root["IO_00"] | "";
-    availableGPIOS[3] = root["IO_02"] | "";
-    availableGPIOS[4] =root["IO_15"] |"";
+    availableGPIOS[0] = root["IO_00"] | "";
+    availableGPIOS[1] = root["IO_02"] | "";
+    availableGPIOS[2] = root["IO_13"] | "";
+    availableGPIOS[3] = root["IO_15"] |"";
+    availableGPIOS[4] = root["IO_16"] | "";
     
+
     if(wifiSSID != lastSSID ||  wifiSecret != lastWifiSecrect){
-       jw.disconnect();
+       jw.disconnect(); 
        jw.cleanNetworks();
        jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
+       
     }
     if(lastNotificationInterval != notificationInterval){
       //timerRead.detach();

@@ -1,6 +1,6 @@
 
 var config = {
-    baseUrl: "http://192.168.1.86" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
+    baseUrl: "" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
 };
 
 var map = {
@@ -60,11 +60,12 @@ function loadConfig() {
             $('select[name="IO_13"] option[value="' + response[0].IO_13 + '"]').attr("selected", "selected");
             $('select[name="IO_15"] option[value="' + response[0].IO_15 + '"]').attr("selected", "selected");
             $('select[name="IO_16"] option[value="' + response[0].IO_16 + '"]').attr("selected", "selected");
+            $('#ff').prop('disabled', false);
         },
         error: function() {
 
         },complete: function(){
-            $('#ff').prop('disabled', false);
+
         },
         timeout: 2000
     });

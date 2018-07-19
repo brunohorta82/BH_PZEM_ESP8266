@@ -140,22 +140,22 @@ void  prepareWebserver(){
   /** POSTS **/
    server.on("/saveconfig", HTTP_POST, [](AsyncWebServerRequest *request){
    String newConfig=buildConfigToJson(
-    request->arg("nodeId"),
-   request->arg("notificationInterval").toInt(),
-   request->hasArg("directionCurrentDetection"),
-   request->arg("emoncmsApiKey"),
-   request->arg("emoncmsPrefix"),
-   request->arg("emoncmsUrl"),
-   request->arg("mqttIpDns"),
-   request->arg("mqttUsername"),
-   request->arg("mqttPassword"),
-   request->arg("wifiSSID"),
-   request->arg("wifiSecret"),
-   request->arg("IO_00"),
-   request->arg("IO_02"),
-   request->arg("IO_13"),
-   request->arg("IO_15"),
-   request->arg("IO_16"),
+   request->hasArg("nodeId") ? request->arg("nodeId") : nodeId,
+   request->hasArg("notificationInterval") ? request->arg("notificationInterval").toInt() : notificationInterval,
+   request->hasArg("directionCurrentDetection") ? request->hasArg("directionCurrentDetection") : directionCurrentDetection,
+   request->hasArg("emoncmsApiKey") ? request->arg("emoncmsApiKey") : emoncmsApiKey,
+   request->hasArg("emoncmsPrefix") ?request->arg("emoncmsPrefix") : emoncmsPrefix,
+   request->hasArg("emoncmsUrl") ? request->arg("emoncmsUrl") : emoncmsUrl,
+   request->hasArg("mqttIpDns") ? request->arg("mqttIpDns") : mqttIpDns,
+   request->hasArg("mqttUsername") ? request->arg("mqttUsername") : mqttUsername,
+   request->hasArg("mqttPassword") ? request->arg("mqttPassword") : mqttPassword,
+   request->hasArg("wifiSSID") ? request->arg("wifiSSID") : wifiSSID,
+   request->hasArg("wifiSecret") ? request->arg("wifiSecret") : wifiSecret,
+   request->hasArg("IO_00") ? request->arg("IO_00") : availableGPIOS[0],
+   request->hasArg("IO_02") ? request->arg("IO_02") : availableGPIOS[1],
+   request->hasArg("IO_13") ? request->arg("IO_13") : availableGPIOS[2],
+   request->hasArg("IO_15") ? request->arg("IO_15") : availableGPIOS[3],
+   request->hasArg("IO_16") ? request->arg("IO_16") : availableGPIOS[4],
    hostname);
    requestToSaveNewConfigJson(newConfig);
    request->redirect("/");
@@ -168,7 +168,7 @@ void  prepareWebserver(){
 
   server.on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
     shouldReboot = !Update.hasError();
-    AsyncWebServerResponse *response = request->beginResponse(200, "text/plain", shouldReboot?"OK":"FAIL");
+    AsyncWebServerResponse *response = request->beginResponse(200, "text/html", shouldReboot? "<!DOCTYPE html><html lang=\"en\"><head> <meta charset=\"UTF-8\"> <title>Atualização</title> <style>body{background-color: rgb(34, 34, 34); color: white; font-size: 18px; padding: 10px; font-weight: lighter;}</style> <script type=\"text/javascript\">function Redirect(){window.location=\"/\";}document.write(\"Atualização com sucesso, vai ser redirecionado automaticamente daqui a 60 segundos. Aguarde...\"); setTimeout('Redirect()', 60000); </script></head><body></body></html>":"<!DOCTYPE html><html lang=\"en\"><head> <meta charset=\"UTF-8\"> <title>Atualização</title> <style>body{background-color: #cc0000; color: white; font-size: 18px; padding: 10px; font-weight: lighter;}</style> <script type=\"text/javascript\">function Redirect(){window.location=\"/\";}document.write(\"Atualização falhou, poderá ser necessário fazer reset manualmente ao equipamento e tentar novamente.\"); setTimeout('Redirect()', 10000); </script></head><body></body></html>");
     response->addHeader("Connection", "close");
     request->send(response);
   },[](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
