@@ -38,10 +38,9 @@ function loadConfig() {
         success: function (response) {
 
             $('input[name="nodeId"]').val(response[0].nodeId);
-            $('input[name="directionCurrentDetection"]').prop("checked", response[0].directionCurrentDetection);
             $('input[name="nodeId"], input[name="directionCurrentDetection"]').prop('disabled', false);
             $('select[name="notificationInterval"] option[value="' + response[0].notificationInterval + '"]').attr("selected", "selected");
-
+            $('select[name="directionCurrentDetection"] option[value="' + response[0].directionCurrentDetection + '"]').attr("selected", "selected");
             $('input[name="emoncmsApiKey"]').val(response[0].emoncmsApiKey);
             $('input[name="emoncmsUrl"]').val(response[0].emoncmsUrl);
             $('input[name="emoncmsPrefix"]').val(response[0].emoncmsPrefix);
@@ -103,6 +102,31 @@ function loadReadings() {
     });
 }
 
+function loadDefaults() {
+    var someUrl = config.baseUrl + "/loaddefaults";
+    $.ajax({
+        url: someUrl,
+        contentType: "text/plain; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+            
+        },
+        timeout: 2000
+    });
+}
+
+function reboot() {
+    var someUrl = config.baseUrl + "/reboot";
+    $.ajax({
+        url: someUrl,
+        contentType: "text/plain; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+            
+        },
+        timeout: 2000
+    });
+}
 $(document).ready(function () {
     toggleActive("dashboard");
     $( ".content" ).load("dashboard.html" , function(){

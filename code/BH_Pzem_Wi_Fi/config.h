@@ -12,8 +12,8 @@
 #define DELAY_NOTIFICATION 5000 //5 seconds
 #define TEMPERATURE_PRECISION 9
 
-#define WIFI_SSID "VOID SOFTWARE"
-#define WIFI_SECRET "blackiscool"
+#define WIFI_SSID ""
+#define WIFI_SECRET ""
 //     ___ ___ ___ ___  _    
 //    / __| _ \_ _/ _ \( )___
 //   | (_ |  _/| | (_) |/(_-<
@@ -57,7 +57,7 @@
 //   | |\/| | (_) || |   | |  
 //   |_|  |_|\__\_\|_|   |_|  
 //  
-#define MQTT_BROKER_IP "192.168.187.227"
+#define MQTT_BROKER_IP ""
 #define MQTT_BROKER_PORT 1883
 #define MQTT_USERNAME ""
 #define MQTT_PASSWORD ""
@@ -69,10 +69,11 @@
 //NODE
 String hostname = HOSTNAME;
 String nodeId = NODE_ID;
+bool directionCurrentDetection = DETECT_DIRECTION;
 
 //RELAYS
 int notificationInterval = DELAY_NOTIFICATION;
-bool directionCurrentDetection = DETECT_DIRECTION;
+
 
 //EMONCMS
 String emoncmsApiKey = EMONCMS_API_KEY;
@@ -127,22 +128,26 @@ String buildConfigToJson(String _nodeId, int _notificationInterval, bool _direct
 }
 
 String defaultConfigJson(){
-   return buildConfigToJson(nodeId ,notificationInterval,directionCurrentDetection,emoncmsApiKey,emoncmsPrefix,emoncmsUrl,mqttIpDns,mqttUsername,mqttPassword,wifiSSID,wifiSecret,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,HOSTNAME);
+   return buildConfigToJson(NODE_ID ,DELAY_NOTIFICATION,DETECT_DIRECTION,EMONCMS_API_KEY,EMONCMS_URL_PREFIX,EMONCMS_HOST,MQTT_BROKER_IP
+   ,MQTT_USERNAME,MQTT_PASSWORD, WIFI_SSID,WIFI_SECRET,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,HOSTNAME);
 }
-
+void requestToLoadDefaults(){
+   SPIFFS.format();
+   shouldReboot = true;
+}
 void applyJsonConfig(String json) {
+    cachedConfigJson = json ;
     DynamicJsonBuffer jsonBuffer(1024);
     JsonObject &root = jsonBuffer.parseObject(json);
     if( !root.success()){
       Serial.println("[CONFIG] ERROR ON JSON VALIDATION!");
       return;
     }
-    
+   
     nodeId = root["nodeId"] | NODE_ID;
     hostname = String(HARDWARE) +"-"+String(nodeId);
-    int lastNotificationInterval = notificationInterval;
     notificationInterval=root["notificationInterval"] | DELAY_NOTIFICATION;
-    directionCurrentDetection=root["directionCurrentDetection"] | DETECT_DIRECTION;
+    directionCurrentDetection= (bool)root["directionCurrentDetection"] | DETECT_DIRECTION;
     emoncmsApiKey=root["emoncmsApiKey"] | EMONCMS_API_KEY;
     emoncmsUrl=root["emoncmsUrl"] | EMONCMS_HOST;
     emoncmsPrefix=root["emoncmsPrefix"] | EMONCMS_URL_PREFIX;
@@ -166,11 +171,7 @@ void applyJsonConfig(String json) {
        jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
        
     }
-    if(lastNotificationInterval != notificationInterval){
-      //timerRead.detach();
-      //timerRead.attach(notificationInterval,readAndPublish);
-      }
-    cachedConfigJson = json ;
+   
 }
 
 
@@ -182,11 +183,7 @@ void loadStoredConfiguration(){
     
     if(SPIFFS.exists(CONFIG_FILENAME)){
       cFile = SPIFFS.open(CONFIG_FILENAME,"r+"); 
-     }else{
-      cFile = SPIFFS.open(CONFIG_FILENAME,"w+"); 
-      cFile.print(defaultConfigJson());
-      }
-     if(!cFile){
+      if(!cFile){
         Serial.println("[CONFIF] Create file config Error!");
       }else{
         Serial.println("[CONFIG] Read stored file config...");
@@ -196,6 +193,12 @@ void loadStoredConfiguration(){
         }
         cFile.close();
       }
+     }else{
+      cFile = SPIFFS.open(CONFIG_FILENAME,"w+"); 
+      configJson = defaultConfigJson();
+      cFile.print(configJson);
+      }
+     
   }else{
      Serial.println("[CONFIG] Open file system Error!");
   }

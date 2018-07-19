@@ -6,13 +6,13 @@
     </div>
 
     <form action="/saveconfig" method="post">
-        <fieldset id="ff" disabled>
+        
         <div class="box-body">
             <div class="row">
                 <div class="col-md-6 col-xs-12">
                     <div class="form-group">
                         <label for="node_id">Nome</label>
-                        <input  class="form-control" type="text" name="nodeId" id="node_id" placeholder="ex: pzem-solar" disabled required>
+                        <input  class="form-control" type="text" name="nodeId" id="node_id" placeholder="ex: pzem-solar"  required/>
                     </div>
                 </div>
                 <div class="col-md-6 col-xs-12">
@@ -26,11 +26,15 @@
                     </div>
                 </div>
                 <div class="col-xs-12">
-                    <div class="checkbox">
-                        <label for="exampleCheck1">
-                            <input type="checkbox" name="directionCurrentDetection" class="form-check-input" id="exampleCheck1" disabled> Deteção de sentido de corrente
-                        </label>
+                    
+                        <div class="form-group">
+                        <label for="directionCurrentDetection">Detectar sentido da corrente</label>
+                        <select class="form-control" name="directionCurrentDetection" id="directionCurrentDetection">
+                            <option value="0">Não</option>
+                            <option value="1">Sim</option>
+                        </select>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -40,5 +44,24 @@
             <button type="submit" class="btn btn-primary">Guardar</button>
         </div>
         </fieldset>
+    </form>
+</div>
+
+<div class="box ">
+    <div class="box-header with-border">
+        <h3 class="box-title">
+            <i class="fa fa-cog"></i>&nbsp;&nbsp;Sistema
+        </h3>
+    </div>
+
+    <form>
+        <fieldset id="ff" disabled>
+        
+
+        <div class="box-footer">
+            <button type="button" onclick="loadDefaults()" class="btn btn-warning">Carregar Configuração de Fábrica</button>
+            <button type="button" onclick="reboot()" class="btn btn-danger">Reiniciar</button>
+        </div>
+        
     </form>
 </div>

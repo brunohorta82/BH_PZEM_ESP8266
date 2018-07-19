@@ -142,7 +142,7 @@ void  prepareWebserver(){
    String newConfig=buildConfigToJson(
    request->hasArg("nodeId") ? request->arg("nodeId") : nodeId,
    request->hasArg("notificationInterval") ? request->arg("notificationInterval").toInt() : notificationInterval,
-   request->hasArg("directionCurrentDetection") ? request->hasArg("directionCurrentDetection") : directionCurrentDetection,
+   request->hasArg("directionCurrentDetection") ? request->arg("directionCurrentDetection").toInt() : directionCurrentDetection,
    request->hasArg("emoncmsApiKey") ? request->arg("emoncmsApiKey") : emoncmsApiKey,
    request->hasArg("emoncmsPrefix") ?request->arg("emoncmsPrefix") : emoncmsPrefix,
    request->hasArg("emoncmsUrl") ? request->arg("emoncmsUrl") : emoncmsUrl,
@@ -162,13 +162,16 @@ void  prepareWebserver(){
   });
   
    server.on("/reboot", HTTP_GET, [](AsyncWebServerRequest *request){
-    shouldReboot = true;
+   shouldReboot = true;
+   request->redirect("/");
+  });
+   server.on("/loaddefaults", HTTP_GET, [](AsyncWebServerRequest *request){
+   requestToLoadDefaults();
    request->send(200);
   });
-
   server.on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
     shouldReboot = !Update.hasError();
-    AsyncWebServerResponse *response = request->beginResponse(200, "text/html", shouldReboot? "<!DOCTYPE html><html lang=\"en\"><head> <meta charset=\"UTF-8\"> <title>Atualização</title> <style>body{background-color: rgb(34, 34, 34); color: white; font-size: 18px; padding: 10px; font-weight: lighter;}</style> <script type=\"text/javascript\">function Redirect(){window.location=\"/\";}document.write(\"Atualização com sucesso, vai ser redirecionado automaticamente daqui a 60 segundos. Aguarde...\"); setTimeout('Redirect()', 60000); </script></head><body></body></html>":"<!DOCTYPE html><html lang=\"en\"><head> <meta charset=\"UTF-8\"> <title>Atualização</title> <style>body{background-color: #cc0000; color: white; font-size: 18px; padding: 10px; font-weight: lighter;}</style> <script type=\"text/javascript\">function Redirect(){window.location=\"/\";}document.write(\"Atualização falhou, poderá ser necessário fazer reset manualmente ao equipamento e tentar novamente.\"); setTimeout('Redirect()', 10000); </script></head><body></body></html>");
+    AsyncWebServerResponse *response = request->beginResponse(200, "text/html", shouldReboot? "<!DOCTYPE html><html lang=\"en\"><head> <meta charset=\"UTF-8\"> <title>Atualização</title> <style>body{background-color: rgb(34, 34, 34); color: white; font-size: 18px; padding: 10px; font-weight: lighter;}</style> <script type=\"text/javascript\">function Redirect(){window.location=\"/\";}document.write(\"Atualização com sucesso, vai ser redirecionado automaticamente daqui a 30 segundos. Aguarde...\"); setTimeout('Redirect()', 30000); </script></head><body></body></html>":"<!DOCTYPE html><html lang=\"en\"><head> <meta charset=\"UTF-8\"> <title>Atualização</title> <style>body{background-color: #cc0000; color: white; font-size: 18px; padding: 10px; font-weight: lighter;}</style> <script type=\"text/javascript\">function Redirect(){window.location=\"/\";}document.write(\"Atualização falhou, poderá ser necessário fazer reset manualmente ao equipamento e tentar novamente.\"); setTimeout('Redirect()', 10000); </script></head><body></body></html>");
     response->addHeader("Connection", "close");
     request->send(response);
   },[](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
