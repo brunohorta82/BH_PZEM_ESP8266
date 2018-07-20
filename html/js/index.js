@@ -1,6 +1,6 @@
 
 var config = {
-    baseUrl: "" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
+    baseUrl: "http://192.168.1.86" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
 };
 
 var map = {
@@ -36,7 +36,6 @@ function loadConfig() {
         contentType: "text/plain; charset=utf-8",
         dataType: "json",
         success: function (response) {
-
             $('input[name="nodeId"]').val(response[0].nodeId);
             $('input[name="nodeId"], input[name="directionCurrentDetection"]').prop('disabled', false);
             $('select[name="notificationInterval"] option[value="' + response[0].notificationInterval + '"]').attr("selected", "selected");
@@ -44,16 +43,14 @@ function loadConfig() {
             $('input[name="emoncmsApiKey"]').val(response[0].emoncmsApiKey);
             $('input[name="emoncmsUrl"]').val(response[0].emoncmsUrl);
             $('input[name="emoncmsPrefix"]').val(response[0].emoncmsPrefix);
-
             $('input[name="mqttIpDns"]').val(response[0].mqttIpDns);
             $('input[name="mqttUsername"]').val(response[0].mqttUsername);
             $('input[name="mqttPassword"]').val(response[0].mqttPassword);
-
             $('input[name="wifiSSID"]').val(response[0].wifiSSID);
+
             $('input[name="wifiSecret"]').val(response[0].wifiSecret);
-
             $("#firmwareVersion").text(response[1].firmwareVersion);
-
+            $("#version_lbl").text(response[1].firmwareVersion);
             $('select[name="IO_00"] option[value="' + response[0].IO_00 + '"]').attr("selected", "selected");
             $('select[name="IO_02"] option[value="' + response[0].IO_02 + '"]').attr("selected", "selected");
             $('select[name="IO_13"] option[value="' + response[0].IO_13 + '"]').attr("selected", "selected");
@@ -86,7 +83,7 @@ function loadReadings() {
                 Object.keys(response).reverse().forEach(function (key) {
                     if (key !== "config" ) {
                         $('#sensors').append('<div class="col-lg-4 col-md-6 col-xs-12"><div class="info-box bg-aqua"><span class="info-box-icon"><i class="fa '+mapIcons[key.split("_")[0]]+'"></i></span><div class="info-box-content"><span class="info-box-text">'+mapTitles[key.split("_")[0]]+'</span><div id="' + key + '"  class="GaugeMeter" data-animationstep="0" data-total="' + limits[key.split("_")[0]]  + '"  data-size="200" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff"  data-label="' + map[key.split("_")[0]] + '"><canvas width="200" height="200"></canvas></div></div></div></div>');
-                      //  $('#sensors').append(' <div id="' + key + '" class="GaugeMeter" data-animationstep = 0 data-total="' + limits[key.split("_")[0]]  + '" data-size="250" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff" data-label="' + map[key.split("_")[0]] + '"></div>');
+                        //  $('#sensors').append(' <div id="' + key + '" class="GaugeMeter" data-animationstep = 0 data-total="' + limits[key.split("_")[0]]  + '" data-size="250" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff" data-label="' + map[key.split("_")[0]] + '"></div>');
                         $('#' + key).gaugeMeter({used:Math.round(response[key]),text:response[key]});
                     }
                 });
@@ -102,6 +99,27 @@ function loadReadings() {
     });
 }
 
+function wifiStatus() {
+    var someUrl = config.baseUrl + "/wifi-status";
+    $.ajax({
+        url: someUrl,
+        contentType: "text/plain; charset=utf-8",
+        dataType: "json",
+        success: function (response) {
+            $('#ssid_lbl').text(response.wifiSSID);
+            if(response.status){
+               // $('#wifi_status').text('ligado');
+                $('#wifi_status_icon').removeClass('text-danger').addClass('text-ok');
+
+            }else {
+                $('#wifi_status_icon').removeClass('text-ok').addClass('text-danger')
+                //$('#wifi_status').text('desligado');
+            }
+        },
+        timeout: 2000
+    });
+}
+
 function loadDefaults() {
     var someUrl = config.baseUrl + "/loaddefaults";
     $.ajax({
@@ -109,7 +127,6 @@ function loadDefaults() {
         contentType: "text/plain; charset=utf-8",
         dataType: "json",
         success: function (response) {
-            
         },
         timeout: 2000
     });
@@ -122,19 +139,17 @@ function reboot() {
         contentType: "text/plain; charset=utf-8",
         dataType: "json",
         success: function (response) {
-            
+
         },
         timeout: 2000
     });
 }
 $(document).ready(function () {
+    wifiStatus();
     toggleActive("dashboard");
     $( ".content" ).load("dashboard.html" , function(){
       loadReadings();
     });
-
-
-
     var read = setInterval(loadReadings, 3000);
     $('#node_id').on('keypress', function(e) {
         if (e.which === 32)

@@ -5,11 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>BH Pzem | Medidor de Consumo energético</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <link rel="stylesheet" href="css/bootstrap.min.css">
-
-    <link rel="stylesheet" href="css/font-awesome.min.css">
     <link rel="stylesheet" href="css/AdminLTE.min.css">
-    <link rel="stylesheet" href="css/skin-blue.min.css">
+
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -50,9 +47,9 @@
                     <i  class="fa fa-2x fa-wifi"></i>
                 </div>
                 <div class="pull-left info">
-                    <p>---</p>
+                    <p id="ssid_lbl">---</p>
                     <!-- Status -->
-                    <a href="#"><i class="fa fa-circle text-danger"></i> desligado</a>
+                    <a href="#" class="menu-item" data-menu="wifi" ><i id="wifi_status_icon" class="fa fa-circle text-danger"></i><span id="wifi_status">desligado</span> </a>
                 </div>
             </div>
 
@@ -101,7 +98,7 @@
     <footer class="main-footer">
         <!-- To the right -->
         <div class="pull-right hidden-xs">
-            Versão 0
+            VERSÂO:  <span id="version_lbl">1.0</span>
         </div>
         <!-- Default to the left -->
         <strong>Desenvolvido por <a href="https://github.com/brunohorta82/BH_PZEM_ESP8266">Bruno Horta</a> @ 2018</strong>

@@ -26,7 +26,6 @@ void setup() {
   jw.enableAP(false);
   jw.enableAPFallback(true);
   jw.enableSTA(true);
-
   jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
 
 

@@ -84,27 +84,10 @@ void  prepareWebserver(){
   server.on("/css/AdminLTE.min.css", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", AdminLTE_min_css,sizeof(AdminLTE_min_css));
     response->addHeader("Content-Encoding", "gzip");
-    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
-    request->send(response);
-  });
-  server.on("/css/bootstrap.min.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css",bootstrap_min_css,sizeof(bootstrap_min_css));
-    response->addHeader("Content-Encoding", "gzip");
     response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
     request->send(response);
   });
-  server.on("/css/font-awesome.min.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", font_awesome_min_css,sizeof(font_awesome_min_css));
-    response->addHeader("Content-Encoding", "gzip");
-    response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
-    request->send(response);
-  });
-    server.on("/css/skin-blue.min.css", HTTP_GET, [](AsyncWebServerRequest *request){
-    AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", skin_blue_min_css,sizeof(skin_blue_min_css));
-    response->addHeader("Content-Encoding", "gzip");
-    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
-    request->send(response);
-  });
+
   /** FONTS **/
     server.on("/fonts/fontawesome-webfont.eot", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "font/eot", fontawesome_webfont_eot,sizeof(fontawesome_webfont_eot));
@@ -136,6 +119,9 @@ void  prepareWebserver(){
   });
  server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200,  "application/json","["+cachedConfigJson+",{\"firmwareVersion\":"+String(FIRMWARE_VERSION)+"}]");
+  });
+  server.on("/wifi-status", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(200,  "application/json","{\"wifiSSID\":\""+wifiSSID+"\",\"status\":"+String(jw.connected())+",\"signal\":\""+String(WiFi.RSSI())+"\"}");
   });
   /** POSTS **/
    server.on("/saveconfig", HTTP_POST, [](AsyncWebServerRequest *request){
