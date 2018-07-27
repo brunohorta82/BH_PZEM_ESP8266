@@ -1,6 +1,5 @@
 #include <JustWifi.h> //https://github.com/xoseperez/justwifi
 #include "config.h"
-
 #include <Timing.h> //https://github.com/scargill/Timing
 #include <AsyncMqttClient.h> //https://github.com/marvinroger/async-mqtt-client
 #include <PZEM004T.h> //https://github.com/olehs/PZEM004T
@@ -26,6 +25,8 @@ void setup() {
   jw.enableAP(false);
   jw.enableAPFallback(true);
   jw.enableSTA(true);
+  jw.enableScan(true);
+  jw.cleanNetworks();
   jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
 
 
@@ -39,8 +40,9 @@ void setup() {
   sensorsCount = sensors.getDeviceCount();
   oneWire.reset_search();
   for (int i=0; i<sensorsCount; i++){
-   if (!oneWire.search(devAddr[i])) 
-   Serial.print("Unable to find temperature sensors address "); Serial.println(i);
+   if (!oneWire.search(devAddr[i])){ 
+    logger("Unable to find temperature sensors address");
+   }
   }
   for (int a=0; a<sensorsCount; a++){ 
   String addr  = "";
@@ -52,13 +54,13 @@ void setup() {
   }
   timerRead.begin(0);
 }
-
+bool pzemError = false;
+int pzemErrorAttemps = 0;
 void loop() {
   jw.loop();
 
- 
   if(shouldReboot){
-    Serial.println("Rebooting...");
+    logger("Rebooting...");
     delay(100);
     ESP.restart();
     return;
@@ -71,13 +73,11 @@ void loop() {
     setupDisplay();
   }
   
-      if (timerRead.onTimeout(notificationInterval)){
-        
-        float t = 0;
-        float v = getVoltage();
-        float i = getCurrent();
-        float p =  getPower()*directionSignal();
-        float e = getEnergy()/1000;
+      if (timerRead.onTimeout(notificationInterval) ){
+        float v = pzemError ? -1 :  getVoltage();
+        float i = pzemError ? -1 :   getCurrent();
+        float p = pzemError ? -1 :   getPower()*directionSignal();
+        float e = pzemError ? -1 :  getEnergy()/1000;
         sensors.requestTemperatures();
         String temperatures= "";
         String displayTemps = "";
@@ -89,32 +89,39 @@ void loop() {
         
       //SHOW DATA ON SSD1306 DISPLAY
       printOnDisplay(v,i,p,e,displayTemps);
+      if(v < 0 && i < 0 && p < 0 && e <= 0){
+        pzemError = true;
+        pzemErrorAttemps++;
+        if(pzemErrorAttemps == 1){
+          logger("[PZEM] Check connections, can't get data.");
+        }
+        if(pzemErrorAttemps > 5){
+          logger("[PZEM] Retry get data...");
+          pzemErrorAttemps = 0;
+          pzemError = false;
+        }
+        
+      }
+      if(!pzemError){
+        logger("[PZEM] V: "+String(v));
+        logger("[PZEM] A: "+String(i));
+        logger("[PZEM] W: "+String(p));
+        logger("[PZEM] kWh: "+String(e));
+      }
       
-      #if PRINT_TO_SERIAL_MONITOR  
-        Serial.print("T; ");
-        Serial.print(t); 
-        Serial.print(v);  
-        Serial.print("V; ");
-        Serial.print(i);
-        Serial.print("A; ");
-        Serial.print(p);
-        Serial.print("W; ");
-        Serial.print(e);
-        Serial.print("kWh; ");
-        Serial.println();
-      #endif
-      String json = "{"+ temperatures+"\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
-      publishData(json);
+      cachedReadings = "{"+ temperatures+"\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
+      publishData();
+     
     }
   
 }
-void publishData(String json){
+void publishData(){
   //WEB PANEL
-  publishOnPanel(json);
+  publishOnEventSource("dashboard",cachedReadings);
   //MQTT
-  publishOnMqtt(json);
+  publishOnMqtt(cachedReadings);
   //EMON CMS
-  publishOnEmoncms(json);
+  publishOnEmoncms(cachedReadings);
 }
 float requestTemperature(DeviceAddress deviceAddress){
   float temp = 0;

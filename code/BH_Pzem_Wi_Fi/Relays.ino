@@ -4,7 +4,6 @@ Ticker pulseTicker;
 
 void turnOn(int gpio, bool inverted) {
   pinMode(gpio,OUTPUT);
-  Serial.println(gpio);
  if(inverted){
       digitalWrite( gpio,LOW);
     }else{

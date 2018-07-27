@@ -1,10 +1,12 @@
 #include <ArduinoJson.h> ////Install from Arduino IDE Library Manager
 #include <FS.h> 
 #include <Ticker.h>
+#include <ESPAsyncTCP.h> //https://github.com/me-no-dev/ESPAsyncTCP
+#include <ESPAsyncWebServer.h> //https://github.com/me-no-dev/ESPAsyncWebServer
 
 #define EMPTY  ""
 #define HARDWARE "bhpzem" 
-#define FIRMWARE_VERSION 2.0
+#define FIRMWARE_VERSION 2.2
 #define NODE_ID "mynode"
 #define HOSTNAME String(HARDWARE)+"-"+String(NODE_ID)
 #define CONFIG_FILENAME  "/bconfig.json"
@@ -47,7 +49,6 @@
 //   | _|| |\/| | (_) | .` | (__| .` \__ \
 //   |___|_|  |_|\___/|_|\_|\___|_|\_|___/
 //   
-#define EMONCMS_PROTOCOL 0 //usar 0 para HTTP ou 1 HTTPS para servidores com certificado
 #define EMONCMS_HOST  ""
 #define EMONCMS_URL_PREFIX  ""
 #define EMONCMS_API_KEY ""
@@ -70,7 +71,7 @@
 String hostname = HOSTNAME;
 String nodeId = NODE_ID;
 bool directionCurrentDetection = DETECT_DIRECTION;
-
+String cachedReadings = "{}";
 //RELAYS
 int notificationInterval = DELAY_NOTIFICATION;
 
@@ -79,7 +80,6 @@ int notificationInterval = DELAY_NOTIFICATION;
 String emoncmsApiKey = EMONCMS_API_KEY;
 String emoncmsUrl = EMONCMS_HOST;
 String emoncmsPrefix = EMONCMS_URL_PREFIX;
-bool emoncmshttp = EMONCMS_PROTOCOL ==  0;
 
 //MQTT
 String mqttIpDns = MQTT_BROKER_IP;
@@ -106,6 +106,12 @@ bool configNeedsUpdate = false;
 bool restartMqtt = false;
 bool shouldReboot = false;
 
+AsyncEventSource events("/events");
+void logger(String payload){
+  if(payload.equals(""))return;
+   events.send(payload.c_str(), "log");
+   Serial.printf((payload+"\n").c_str());
+}
 String buildConfigToJson(String _nodeId, int _notificationInterval, bool _directionCurrentDetection, String  _emoncmsApiKey, String _emoncmsPrefix, String  _emoncmsUrl, String _mqttIpDns, String _mqttUsername,String _mqttPassword ,String _wifiSSID, String _wifiSecret, String _IO_00, String  _IO_02, String _IO_13, String _IO_15, String _IO_16, String _hostname){
           return "{\"nodeId\":\""+_nodeId+"\","+
           "\"hostname\":\""+String(_hostname)+"\","+
@@ -140,7 +146,7 @@ void applyJsonConfig(String json) {
     DynamicJsonBuffer jsonBuffer(1024);
     JsonObject &root = jsonBuffer.parseObject(json);
     if( !root.success()){
-      Serial.println("[CONFIG] ERROR ON JSON VALIDATION!");
+      logger("[CONFIG] ERROR ON JSON VALIDATION!");
       return;
     }
    
@@ -184,9 +190,9 @@ void loadStoredConfiguration(){
     if(SPIFFS.exists(CONFIG_FILENAME)){
       cFile = SPIFFS.open(CONFIG_FILENAME,"r+"); 
       if(!cFile){
-        Serial.println("[CONFIF] Create file config Error!");
+        logger("[CONFIF] Create file config Error!");
       }else{
-        Serial.println("[CONFIG] Read stored file config...");
+        logger("[CONFIG] Read stored file config...");
         while(cFile.available()) {
           String line = cFile.readStringUntil('\n');
           configJson+= line;
@@ -200,7 +206,7 @@ void loadStoredConfiguration(){
       }
      
   }else{
-     Serial.println("[CONFIG] Open file system Error!");
+     logger("[CONFIG] Open file system Error!");
   }
    SPIFFS.end(); 
    applyJsonConfig(configJson);
@@ -211,7 +217,7 @@ bool checkRebootRules(String newConfig){
    DynamicJsonBuffer jsonBuffer(1024);
     JsonObject &root = jsonBuffer.parseObject(newConfig);
     if( !root.success()){
-      Serial.println("[CONFIG] ERROR ON JSON VALIDATION!");
+      logger("[CONFIG] ERROR ON JSON VALIDATION!");
       return true;
     }    
    
@@ -226,18 +232,18 @@ void saveConfig(String newConfig) {
    if(SPIFFS.begin()){
       File rFile = SPIFFS.open(CONFIG_FILENAME,"w+");
       if(!rFile){
-        Serial.println("[CONFIG] Open config file Error!");
+        logger("[CONFIG] Open config file Error!");
       } else {
         rFile.print(newConfig);
       }
       rFile.close();
    }else{
-     Serial.println("[CONFIG] Open file system Error!");
+     logger("[CONFIG] Open file system Error!");
   }
   SPIFFS.end();
   configNeedsUpdate = false;
   
-  Serial.println("[CONFIG] New config loaded.");
+  logger("[CONFIG] New config loaded.");
   shouldReboot = checkRebootRules(newConfig);
   if(!shouldReboot){
    applyJsonConfig(nextConfigJson);
@@ -249,7 +255,7 @@ void saveConfig(String newConfig) {
 
 void requestToSaveNewConfigJson(String newConfig){
   if(newConfig.equals("")){
-     Serial.println("[CONFIG] Invalid Config File");
+     logger("[CONFIG] Invalid Config File");
      return;
    }
    cachedConfigJson = newConfig;
@@ -261,6 +267,10 @@ void checkConfigChanges(){
   if(configNeedsUpdate && !nextConfigJson.equals("")){
     saveConfig(nextConfigJson);
    }
+}
+
+String wifiJSONStatus(){
+    return ("{\"wifiSSID\":\""+wifiSSID+"\",\"status\":"+String(jw.connected())+",\"signal\":\""+String(WiFi.RSSI())+"\"}");
 }
 
 

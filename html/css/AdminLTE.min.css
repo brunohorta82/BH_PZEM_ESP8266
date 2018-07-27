@@ -1502,6 +1502,7 @@ a:hover, a:active, a:focus {
 
 .small-box {
     border-radius: 2px;
+
     position: relative;
     display: block;
     margin-bottom: 20px;
@@ -1913,7 +1914,12 @@ a:hover, a:active, a:focus {
     padding: 10px;
     background-color: #fff
 }
-
+.box-title i{
+    padding-right: 10px;
+}
+.box-footer.save {
+  text-align: right;
+}
 .chart-legend {
     margin: 10px 0
 }
@@ -15582,4 +15588,18 @@ button.close {
     margin: 0;
     overflow: visible;
     clip: auto
+}
+
+.signal-zero{
+    color: rgba(255,255,255,.1);
+}
+.signal-bad{
+    color: rgba(217, 83, 79,.4);
+}
+.signal-med{
+    color: rgba(240, 173, 78,.7);
+}
+
+.signal-good{
+    color: rgba(56,225,96,1);
 }

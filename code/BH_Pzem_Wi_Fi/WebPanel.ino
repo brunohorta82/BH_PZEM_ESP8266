@@ -3,10 +3,6 @@
 #include "static_js.h"
 #include "static_fonts.h"
 #include <ESP8266mDNS.h>
-#include <ESPAsyncTCP.h> //https://github.com/me-no-dev/ESPAsyncTCP
-#include <ESPAsyncWebServer.h> //https://github.com/me-no-dev/ESPAsyncWebServer
-
-String lastReadings= "{}";
 
 // SKETCH BEGIN
 AsyncWebServer server(80);
@@ -14,12 +10,24 @@ AsyncWebServer server(80);
 void  prepareWebserver(){
   MDNS.begin(hostname.c_str());
   MDNS.addService("http","tcp",80);
+  events.onConnect([](AsyncEventSourceClient *client){
+    client->send(wifiJSONStatus().c_str(),"wifi");
+    
+  });
+
+  server.addHandler(&events);
   /** HTML  **/
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", index_html,sizeof(index_html));
     response->addHeader("Content-Encoding", "gzip");
     request->send(response);
   });
+server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
+   jw.disconnect(); 
+   jw.enableScan(true);
+    request->send(200,  "application/json","{\"result\":\"OK\"}");
+  });
+  
   server.on("/dashboard.html", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", dashboard_html,sizeof(dashboard_html));
     response->addHeader("Content-Encoding", "gzip");
@@ -114,15 +122,11 @@ void  prepareWebserver(){
     request->send(response);
   });
   /** JSON **/ 
-  server.on("/readings", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200, "application/json", lastReadings);
-  });
+
  server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200,  "application/json","["+cachedConfigJson+",{\"firmwareVersion\":"+String(FIRMWARE_VERSION)+"}]");
   });
-  server.on("/wifi-status", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200,  "application/json","{\"wifiSSID\":\""+wifiSSID+"\",\"status\":"+String(jw.connected())+",\"signal\":\""+String(WiFi.RSSI())+"\"}");
-  });
+
   /** POSTS **/
    server.on("/saveconfig", HTTP_POST, [](AsyncWebServerRequest *request){
    String newConfig=buildConfigToJson(
@@ -162,7 +166,7 @@ void  prepareWebserver(){
     request->send(response);
   },[](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
     if(!index){
-      Serial.printf("Update Start: %s\n", filename.c_str());
+      logger("[FIRMWARE] Update Start:"+ filename);
       Update.runAsync(true);
       if(!Update.begin((ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000)){
         Update.printError(Serial);
@@ -175,7 +179,7 @@ void  prepareWebserver(){
     }
     if(final){
       if(Update.end(true)){
-        Serial.printf("Update Success: %uB\n", index+len);
+        logger("[FIRMWARE] Update Success: "+String( index+len));
       } else {
         Update.printError(Serial);
       }
@@ -195,9 +199,8 @@ server.onNotFound([](AsyncWebServerRequest *request) {
 }
 
 
-void publishOnPanel(String json){
-  lastReadings = json;
+void publishOnEventSource(String topic, String payload){
+   events.send(payload.c_str(), topic.c_str());
 }
-
 
 

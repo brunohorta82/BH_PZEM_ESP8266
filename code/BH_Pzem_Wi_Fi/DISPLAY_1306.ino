@@ -21,11 +21,9 @@ void setupDisplay(){
       }
 
   if(displaySDA == -1 || displaySCL == -1)return;
-    Serial.println("[DISPLAY] INIT..");
-    Serial.print("[DISPLAY] SDA: ");
-    Serial.println(displaySDA);
-    Serial.print("[DISPLAY] SCL: ");
-    Serial.println(displaySCL);
+    logger("[DISPLAY] INIT..");
+    logger("[DISPLAY] SDA GPIO: "+String(displaySDA));
+    logger("[DISPLAY] SCL GPIO: "+String(displaySCL));
     display = SSD1306Wire(0x3c,displaySDA,displaySCL);
     display.init();
     display.flipScreenVertically();
