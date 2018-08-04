@@ -45,16 +45,12 @@ void infoCallback(justwifi_messages_t code, char * parameter) {
       break;
       case MESSAGE_NO_NETWORKS:
       msg = "[WIFI] No networks found";
-      publishOnEventSource("wifi-networks","No networks found");
-      stopScan();
       break;
       case MESSAGE_NO_KNOWN_NETWORKS:
       msg = "[WIFI] No known networks found";
       break;
       case MESSAGE_FOUND_NETWORK:
       msg = "[WIFI] "+String(parameter);
-      publishOnEventSource("wifi-networks",parameter);
-      stopScan();
       break;
       case MESSAGE_CONNECTING:
        msg = String("[WIFI] Connecting to ")+String(parameter);
@@ -107,13 +103,11 @@ void infoCallback(justwifi_messages_t code, char * parameter) {
       }
         logger(msg);
 };
- void stopScan(){
- jw.enableScan(false);
- logger("[WIFI] WI-Fi Network's Scanner Stoped");
- }
+
 String wifiJSONStatus(){
     return ("{\"wifiSSID\":\""+wifiSSID+"\",\"status\":"+String(jw.connected())+",\"signal\":\""+String(WiFi.RSSI())+"\"}");
 }
+
 String split(String data, char separator, int index)
 {
     int found = 0;

@@ -22,7 +22,7 @@ void  setupWebserver(){
     request->send(response);
   });
 server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
-   scanNewWifiNetworks();
+    activateScan();
     request->send(200,  "application/json","{\"result\":\"OK\"}");
   });
   
@@ -127,8 +127,8 @@ server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
   request->send(response);
   });
    server.on("/saveconfig", HTTP_POST, [](AsyncWebServerRequest *request){
-   saveConfig(
-   request->hasArg("nodeId") ? request->arg("nodeId") : nodeId,
+   String node = request->hasArg("nodeId") ? request->arg("nodeId") : nodeId;
+   saveConfig(node,
    request->hasArg("notificationInterval") ? request->arg("notificationInterval").toInt() : notificationInterval,
    request->hasArg("directionCurrentDetection") ? request->arg("directionCurrentDetection").toInt() : directionCurrentDetection,
    request->hasArg("emoncmsApiKey") ? request->arg("emoncmsApiKey") : emoncmsApiKey,
@@ -140,7 +140,7 @@ server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
    request->hasArg("wifiSSID") ? request->arg("wifiSSID") : wifiSSID,
    request->hasArg("wifiSecret") ? request->arg("wifiSecret") : wifiSecret,
    hostname);
-   request->redirect("/");
+   request->redirect("http://"+String(HARDWARE)+"-"+node+".local");
   });
   
    server.on("/reboot", HTTP_GET, [](AsyncWebServerRequest *request){

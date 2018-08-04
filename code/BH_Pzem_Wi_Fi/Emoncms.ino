@@ -43,6 +43,6 @@ void publishOnEmoncms(String json){
                 return;
               }
             }
-          logger("[EMONCMS] HTTPS Data sent OK");
+          logger("[EMONCMS] HTTP Data sent OK");
        }
 }

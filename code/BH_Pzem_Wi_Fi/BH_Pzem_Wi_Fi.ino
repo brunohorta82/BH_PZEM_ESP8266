@@ -26,6 +26,9 @@ void loopSensors(){
 }
 
 void checkServices(){
+  if(needScan()){
+    scanNewWifiNetworks();
+    }
     if(restartMqtt){
     restartMqtt = false;
     setupMQTT() ;
