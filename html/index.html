@@ -27,14 +27,24 @@
         <nav class="navbar navbar-static-top" role="navigation">
             <!-- Sidebar toggle button-->
             <a href="#" class="sidebar-toggle" data-toggle="push-menu" role="button">
-                <span class="sr-only">Toggle</span>
+                <span class="sr-only">Toggle navigation</span>
             </a>
             <!-- Navbar Right Menu -->
             <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
 
+
+
+
+                    <!-- Control Sidebar Toggle Button -->
+                    <li>
+                        <a href="#" data-toggle="control-sidebar"><i class=" fa fa-info-circle"></i></a>
+                    </li>
+                </ul>
             </div>
         </nav>
     </header>
+
     <!-- Left side column. contains the logo and sidebar -->
     <aside class="main-sidebar">
 
@@ -62,11 +72,10 @@
                 <li class="active" ><a href="#" class="menu-item" data-menu="dashboard"><i class="fa fa-tachometer"></i> <span>DASHBOARD</span></a></li>
                 <li class=""><a href="#" class="menu-item" data-menu="node"><i class="fa fa-cog"></i> <span>NÓ</span></a></li>
                 <li class=""><a href="#" class="menu-item" data-menu="wifi"><i class="fa fa-wifi"></i> <span>WI-Fi</span></a></li>
-                <li class=""><a href="#" class="menu-item" data-menu="gpios"><i class="fa fa-circle-o"></i> <span>GPIO's</span></a></li>
+                <!--<li class=""><a href="#" class="menu-item" data-menu="gpios"><i class="fa fa-circle-o"></i> <span>GPIO's</span></a></li>-->
                 <li class=""><a href="#" class="menu-item" data-menu="mqtt"><i class="fa fa-hashtag"></i> <span>MQTT</span></a></li>
                 <li class=""><a href="#" class="menu-item" data-menu="emoncms"><i class="fa fa-bar-chart"></i> <span>EMONCMS</span></a></li>
                 <li class=""><a href="#" class="menu-item" data-menu="firmware"><i class="fa  fa-upload"></i> <span>ATUALIZAR</span></a></li>
-                <li class=""><a href="#" class="menu-item" data-menu="logs"><i class="fa  fa-info"></i> <span>LOGS</span></a></li>
 
             </ul>
             <!-- /.sidebar-menu -->
@@ -105,7 +114,49 @@
         <!-- Default to the left -->
         <strong>Desenvolvido por <a href="https://github.com/brunohorta82/BH_PZEM_ESP8266">Bruno Horta</a> @ 2018</strong>
     </footer>
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Create the tabs -->
+        <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+            <li class="active"><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-info-circle"></i></a></li>
 
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <!-- Home tab content -->
+            <div class="tab-pane active" id="control-sidebar-home-tab">
+                <h3 class="control-sidebar-heading">Estado</h3>
+                <ul class="control-sidebar-menu">
+                    <li>
+                        <a href="javascript:;">
+                            <i class="menu-icon fa fa-power-off bg-red"></i>
+
+                            <div class="menu-info">
+                                <h4 class="control-sidebar-subheading">Ligado desde</h4>
+
+                                <p>00/00/0000 00:00:00</p>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                <!-- /.control-sidebar-menu -->
+
+                <h3 class="control-sidebar-heading">Logger</h3>
+                <ul class="control-sidebar-menu">
+                    <li>
+                        <a style="color: white;text-decoration: none;font-size: 12px;text-align: right;" href="#"  onclick="clearLog()">Limpar</a>
+                    <textarea style="width: 100%;resize: none;padding-left: 15px;font-size: 11px;background: none;border: none;"  readonly="true" id="log-box" rows="20">
+
+                    </textarea>
+
+                    </li>
+                </ul>
+                <!-- /.control-sidebar-menu -->
+
+            </div>
+
+        </div>
+    </aside>
     <!-- /.control-sidebar -->
     <!-- Add the sidebar's background. This div must be placed
     immediately after the control sidebar -->

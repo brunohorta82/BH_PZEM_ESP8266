@@ -2,12 +2,11 @@
 #include "static_css.h"
 #include "static_js.h"
 #include "static_fonts.h"
-#include <ESP8266mDNS.h>
 
 // SKETCH BEGIN
 AsyncWebServer server(80);
 
-void  prepareWebserver(){
+void  setupWebserver(){
   MDNS.begin(hostname.c_str());
   MDNS.addService("http","tcp",80);
   events.onConnect([](AsyncEventSourceClient *client){
@@ -23,8 +22,7 @@ void  prepareWebserver(){
     request->send(response);
   });
 server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
-   jw.disconnect(); 
-   jw.enableScan(true);
+   scanNewWifiNetworks();
     request->send(200,  "application/json","{\"result\":\"OK\"}");
   });
   
@@ -100,36 +98,36 @@ server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
     server.on("/fonts/fontawesome-webfont.eot", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "font/eot", fontawesome_webfont_eot,sizeof(fontawesome_webfont_eot));
     response->addHeader("Content-Encoding", "gzip");
-    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
     request->send(response);
   });
       server.on("/fonts/fontawesome-webfont.woff", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "font/woff", fontawesome_webfont_woff,sizeof(fontawesome_webfont_woff));
     response->addHeader("Content-Encoding", "gzip");
-    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
     request->send(response);
   });
       server.on("/fonts/fontawesome-webfont.woff2", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "font/woff2", fontawesome_webfont_woff2,sizeof(fontawesome_webfont_woff2));
     response->addHeader("Content-Encoding", "gzip");
-    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
     request->send(response);
   });
       server.on("/fonts/FontAwesome.otf", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "font/otf", FontAwesome_otf,sizeof(FontAwesome_otf));
     response->addHeader("Content-Encoding", "gzip");
-    //response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
+    response->addHeader("Expires","Mon, 1 Jan 2222 10:10:10 GMT");
     request->send(response);
   });
   /** JSON **/ 
 
  server.on("/config", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(200,  "application/json","["+cachedConfigJson+",{\"firmwareVersion\":"+String(FIRMWARE_VERSION)+"}]");
+  AsyncResponseStream *response = request->beginResponseStream("application/json");
+  readStoredConfig().printTo(*response);
+  request->send(response);
   });
-
-  /** POSTS **/
    server.on("/saveconfig", HTTP_POST, [](AsyncWebServerRequest *request){
-   String newConfig=buildConfigToJson(
+   saveConfig(
    request->hasArg("nodeId") ? request->arg("nodeId") : nodeId,
    request->hasArg("notificationInterval") ? request->arg("notificationInterval").toInt() : notificationInterval,
    request->hasArg("directionCurrentDetection") ? request->arg("directionCurrentDetection").toInt() : directionCurrentDetection,
@@ -141,13 +139,7 @@ server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
    request->hasArg("mqttPassword") ? request->arg("mqttPassword") : mqttPassword,
    request->hasArg("wifiSSID") ? request->arg("wifiSSID") : wifiSSID,
    request->hasArg("wifiSecret") ? request->arg("wifiSecret") : wifiSecret,
-   request->hasArg("IO_00") ? request->arg("IO_00") : availableGPIOS[0],
-   request->hasArg("IO_02") ? request->arg("IO_02") : availableGPIOS[1],
-   request->hasArg("IO_13") ? request->arg("IO_13") : availableGPIOS[2],
-   request->hasArg("IO_15") ? request->arg("IO_15") : availableGPIOS[3],
-   request->hasArg("IO_16") ? request->arg("IO_16") : availableGPIOS[4],
    hostname);
-   requestToSaveNewConfigJson(newConfig);
    request->redirect("/");
   });
   

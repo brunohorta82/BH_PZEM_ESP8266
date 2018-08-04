@@ -1,9 +1,9 @@
 
-    var config = {
-        baseUrl: "http://192.168.4.1" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
+const config = {
+        baseUrl: "" /* UNCOMMENT THIS LINE BEFORE SENT TO PRODUCTION */
     };
 
-    var map = {
+    const map = {
         "config": "",
         "potencia": "Wats",
         "amperagem": "Amperes",
@@ -11,7 +11,7 @@
         "temp": "\u00BAC",
         "contador": "kWh"
     };
-    var mapTitles = {
+    const mapTitles = {
         "config": "",
         "potencia": "Potência",
         "amperagem": "Corrente",
@@ -19,7 +19,7 @@
         "temp": "Temperatura",
         "contador": "Contador"
     };
-    var mapIcons = {
+    const mapIcons = {
         "config": "",
         "potencia": "fa-plug",
         "amperagem": "fa-plug",
@@ -27,18 +27,18 @@
         "temp": "fa-thermometer-empty",
         "contador": "fa-dot-circle-o"
     };
-    var limits = {"config": "0", "potencia": "2700", "amperagem": "32", "voltagem": "270", "temp": "180", "contador": "0"};
+    const limits = {"config": "0", "potencia": "2700", "amperagem": "32", "voltagem": "270", "temp": "180", "contador": "0"};
 
 function findNetworks(){
     $('#networks').empty();
     $('#status-scan').text('a pesquisar, aguarde...');
-    var someUrl = config.baseUrl + "/scan";
+    const someUrl = config.baseUrl + "/scan";
         $.ajax({
             url: someUrl,
             contentType: "text/plain; charset=utf-8",
             dataType: "json",
             success: function (response) {
-                
+
             },
             error: function() {
 
@@ -49,35 +49,17 @@ function findNetworks(){
         });
 }
 function addZeros(i){
-    return i < 10 ? "0"+i : i 
+    return i < 10 ? "0"+i : i
 }
     function loadConfig() {
-        var someUrl = config.baseUrl + "/config";
+        const someUrl = config.baseUrl + "/config";
         $.ajax({
             url: someUrl,
             contentType: "text/plain; charset=utf-8",
             dataType: "json",
             success: function (response) {
-                $('input[name="nodeId"]').val(response[0].nodeId);
-                $('input[name="nodeId"], input[name="directionCurrentDetection"]').prop('disabled', false);
-                $('select[name="notificationInterval"] option[value="' + response[0].notificationInterval + '"]').attr("selected", "selected");
-                $('select[name="directionCurrentDetection"] option[value="' + response[0].directionCurrentDetection + '"]').attr("selected", "selected");
-                $('input[name="emoncmsApiKey"]').val(response[0].emoncmsApiKey);
-                $('input[name="emoncmsUrl"]').val(response[0].emoncmsUrl);
-                $('input[name="emoncmsPrefix"]').val(response[0].emoncmsPrefix);
-                $('input[name="mqttIpDns"]').val(response[0].mqttIpDns);
-                $('input[name="mqttUsername"]').val(response[0].mqttUsername);
-                $('input[name="mqttPassword"]').val(response[0].mqttPassword);
-                $('input[name="wifiSSID"]').val(response[0].wifiSSID);
-                $('input[name="wifiSecret"]').val(response[0].wifiSecret);
-                $("#firmwareVersion").text(response[1].firmwareVersion);
-                $("#version_lbl").text(response[1].firmwareVersion);
-                $('select[name="IO_00"] option[value="' + response[0].IO_00 + '"]').attr("selected", "selected");
-                $('select[name="IO_02"] option[value="' + response[0].IO_02 + '"]').attr("selected", "selected");
-                $('select[name="IO_13"] option[value="' + response[0].IO_13 + '"]').attr("selected", "selected");
-                $('select[name="IO_15"] option[value="' + response[0].IO_15 + '"]').attr("selected", "selected");
-                $('select[name="IO_16"] option[value="' + response[0].IO_16 + '"]').attr("selected", "selected");
-                $('#ff').prop('disabled', false);
+                localStorage.setItem("config",JSON.stringify(response));
+                fillConfig();
             },
             error: function() {
 
@@ -87,20 +69,39 @@ function addZeros(i){
             timeout: 2000
         });
     }
-
+function fillConfig(){
+                let response = JSON.parse(localStorage.getItem("config"));
+                $('input[name="nodeId"]').val(response.nodeId);
+                $('input[name="nodeId"], input[name="directionCurrentDetection"]').prop('disabled', false);
+                $('select[name="notificationInterval"] option[value="' + response.notificationInterval + '"]').attr("selected", "selected");
+                $('select[name="directionCurrentDetection"] option[value="' + response.directionCurrentDetection + '"]').attr("selected", "selected");
+                $('input[name="emoncmsApiKey"]').val(response.emoncmsApiKey);
+                $('input[name="emoncmsUrl"]').val(response.emoncmsUrl);
+                $('input[name="emoncmsPrefix"]').val(response.emoncmsPrefix);
+                $('input[name="mqttIpDns"]').val(response.mqttIpDns);
+                $('input[name="mqttUsername"]').val(response.mqttUsername);
+                $('input[name="mqttPassword"]').val(response.mqttPassword);
+                $('input[name="wifiSSID"]').val(response.wifiSSID);
+                $('input[name="wifiSecret"]').val(response.wifiSecret);
+                $("#firmwareVersion").text(response.firmwareVersion);
+                $("#version_lbl").text(response.firmwareVersion);
+                $('#ff').prop('disabled', false);
+}
     function toggleActive(menu) {
         $('.sidebar-menu').find('li').removeClass('active');
         $('.menu-item[data-menu="' + menu +'"]').closest('li').addClass('active');
-        $( ".content" ).load(menu + ".html" );
-        loadConfig();
+        $( ".content" ).load(menu + ".html" ,function(){
+            fillConfig();    
+        });
+        
     }
 
     function refreshDashboard() {
-        
+
         let payload = JSON.parse(localStorage.getItem("dashboard"));
         if(!payload)return;
         $('#time-lbl').text(localStorage.getItem('last-update'));
-                if($('#sensors .GaugeMeter').length === 0){
+                if($('#sensors').find('.GaugeMeter').length === 0){
                     Object.keys(payload).reverse().forEach(function (key) {
                         if (key !== "config" ) {
                             $('#sensors').append('<div class="col-lg-4 col-md-6 col-xs-12"><div class="info-box bg-aqua"><span class="info-box-icon"><i class="fa '+mapIcons[key.split("_")[0]]+'"></i></span><div class="info-box-content"><span class="info-box-text">'+mapTitles[key.split("_")[0]]+'</span><div id="' + key + '"  class="GaugeMeter" data-animationstep="0" data-total="' + limits[key.split("_")[0]]  + '"  data-size="200" data-label_color="#fff" data-used_color="#fff" data-animate_gauge_colors="false" data-width="15" data-style="Semi" data-theme="Red-Gold-Green" data-back="#fff"  data-label="' + map[key.split("_")[0]] + '"><canvas width="200" height="200"></canvas></div></div></div></div>');
@@ -114,7 +115,7 @@ function addZeros(i){
                         }
                     });
                 }
-           
+
     }
 
     function wifiStatus(response) {
@@ -123,7 +124,7 @@ function addZeros(i){
                 if(response.status){
                     $('#wifi_status').text('ligado');
                     $('#wifi_status_icon').removeClass('text-danger').addClass('text-ok');
-                    let percentage = parseFloat(Math.abs(((2*((response.signal)) + 100) / 100))*100).toFixed(0);
+                    var percentage = 2*(parseInt(response.signal) + 100);
                 $('#wifi-signal').text(percentage+"%");
                 if(percentage > 0 && percentage < 30){
                     $('#wifi-icon')
@@ -150,20 +151,20 @@ function addZeros(i){
 
                 }else {
                     $('#wifi_status_icon').removeClass('text-ok').addClass('text-danger')
-                    
+
                     $('#wifi_status').text('desligado');
                 }
-          
+
     }
 
 function clearLog(){
-   localStorage.setItem('log',""); 
+   localStorage.setItem('log',"");
    refreshLogConsole();
 }
 function selectNetwork(node){
     $('input[name="wifiSSID"]').val(node.split(": ")[5].trim());
     $('input[name="wifiSecret"]').val("").focus();
-    
+
 }
 
 function appendNetwork(network){
@@ -175,7 +176,7 @@ function appendNetwork(network){
             $('.wifi-node').click(function(e) {
                 var node = $(e.currentTarget).data('menu');
                 selectNetwork(node);
-              
+
             });
     }
 }
@@ -212,20 +213,18 @@ function getTimestamp(){
     }
 
     $(document).ready(function () {
-   
+    loadConfig();
     if (!!window.EventSource) {
-      var source = new EventSource('http://192.168.4.1/events');
-      
-      source.addEventListener('open', function(e) {
+        const source = new EventSource(config.baseUrl +'/events');
+        source.addEventListener('open', function(e) {
         console.log("Events Connected");
-        let date = new Date();
         localStorage.setItem("last-update","Atualizado em "+getTimestamp());
-        
         refreshDashboard();
+        refreshLogConsole();
       }, false);
 
       source.addEventListener('error', function(e) {
-        if (e.target.readyState != EventSource.OPEN) {
+        if (e.target.readyState !== EventSource.OPEN) {
           console.log("Events Disconnected");
         }
       }, false);
@@ -244,26 +243,26 @@ function getTimestamp(){
         appendNetwork(e.data);
       }, false);
         source.addEventListener('log', function(e) {
-            
-            let lastlog =  localStorage.getItem("log") == null ? "" : localStorage.getItem("log");
-            localStorage.setItem("log",getTimestamp()+": "+e.data+"\n"+lastlog);
+
+            let lastlog =  localStorage.getItem("log") === null ? "" : localStorage.getItem("log");
+            localStorage.setItem("log",getTimestamp()+"\n "+e.data+"\n\n"+lastlog);
             refreshLogConsole();
             console.log(e.data);
       }, false);
     }
-        
+
         $('#node_id').on('keypress', function(e) {
             if (e.which === 32)
                 return false;
         });
 
-        
+
         $('.menu-item').click(function(e) {
             var menu = $(e.currentTarget).data('menu');
             toggleActive(menu);
-          
+
         });
-     
+
         toggleActive("dashboard");
 
 

@@ -1,182 +1,63 @@
-#include <JustWifi.h> //https://github.com/xoseperez/justwifi
-#include "config.h"
-#include <Timing.h> //https://github.com/scargill/Timing
-#include <AsyncMqttClient.h> //https://github.com/marvinroger/async-mqtt-client
-#include <PZEM004T.h> //https://github.com/olehs/PZEM004T
-//TEMPERATURA
-#include <OneWire.h>
-#include <DallasTemperature.h> //https://github.com/milesburton/Arduino-Temperature-Control-Library
-DeviceAddress sensores[8];
-IPAddress pzemIP(192, 168, 1, 1);
-PZEM004T pzem(RX_PIN, TX_PIN);
-Timing timerRead;
-//DALLAS
-OneWire oneWire(DS18B20_PIN);
-DallasTemperature sensors(&oneWire);
-DeviceAddress devAddr[15];  // array of (up to) 15 temperature sensors
-String devAddrNames[15];  // array of (up to) 15 temperature sensors
-int sensorsCount = 0;
+/*
+
+BH FIRMWARE
+
+Copyright (C) 2017-2018 by Bruno Horta <brunohorta82 at gmail dot com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+#include "Config.h"
+
+void loopSensors(){
+    loopBHPzem();
+}
+
+void checkServices(){
+    if(restartMqtt){
+    restartMqtt = false;
+    setupMQTT() ;
+  }
+}
 
 void setup() {
   Serial.begin(115200);
+  
   loadStoredConfiguration();
-  jw.setHostname(hostname.c_str());
-  jw.subscribe(infoCallback);
-  jw.enableAP(false);
-  jw.enableAPFallback(true);
-  jw.enableSTA(true);
-  jw.enableScan(true);
-  jw.cleanNetworks();
-  jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
-
-
-  prepareWebserver();
-  //PZEM SETUP
-  pzem.setAddress(pzemIP);
-  delay(1000);// WAITING FOR PZEM CONECTION
-  pinMode(DIRECTION_PIN,INPUT);
-  setupDisplay();
-  sensors.begin();
-  sensorsCount = sensors.getDeviceCount();
-  oneWire.reset_search();
-  for (int i=0; i<sensorsCount; i++){
-   if (!oneWire.search(devAddr[i])){ 
-    logger("Unable to find temperature sensors address");
-   }
-  }
-  for (int a=0; a<sensorsCount; a++){ 
-  String addr  = "";
-    for (uint8_t i = 0; i < 8; i++){
-      if (devAddr[0][i] < 16) addr+="0";
-      addr+=String(devAddr[a][i], HEX);
-   }
-  devAddrNames[a] = addr;
-  }
-  timerRead.begin(0);
+  
+  setupWiFi(); 
+  
+  setupWebserver();
+  
+  setupBHPzem();
 }
-bool pzemError = false;
-int pzemErrorAttemps = 0;
-void loop() {
-  jw.loop();
 
-  if(shouldReboot){
+void loop() {
+   if(shouldReboot){
     logger("Rebooting...");
     delay(100);
     ESP.restart();
     return;
   }
   
-  checkConfigChanges();
-  if(restartMqtt){
-    restartMqtt = false;
-    setupMQTT() ;
-    setupDisplay();
-  }
+  loopWiFi();
+ 
+  checkServices();
   
-      if (timerRead.onTimeout(notificationInterval) ){
-        float v = pzemError ? -1 :  getVoltage();
-        float i = pzemError ? -1 :   getCurrent();
-        float p = pzemError ? -1 :   getPower()*directionSignal();
-        float e = pzemError ? -1 :  getEnergy()/1000;
-        sensors.requestTemperatures();
-        String temperatures= "";
-        String displayTemps = "";
-        for(int a = 0 ;a < sensorsCount; a++){
-          float t = requestTemperature(devAddr[a]);
-          displayTemps += "t"+String(a+1)+": "+((int)t)+ " ºC ";
-          temperatures += "\"temp_"+devAddrNames[a]+"\":"+String(t)+",";
-        }
-        
-      //SHOW DATA ON SSD1306 DISPLAY
-      printOnDisplay(v,i,p,e,displayTemps);
-      if(v < 0 && i < 0 && p < 0 && e <= 0){
-        pzemError = true;
-        pzemErrorAttemps++;
-        if(pzemErrorAttemps == 1){
-          logger("[PZEM] Check connections, can't get data.");
-        }
-        if(pzemErrorAttemps > 5){
-          logger("[PZEM] Retry get data...");
-          pzemErrorAttemps = 0;
-          pzemError = false;
-        }
-        
-      }
-      if(!pzemError){
-        logger("[PZEM] V: "+String(v));
-        logger("[PZEM] A: "+String(i));
-        logger("[PZEM] W: "+String(p));
-        logger("[PZEM] kWh: "+String(e));
-      }
-      
-      cachedReadings = "{"+ temperatures+"\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
-      publishData();
-     
-    }
-  
-}
-void publishData(){
-  //WEB PANEL
-  publishOnEventSource("dashboard",cachedReadings);
-  //MQTT
-  publishOnMqtt(cachedReadings);
-  //EMON CMS
-  publishOnEmoncms(cachedReadings);
-}
-float requestTemperature(DeviceAddress deviceAddress){
-  float temp = 0;
-   do {
-    temp = sensors.getTempC( deviceAddress);
-  } while (temp == 85.0 || temp == (-127.0));
-  return temp;
-}
+  loopSensors();
 
-
-
-int directionSignal(){
-  if(directionCurrentDetection)
-    return digitalRead(DIRECTION_PIN) ? -1 : 1;
-  return 1;
-}
-
-float getVoltage() {
-  int i = 0;
-  float r = -1.0;
-  do {
-    r = pzem.voltage(pzemIP);
-    i++;
-  } while ( i < MAX_ATTEMPTS && r < 0.0);
-  return r;
-}
-
-float getCurrent() {
-  int i = 0;
-  float r = -1.0;
-  do {
-    r = pzem.current(pzemIP);
-    i++;
-  } while ( i < MAX_ATTEMPTS && r < 0.0);
-  return r;
-}
-
-float getPower() {
-  int i = 0;
-  float r = -1.0;
-  do {
-    r = pzem.power(pzemIP);
-    i++;
-  } while ( i < MAX_ATTEMPTS && r < 0.0);
-  return r;
-}
-
-float getEnergy() {
-  int i = 0;
-  float r = -1.0;
-  do {
-    r = pzem.energy(pzemIP);
-    i++;
-  } while ( i < MAX_ATTEMPTS && r < 0.0);
-  return r;
 }
 
 

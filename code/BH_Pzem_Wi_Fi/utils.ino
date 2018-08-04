@@ -111,7 +111,9 @@ void infoCallback(justwifi_messages_t code, char * parameter) {
  jw.enableScan(false);
  logger("[WIFI] WI-Fi Network's Scanner Stoped");
  }
-
+String wifiJSONStatus(){
+    return ("{\"wifiSSID\":\""+wifiSSID+"\",\"status\":"+String(jw.connected())+",\"signal\":\""+String(WiFi.RSSI())+"\"}");
+}
 String split(String data, char separator, int index)
 {
     int found = 0;

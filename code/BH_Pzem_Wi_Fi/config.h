@@ -1,19 +1,25 @@
+#include <JustWifi.h> //https://github.com/xoseperez/justwifi
+#include <ESP8266mDNS.h>
+#include <Timing.h> //https://github.com/scargill/Timing
+#include <AsyncMqttClient.h> //https://github.com/marvinroger/async-mqtt-client
+#include <DallasTemperature.h> //https://github.com/milesburton/Arduino-Temperature-Control-Library
 #include <ArduinoJson.h> ////Install from Arduino IDE Library Manager
 #include <FS.h> 
 #include <Ticker.h>
 #include <ESPAsyncTCP.h> //https://github.com/me-no-dev/ESPAsyncTCP
 #include <ESPAsyncWebServer.h> //https://github.com/me-no-dev/ESPAsyncWebServer
-
-#define EMPTY  ""
+#include "devices_manager.h"
+#define EMPTY_ARRAY  "[]"
+#define EMPTY_JSON  "{}"
 #define HARDWARE "bhpzem" 
 #define FIRMWARE_VERSION 2.2
 #define NODE_ID "mynode"
 #define HOSTNAME String(HARDWARE)+"-"+String(NODE_ID)
-#define CONFIG_FILENAME  "/bconfig.json"
+#define CONFIG_FILENAME  "/config_"+String(HARDWARE)+".json"
 #define MAX_ATTEMPTS 5
 #define DELAY_NOTIFICATION 5000 //5 seconds
 #define TEMPERATURE_PRECISION 9
-
+#define CONFIG_BUFFER_SIZE 1024
 #define WIFI_SSID ""
 #define WIFI_SECRET ""
 //     ___ ___ ___ ___  _    
@@ -91,186 +97,8 @@ String mqttPassword = MQTT_PASSWORD;
 String wifiSSID = WIFI_SSID;
 String wifiSecret = WIFI_SECRET;
 
-//GPIO's
-const int totalAvailableGPIOs = 5;
-String availableGPIOS[totalAvailableGPIOs]  ;
-int displaySDA = -1;
-int displaySCL = -1;
-
-//CONFIG JSON
-String cachedConfigJson = "";
-String nextConfigJson = "";
-
 //CONTROL FLAGS
 bool configNeedsUpdate = false;
 bool restartMqtt = false;
 bool shouldReboot = false;
-
-AsyncEventSource events("/events");
-void logger(String payload){
-  if(payload.equals(""))return;
-   events.send(payload.c_str(), "log");
-   Serial.printf((payload+"\n").c_str());
-}
-String buildConfigToJson(String _nodeId, int _notificationInterval, bool _directionCurrentDetection, String  _emoncmsApiKey, String _emoncmsPrefix, String  _emoncmsUrl, String _mqttIpDns, String _mqttUsername,String _mqttPassword ,String _wifiSSID, String _wifiSecret, String _IO_00, String  _IO_02, String _IO_13, String _IO_15, String _IO_16, String _hostname){
-          return "{\"nodeId\":\""+_nodeId+"\","+
-          "\"hostname\":\""+String(_hostname)+"\","+
-          "\"notificationInterval\":"+String(_notificationInterval)+","+
-          "\"directionCurrentDetection\":"+String(_directionCurrentDetection)+","+
-          "\"emoncmsApiKey\": \""+_emoncmsApiKey+"\","+
-          "\"emoncmsPrefix\": \""+_emoncmsPrefix+"\","+
-          "\"emoncmsUrl\": \""+_emoncmsUrl+"\","+
-          "\"mqttIpDns\": \""+_mqttIpDns+"\","+
-          "\"mqttUsername\": \""+_mqttUsername+"\","+
-          "\"mqttPassword\": \""+_mqttPassword+"\","+
-          "\"wifiSSID\": \""+_wifiSSID+"\","+
-          "\"wifiSecret\": \""+_wifiSecret+"\","+
-          "\"IO_16\": \""+_IO_16+"\","+
-          "\"IO_13\": \""+_IO_13+"\","+
-          "\"IO_00\": \""+_IO_00+"\","+
-          "\"IO_02\": \""+_IO_02+"\","+
-          "\"IO_15\": \""+_IO_15+"\""+
-          "}";
-}
-
-String defaultConfigJson(){
-   return buildConfigToJson(NODE_ID ,DELAY_NOTIFICATION,DETECT_DIRECTION,EMONCMS_API_KEY,EMONCMS_URL_PREFIX,EMONCMS_HOST,MQTT_BROKER_IP
-   ,MQTT_USERNAME,MQTT_PASSWORD, WIFI_SSID,WIFI_SECRET,EMPTY,EMPTY,EMPTY,EMPTY,EMPTY,HOSTNAME);
-}
-void requestToLoadDefaults(){
-   SPIFFS.format();
-   shouldReboot = true;
-}
-void applyJsonConfig(String json) {
-    cachedConfigJson = json ;
-    DynamicJsonBuffer jsonBuffer(1024);
-    JsonObject &root = jsonBuffer.parseObject(json);
-    if( !root.success()){
-      logger("[CONFIG] ERROR ON JSON VALIDATION!");
-      return;
-    }
-   
-    nodeId = root["nodeId"] | NODE_ID;
-    hostname = String(HARDWARE) +"-"+String(nodeId);
-    notificationInterval=root["notificationInterval"] | DELAY_NOTIFICATION;
-    directionCurrentDetection= (bool)root["directionCurrentDetection"] | DETECT_DIRECTION;
-    emoncmsApiKey=root["emoncmsApiKey"] | EMONCMS_API_KEY;
-    emoncmsUrl=root["emoncmsUrl"] | EMONCMS_HOST;
-    emoncmsPrefix=root["emoncmsPrefix"] | EMONCMS_URL_PREFIX;
-    mqttIpDns=root["mqttIpDns"] | MQTT_BROKER_IP;
-    mqttUsername = root["mqttUsername"] | MQTT_USERNAME;
-    mqttPassword = root["mqttPassword"] | MQTT_PASSWORD;
-    String lastSSID =  wifiSSID;
-    String lastWifiSecrect =  wifiSecret;
-    wifiSSID = root["wifiSSID"] | WIFI_SSID;
-    wifiSecret = root["wifiSecret"] | WIFI_SECRET;
-    availableGPIOS[0] = root["IO_00"] | "";
-    availableGPIOS[1] = root["IO_02"] | "";
-    availableGPIOS[2] = root["IO_13"] | "";
-    availableGPIOS[3] = root["IO_15"] |"";
-    availableGPIOS[4] = root["IO_16"] | "";
-    
-
-    if(wifiSSID != lastSSID ||  wifiSecret != lastWifiSecrect){
-       jw.disconnect(); 
-       jw.cleanNetworks();
-       jw.addNetwork(wifiSSID.c_str(), wifiSecret.c_str());
-       
-    }
-   
-}
-
-
-void loadStoredConfiguration(){
-  
-  String configJson = "";
-  if(SPIFFS.begin()){
-    File cFile;   
-    
-    if(SPIFFS.exists(CONFIG_FILENAME)){
-      cFile = SPIFFS.open(CONFIG_FILENAME,"r+"); 
-      if(!cFile){
-        logger("[CONFIF] Create file config Error!");
-      }else{
-        logger("[CONFIG] Read stored file config...");
-        while(cFile.available()) {
-          String line = cFile.readStringUntil('\n');
-          configJson+= line;
-        }
-        cFile.close();
-      }
-     }else{
-      cFile = SPIFFS.open(CONFIG_FILENAME,"w+"); 
-      configJson = defaultConfigJson();
-      cFile.print(configJson);
-      }
-     
-  }else{
-     logger("[CONFIG] Open file system Error!");
-  }
-   SPIFFS.end(); 
-   applyJsonConfig(configJson);
-}
-
-
-bool checkRebootRules(String newConfig){
-   DynamicJsonBuffer jsonBuffer(1024);
-    JsonObject &root = jsonBuffer.parseObject(newConfig);
-    if( !root.success()){
-      logger("[CONFIG] ERROR ON JSON VALIDATION!");
-      return true;
-    }    
-   
-  return nodeId != (root["nodeId"]  | NODE_ID) ||    hostname != String(HARDWARE) +"-"+String((root["nodeId"]  | NODE_ID)) || (WiFi.status() == WL_CONNECTED && (wifiSSID != (root["wifiSSID"] | WIFI_SSID) ||  wifiSecret != (root["wifiSecret"] | WIFI_SECRET)));
-}
-
-void updateServices(){
-  restartMqtt = true; //TODO CHECK IF NEEDED
-}
-
-void saveConfig(String newConfig) {
-   if(SPIFFS.begin()){
-      File rFile = SPIFFS.open(CONFIG_FILENAME,"w+");
-      if(!rFile){
-        logger("[CONFIG] Open config file Error!");
-      } else {
-        rFile.print(newConfig);
-      }
-      rFile.close();
-   }else{
-     logger("[CONFIG] Open file system Error!");
-  }
-  SPIFFS.end();
-  configNeedsUpdate = false;
-  
-  logger("[CONFIG] New config loaded.");
-  shouldReboot = checkRebootRules(newConfig);
-  if(!shouldReboot){
-   applyJsonConfig(nextConfigJson);
-   updateServices();
-   nextConfigJson = "";
-  }
-}
-
-
-void requestToSaveNewConfigJson(String newConfig){
-  if(newConfig.equals("")){
-     logger("[CONFIG] Invalid Config File");
-     return;
-   }
-   cachedConfigJson = newConfig;
-   nextConfigJson = newConfig;
-   configNeedsUpdate = true;
-}
-
-void checkConfigChanges(){
-  if(configNeedsUpdate && !nextConfigJson.equals("")){
-    saveConfig(nextConfigJson);
-   }
-}
-
-String wifiJSONStatus(){
-    return ("{\"wifiSSID\":\""+wifiSSID+"\",\"status\":"+String(jw.connected())+",\"signal\":\""+String(WiFi.RSSI())+"\"}");
-}
-
 

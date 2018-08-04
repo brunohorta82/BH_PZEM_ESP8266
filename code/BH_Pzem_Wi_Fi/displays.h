@@ -3,9 +3,9 @@
 
 SSD1306 display(0x3c,displaySDA,displaySCL);
 
-void setupDisplay(){
+void setupDisplay(JsonObject& configRoot){
   displaySDA = -1;
-   displaySCL = -1;
+  displaySCL = -1;
   for(int i = 0; i <  totalAvailableGPIOs; i++){
       String gpioConfig = availableGPIOS[i];
       if(gpioConfig.equals(""))continue;
@@ -18,7 +18,7 @@ void setupDisplay(){
           displaySCL = split(String(gpioConfig),'|',0).toInt();
         }
       }
-      }
+  }
 
   if(displaySDA == -1 || displaySCL == -1)return;
     logger("[DISPLAY] INIT..");

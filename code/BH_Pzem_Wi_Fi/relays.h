@@ -58,3 +58,38 @@ void pulseOff(int gpio, bool inverted, int delay) {
        pulseTicker.once(delay, turnOnNormal,gpio);
     } 
 }
+
+/*  topicStr.replace("/set","/status");
+  if(payloadStr.equals(PAYLOAD_ON)){
+    inverted  ? turnOnInverted(gpio) :   turnOnNormal(gpio);
+    mqttClient.publish(topicStr.c_str(),0,true,PAYLOAD_ON);
+    logger("[RELAY] ON");
+  }else if (payloadStr.equals(PAYLOAD_OFF)){
+   inverted  ? turnOffInverted(gpio) :   turnOffNormal(gpio);
+   mqttClient.publish(topicStr.c_str(),0,true,PAYLOAD_OFF);
+   logger("[RELAY] OFF");
+  }else if (payloadStr.equals(PAYLOAD_PULSE_OFF_ON)){
+    pulseOff(gpio,false,2);
+  }else if (payloadStr.equals(PAYLOAD_PULSE_ON_OFF)){
+    pulseOn(gpio,false,2);
+  }*/
+
+  /*
+   * bool inverted = false;
+   for(int i = 0; i <  totalAvailableGPIOs; i++){
+      String relayName = availableGPIOS[i];
+      if(relayName.equals(""))continue;
+      if(split(relayName,'|',1).startsWith(relay)){
+        gpio = split(relayName,'|',0).toInt();
+        inverted = split(relayName,'|',2);
+        break;
+      }
+    }
+*/
+   /*
+    *   if(topicStr.startsWith(String(HARDWARE)+"/"+nodeId+"/relay")){
+
+  String relay = split(topicStr,'/',2);
+  int gpio = -1;
+*/
+    */
