@@ -124,7 +124,7 @@ function fillConfig(){
                 if(response.status){
                     $('#wifi_status').text('ligado');
                     $('#wifi_status_icon').removeClass('text-danger').addClass('text-ok');
-                    var percentage = 2*(parseInt(response.signal) + 100);
+                    var percentage = Math.min(2*(parseInt(response.signal) + 100),100);
                 $('#wifi-signal').text(percentage+"%");
                 if(percentage > 0 && percentage < 30){
                     $('#wifi-icon')
