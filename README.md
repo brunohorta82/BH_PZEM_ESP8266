@@ -18,6 +18,9 @@
 **BH Pzem** é um dispositivo baseado em ESP8266 e PZEM-004 que mede energia e / ou temperatura e enviaos dados a um broker MQTT e / ou Emoncms. O BH Pzem é modular, o que significa que podemos começar com um simples módulo de energia até um sistema de monitorização de produção energética, juntamente com detecção de temperatura (até 10 sensores de temperatura digital). Podemos ainda adicionar um diplay Oled e relés.
 Os dados são enviados via Wi-Fi
 
+**Painel de Controlo:**
+![BHPZem](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/current_panel.png)
+
 
 **Medição de Energia:**
   - Baseado no PZEM-004
