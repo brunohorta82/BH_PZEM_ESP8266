@@ -139,7 +139,8 @@ server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
    request->hasArg("mqttPassword") ? request->arg("mqttPassword") : mqttPassword,
    request->hasArg("wifiSSID") ? request->arg("wifiSSID") : wifiSSID,
    request->hasArg("wifiSecret") ? request->arg("wifiSecret") : wifiSecret,
-   hostname);
+   
+   hostname,request->hasArg("emoncmsPort") ? request->arg("emoncmsPort").toInt() : emoncmsPort);
    request->redirect("http://"+String(HARDWARE)+"-"+node+".local");
   });
   

@@ -41,6 +41,7 @@ void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties 
 }
 
 void setupMQTT() {
+
   if(WiFi.status() != WL_CONNECTED || mqttIpDns.equals(""))return;
   mqttClient.disconnect();
   mqttClient.onConnect(onMqttConnect);
@@ -58,6 +59,8 @@ void publishOnMqtt(String topic,String payload, bool retain){
   if(!topic.startsWith("/")){
     topic = "/"+topic;
     }
+    Serial.println(nodeId);
+    Serial.println(baseTopic+topic);
   mqttClient.publish((baseTopic+topic).c_str(), 0,retain,payload.c_str());
  }
 

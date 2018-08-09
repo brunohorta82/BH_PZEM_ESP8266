@@ -7,10 +7,11 @@ void logger(String payload){
    Serial.printf((payload+"\n").c_str());
 }
 
-JsonObject& buildConfigToJson(String _nodeId, int _notificationInterval, bool _directionCurrentDetection, String  _emoncmsApiKey, String _emoncmsPrefix, String  _emoncmsUrl, String _mqttIpDns, String _mqttUsername,String _mqttPassword ,String _wifiSSID, String _wifiSecret, String _hostname){
+JsonObject& buildConfigToJson(String _nodeId, int _notificationInterval, bool _directionCurrentDetection, String  _emoncmsApiKey, String _emoncmsPrefix, String  _emoncmsUrl, String _mqttIpDns, String _mqttUsername,String _mqttPassword ,String _wifiSSID, String _wifiSecret, String _hostname, int _emoncmsPort){
       DynamicJsonBuffer jsonBuffer(CONFIG_BUFFER_SIZE);
       JsonObject& configJson = jsonBuffer.createObject();
       configJson["nodeId"] = _nodeId;
+      configJson["emoncmsPort"] = _emoncmsPort;
       configJson["hostname"] = _hostname;
       configJson["notificationInterval"] = _notificationInterval;
       configJson["directionCurrentDetection"] = _directionCurrentDetection;
@@ -27,7 +28,7 @@ JsonObject& buildConfigToJson(String _nodeId, int _notificationInterval, bool _d
 
 JsonObject& defaultConfigJson(){
    return buildConfigToJson(NODE_ID ,DELAY_NOTIFICATION,DETECT_DIRECTION,EMONCMS_API_KEY,EMONCMS_URL_PREFIX,EMONCMS_HOST,MQTT_BROKER_IP
-   ,MQTT_USERNAME,MQTT_PASSWORD, WIFI_SSID,WIFI_SECRET,HOSTNAME);
+   ,MQTT_USERNAME,MQTT_PASSWORD, WIFI_SSID,WIFI_SECRET,HOSTNAME,EMONCMS_PORT);
 }
 void requestToLoadDefaults(){
    SPIFFS.format();
@@ -44,6 +45,7 @@ void applyJsonConfig(JsonObject& root) {
     mqttIpDns=root["mqttIpDns"] | MQTT_BROKER_IP;
     mqttUsername = root["mqttUsername"] | MQTT_USERNAME;
     mqttPassword = root["mqttPassword"] | MQTT_PASSWORD;
+    emoncmsPort = root["emoncmsPort"] | EMONCMS_PORT;
     String lastSSID =  wifiSSID;
     String lastWifiSecrect =  wifiSecret;
     wifiSSID = root["wifiSSID"] | WIFI_SSID;
@@ -137,8 +139,8 @@ void checkServices(JsonObject& root){
 }
 
 
-void saveConfig(String _nodeId, int _notificationInterval, bool _directionCurrentDetection, String  _emoncmsApiKey, String _emoncmsPrefix, String  _emoncmsUrl, String _mqttIpDns, String _mqttUsername,String _mqttPassword ,String _wifiSSID, String _wifiSecret, String _hostname){
-    JsonObject& newConfig = buildConfigToJson( _nodeId, _notificationInterval,  _directionCurrentDetection,   _emoncmsApiKey,  _emoncmsPrefix,  _emoncmsUrl, _mqttIpDns,  _mqttUsername, _mqttPassword , _wifiSSID,  _wifiSecret,  _hostname);
+void saveConfig(String _nodeId, int _notificationInterval, bool _directionCurrentDetection, String  _emoncmsApiKey, String _emoncmsPrefix, String  _emoncmsUrl, String _mqttIpDns, String _mqttUsername,String _mqttPassword ,String _wifiSSID, String _wifiSecret, String _hostname, int _emoncmsPort){
+    JsonObject& newConfig = buildConfigToJson( _nodeId, _notificationInterval,  _directionCurrentDetection,   _emoncmsApiKey,  _emoncmsPrefix,  _emoncmsUrl, _mqttIpDns,  _mqttUsername, _mqttPassword , _wifiSSID,  _wifiSecret,  _hostname,_emoncmsPort);
    if(SPIFFS.begin()){
       File rFile = SPIFFS.open(CONFIG_FILENAME,"w+");
       if(!rFile){

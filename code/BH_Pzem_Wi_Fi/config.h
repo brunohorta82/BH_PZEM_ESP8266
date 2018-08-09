@@ -9,8 +9,6 @@
 #include <ESPAsyncTCP.h> //https://github.com/me-no-dev/ESPAsyncTCP
 #include <ESPAsyncWebServer.h> //https://github.com/me-no-dev/ESPAsyncWebServer
 #include "devices_manager.h"
-#define EMPTY_ARRAY  "[]"
-#define EMPTY_JSON  "{}"
 #define HARDWARE "bhpzem" 
 #define FIRMWARE_VERSION 2.2
 #define NODE_ID "mynode"
@@ -58,6 +56,7 @@
 #define EMONCMS_HOST  ""
 #define EMONCMS_URL_PREFIX  ""
 #define EMONCMS_API_KEY ""
+#define EMONCMS_PORT 80
 
 //    __  __  ___ _____ _____ 
 //   |  \/  |/ _ \_   _|_   _|
@@ -86,6 +85,7 @@ int notificationInterval = DELAY_NOTIFICATION;
 String emoncmsApiKey = EMONCMS_API_KEY;
 String emoncmsUrl = EMONCMS_HOST;
 String emoncmsPrefix = EMONCMS_URL_PREFIX;
+int emoncmsPort = EMONCMS_PORT;
 
 //MQTT
 String mqttIpDns = MQTT_BROKER_IP;

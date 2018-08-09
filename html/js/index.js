@@ -79,6 +79,7 @@ function fillConfig(){
                 $('input[name="emoncmsUrl"]').val(response.emoncmsUrl);
                 $('input[name="emoncmsPrefix"]').val(response.emoncmsPrefix);
                 $('input[name="mqttIpDns"]').val(response.mqttIpDns);
+                $('input[name="emoncmsPort"]').val(response.emoncmsPort);
                 $('input[name="mqttUsername"]').val(response.mqttUsername);
                 $('input[name="mqttPassword"]').val(response.mqttPassword);
                 $('input[name="wifiSSID"]').val(response.wifiSSID);

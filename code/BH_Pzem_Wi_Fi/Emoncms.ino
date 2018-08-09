@@ -7,7 +7,7 @@ void publishOnEmoncms(String json){
            emoncmsUrl.replace("https://","");
            WiFiClientSecure clienthttps;
         logger("[EMONCMS] Try HTTPS Connection...");
-        if (!clienthttps.connect(emoncmsUrl,HTTPS_PORT)) {
+        if (!clienthttps.connect(emoncmsUrl,emoncmsPort)) {
           logger("[EMONCMS] Connection failed");
           return;
         }
@@ -27,7 +27,7 @@ void publishOnEmoncms(String json){
           }else{
          emoncmsUrl.replace("http://","");
          WiFiClient clienthttp;
-            if (!clienthttp.connect(emoncmsUrl,HTTP_PORT)) {
+            if (!clienthttp.connect(emoncmsUrl,emoncmsPort)) {
               logger("[EMONCMS] Connection failed");
               
               return;
