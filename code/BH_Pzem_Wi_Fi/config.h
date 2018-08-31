@@ -91,7 +91,8 @@ int emoncmsPort = EMONCMS_PORT;
 String mqttIpDns = MQTT_BROKER_IP;
 String mqttUsername = MQTT_USERNAME;
 String mqttPassword = MQTT_PASSWORD;
-
+String baseTopic = String(HARDWARE)+"/"+nodeId;
+String availableTopic = String(HARDWARE)+"_"+nodeId+"/status";
 
 //WI-FI
 String wifiSSID = WIFI_SSID;
@@ -101,4 +102,3 @@ String wifiSecret = WIFI_SECRET;
 bool configNeedsUpdate = false;
 bool restartMqtt = false;
 bool shouldReboot = false;
-

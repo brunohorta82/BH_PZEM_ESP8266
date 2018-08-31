@@ -37,6 +37,8 @@ void requestToLoadDefaults(){
 void applyJsonConfig(JsonObject& root) {
     nodeId = root["nodeId"] | NODE_ID;
     hostname = String(HARDWARE) +"-"+String(nodeId);
+    baseTopic = String(HARDWARE)+"/"+nodeId;
+    availableTopic = String(HARDWARE)+"_"+nodeId+"/status";
     notificationInterval=root["notificationInterval"] | DELAY_NOTIFICATION;
     directionCurrentDetection= (bool)root["directionCurrentDetection"] | DETECT_DIRECTION;
     emoncmsApiKey=root["emoncmsApiKey"] | EMONCMS_API_KEY;
@@ -162,8 +164,3 @@ void saveConfig(String _nodeId, int _notificationInterval, bool _directionCurren
    applyJsonConfig(newConfig);
   }
 }
-
-
-
-
-

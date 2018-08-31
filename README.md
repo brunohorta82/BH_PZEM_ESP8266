@@ -9,7 +9,7 @@
 4. [Hack de sentido da corrente](#id4)
 5. [Exemplos](#id5)
    - [BH PZEM-004 Wi-Fi](#id6)
-
+5. [Donativos](#id7)
 
 
 ## Intro <a name="id1"></a>
@@ -94,7 +94,7 @@ Qtd | Item | Imagem
 ![](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/IMG_4418.JPG?raw=true)
 ![](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/IMG_4419.JPG?raw=true)
 
-## Donativos
+## Donativos<a name="id7"></a>
 
 Se gostas-te do projeto podes fazer o teu donativo :).
 

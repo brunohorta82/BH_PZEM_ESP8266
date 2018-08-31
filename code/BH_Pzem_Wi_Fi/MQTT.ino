@@ -2,8 +2,7 @@
 AsyncMqttClient mqttClient; 
 Ticker mqttReconnectTimer;
 
-String baseTopic = String(HARDWARE)+"/"+nodeId;
-String availableTopic = String(HARDWARE)+"_"+nodeId+"/status";
+
 
 void onMqttConnect(bool sessionPresent) {
     logger("[MQTT] Connected to MQTT.");
