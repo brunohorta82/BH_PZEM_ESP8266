@@ -10,7 +10,7 @@
 #include <ESPAsyncWebServer.h> //https://github.com/me-no-dev/ESPAsyncWebServer
 #include "devices_manager.h"
 #define HARDWARE "bhpzem" 
-#define FIRMWARE_VERSION 2.2
+#define FIRMWARE_VERSION 2.3
 #define NODE_ID "mynode"
 #define HOSTNAME String(HARDWARE)+"-"+String(NODE_ID)
 #define CONFIG_FILENAME  "/config_"+String(HARDWARE)+".json"
