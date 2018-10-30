@@ -8,9 +8,8 @@
 #include <Ticker.h>
 #include <ESPAsyncTCP.h> //https://github.com/me-no-dev/ESPAsyncTCP
 #include <ESPAsyncWebServer.h> //https://github.com/me-no-dev/ESPAsyncWebServer
-#include "devices_manager.h"
 #define HARDWARE "bhpzem" 
-#define FIRMWARE_VERSION 2.3
+#define FIRMWARE_VERSION 2.4
 #define NODE_ID "mynode"
 #define HOSTNAME String(HARDWARE)+"-"+String(NODE_ID)
 #define CONFIG_FILENAME  "/config_"+String(HARDWARE)+".json"
@@ -29,9 +28,8 @@
 #define RX_PIN 4
 #define TX_PIN 5 
 #define DS18B20_PIN 12
-#define DISPLAY_SDA -1 //-1 if you don't use display
-#define DISPLAY_SCL -1 //-1 if you don't use display
-
+#define DISPLAY_SDA 2 //-1 if you don't use display
+#define DISPLAY_SCL 13 //-1 if you don't use display
 
 //    ___ ___ ___ _____ _   _ ___ ___ ___ 
 //   | __| __/ __|_   _| | | | _ \ __/ __|

@@ -37,7 +37,7 @@ void checkServices(){
 
 void setup() {
   Serial.begin(115200);
-  
+  setupDisplay();
   loadStoredConfiguration();
   
   setupWiFi(); 
@@ -56,7 +56,7 @@ void loop() {
   }
   
   loopWiFi();
- 
+ loopSwitchDisplay();
   checkServices();
   
   loopSensors();

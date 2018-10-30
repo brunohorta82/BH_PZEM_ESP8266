@@ -135,7 +135,7 @@ void loopBHPzem() {
       
       cachedReadings = "{"+ temperatures+"\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
       publishData();
-     
+     printOnDisplay(v, i, p, e, displayTemps);
     }
   
 }
