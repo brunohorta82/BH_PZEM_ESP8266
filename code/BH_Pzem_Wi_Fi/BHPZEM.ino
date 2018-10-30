@@ -99,7 +99,7 @@ bool pzemError = false;
 int pzemErrorAttemps = 0;
 
 void loopBHPzem() {
-      if (timerRead.onTimeout(notificationInterval) ){
+    /*  if (timerRead.onTimeout(notificationInterval) ){
         publishOnEventSource("wifi",wifiJSONStatus());
         float v = pzemError ? -1 :  getVoltage();
         float i = pzemError ? -1 :   getCurrent();
@@ -136,7 +136,7 @@ void loopBHPzem() {
       cachedReadings = "{"+ temperatures+"\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
       publishData();
      printOnDisplay(v, i, p, e, displayTemps);
-    }
+    }*/
   
 }
 void publishData(){

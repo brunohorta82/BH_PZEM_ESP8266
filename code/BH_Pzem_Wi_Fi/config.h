@@ -30,6 +30,7 @@
 #define DS18B20_PIN 12
 #define DISPLAY_SDA 2 //-1 if you don't use display
 #define DISPLAY_SCL 13 //-1 if you don't use display
+#define DISPLAY_BTN 16
 
 //    ___ ___ ___ _____ _   _ ___ ___ ___ 
 //   | __| __/ __|_   _| | | | _ \ __/ __|

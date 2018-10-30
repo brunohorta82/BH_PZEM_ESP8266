@@ -1,12 +1,13 @@
-
+#include <Bounce2.h> // https://github.com/thomasfredericks/Bounce2
 #include <Wire.h>  
 #include "SSD1306.h" //https://github.com/ThingPulse/esp8266-oled-ssd1306
 
-
+bool displayOn = true;
 SSD1306 display(0x3c, DISPLAY_SDA,DISPLAY_SCL);
-
+bool lastState = false;
+Bounce debouncer = Bounce();
 void setupDisplay(){
-    pinMode(0,INPUT);
+    pinMode(DISPLAY_BTN,INPUT_PULLDOWN_16);
     display.init();
     display.flipScreenVertically();
     display.setFont(ArialMT_Plain_16);
@@ -14,7 +15,8 @@ void setupDisplay(){
     display.drawString(5,0, "BH PZEM");
     display.display();
     
-  
+  debouncer.attach(DISPLAY_BTN);
+  debouncer.interval(5); // interval in ms
 }
 void printOnDisplay(float _voltage, float _amperage, float _power, float _energy, String _temperatures){
   display.clear(); 
@@ -29,14 +31,26 @@ void printOnDisplay(float _voltage, float _amperage, float _power, float _energy
 }
 
 void loopSwitchDisplay(){
-  if(digitalRead(0)){
-    display.displayOff();
-    Serial.println("OFF");
-    }else{
+  debouncer.update();
+  int value = debouncer.read();
+  Serial.println(value);
+   if(lastState != value){
+     lastState = value;
+      if ( value) {
+   
+    
+     if(displayOn){
+      display.displayOff();
+      displayOn  = false;
+     }else{
       display.displayOn();
-      Serial.println("ON");
-      }
-  }
+      displayOn  = true;
+     }
+    }
+   }
+  } 
+  
+  
 
 
 
