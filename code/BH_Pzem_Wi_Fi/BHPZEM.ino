@@ -19,12 +19,10 @@ int sensorsCount = 0;
 float requestTemperature(DeviceAddress deviceAddress){
   float temp = 0;
    do {
-    temp = sensors.getTempC( deviceAddress);
+    temp = sensors.getTempC(deviceAddress);
   } while (temp == 85.0 || temp == (-127.0));
   return temp;
 }
-
-
 
 int directionSignal(){
   if(directionCurrentDetection)
@@ -99,11 +97,11 @@ bool pzemError = false;
 int pzemErrorAttemps = 0;
 
 void loopBHPzem() {
-    /*  if (timerRead.onTimeout(notificationInterval) ){
+      if (timerRead.onTimeout(notificationInterval) ){
         publishOnEventSource("wifi",wifiJSONStatus());
         float v = pzemError ? -1 :  getVoltage();
-        float i = pzemError ? -1 :   getCurrent();
-        float p = pzemError ? -1 :   getPower()*directionSignal();
+        float i = pzemError ? -1 :  getCurrent();
+        float p = pzemError ? -1 :  getPower()*directionSignal();
         float e = pzemError ? -1 :  getEnergy()/1000;
         sensors.requestTemperatures();
         String temperatures= "";
@@ -135,8 +133,8 @@ void loopBHPzem() {
       
       cachedReadings = "{"+ temperatures+"\"voltagem\":" + String(v) + ",\"amperagem\":" + String(i) + ",\"potencia\":" + String(p) + ",\"contador\":" + String(e)+",\"config\":" + String(FIRMWARE_VERSION) +"}";
       publishData();
-     printOnDisplay(v, i, p, e, displayTemps);
-    }*/
+     
+    }
   
 }
 void publishData(){
@@ -147,5 +145,3 @@ void publishData(){
   //EMON CMS
   publishOnEmoncms(cachedReadings);
 }
-
-

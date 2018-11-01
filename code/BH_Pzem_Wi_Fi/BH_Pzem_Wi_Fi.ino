@@ -25,7 +25,6 @@ void loopSensors(){
     loopBHPzem();
 }
 
-
 void checkServices(){
   if(needScan()){
     scanNewWifiNetworks();
@@ -38,7 +37,7 @@ void checkServices(){
 
 void setup() {
   Serial.begin(115200);
-  setupDisplay();
+  
   loadStoredConfiguration();
   
   setupWiFi(); 
@@ -57,7 +56,7 @@ void loop() {
   }
   
   loopWiFi();
- loopSwitchDisplay();
+ 
   checkServices();
   
   loopSensors();
