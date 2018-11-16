@@ -5,7 +5,7 @@
 **Conteúdo **   
 1. [Intro](#id1)
 2. [Hardware](#id2)
-3. [Firmware](https://github.com/brunohorta82/Easy-Iot)
+3. [Firmware](https://github.com/brunohorta82/BH-Easy-Iot)
 4. [Hack de sentido da corrente](#id4)
 5. [Exemplos](#id5)
    - [BH PZEM-004 Wi-Fi](#id6)
