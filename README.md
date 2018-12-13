@@ -44,6 +44,7 @@ Os dados são enviados via Wi-Fi
 ## Hardware <a name="id2"></a>
 
 ![BHPZem](https://raw.githubusercontent.com/brunohorta82/BH_PZEM_ESP8266/master/images/PIN_OUT.png)
+![BHPZemOled](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/PZEM%20DISPLAY%20WIRING.png)
 
 
 
