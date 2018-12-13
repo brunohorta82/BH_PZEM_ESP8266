@@ -5,7 +5,7 @@
 **Conteúdo **   
 1. [Intro](#id1)
 2. [Hardware](#id2)
-3. [Software](#id3)
+3. [Firmware](https://github.com/brunohorta82/Easy-Iot)
 4. [Hack de sentido da corrente](#id4)
 5. [Exemplos](#id5)
    - [BH PZEM-004 Wi-Fi](#id6)
@@ -93,6 +93,10 @@ Qtd | Item | Imagem
 ![](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/IMG_4417.JPG?raw=true)
 ![](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/IMG_4418.JPG?raw=true)
 ![](https://github.com/brunohorta82/BH_PZEM_ESP8266/blob/master/images/IMG_4419.JPG?raw=true)
+
+
+## Caixas e Adaptadores
+ - [BHPZEM Suporte DIN Powered by Bruno Horta](https://cad.onshape.com/documents/db83fdb5f2287efd0e4b6ae1/w/3f678a7db5145870a715b4d4/e/e8a96d2384c3348520138283)
 
 ## Donativos<a name="id7"></a>
 
