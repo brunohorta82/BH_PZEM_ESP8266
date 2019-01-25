@@ -196,8 +196,8 @@
 <wire x1="17.018" y1="9.906" x2="17.272" y2="9.652" width="0.8128" layer="46" style="shortdash"/>
 <wire x1="18.542" y1="6.35" x2="17.272" y2="5.08" width="0.8128" layer="46" style="shortdash"/>
 <wire x1="17.272" y1="5.08" x2="17.272" y2="0.762" width="0.8128" layer="46" style="shortdash"/>
-<text x="19.05" y="67.31" size="1.016" layer="25" rot="R180">rev2.0</text>
-<text x="5.334" y="67.818" size="1.4224" layer="25">BH PZEM WI-Fi</text>
+<text x="19.05" y="67.31" size="1.016" layer="26" rot="R180">rev2.0</text>
+<text x="5.334" y="67.818" size="1.4224" layer="26">BH PZEM WI-Fi</text>
 </plain>
 <libraries>
 <library name="SparkFun-Connectors" urn="urn:adsk.eagle:library:513">

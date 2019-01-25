@@ -53,7 +53,7 @@
 <layer number="43" name="vRestrict" color="2" fill="10" visible="no" active="yes"/>
 <layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
 <layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
-<layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="yes" active="yes"/>
 <layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
 <layer number="48" name="Document" color="7" fill="1" visible="no" active="yes"/>
 <layer number="49" name="Reference" color="7" fill="1" visible="no" active="yes"/>
@@ -185,6 +185,17 @@
 <text x="32.766" y="6.858" size="0.4064" layer="25" rot="R90">SIGNAL
  GND</text>
 <text x="28.8546" y="16.51" size="0.4064" layer="25" rot="R270">REVP</text>
+<wire x1="5.08" y1="11.176" x2="12.192" y2="18.288" width="0.8128" layer="46" style="shortdash"/>
+<wire x1="12.192" y1="18.288" x2="12.192" y2="19.812" width="0.8128" layer="46" style="shortdash"/>
+<wire x1="12.192" y1="19.812" x2="22.352" y2="19.812" width="0.8128" layer="46" style="shortdash"/>
+<wire x1="22.352" y1="19.812" x2="27.94" y2="14.224" width="0.8128" layer="46" style="shortdash"/>
+<wire x1="27.94" y1="14.224" x2="27.94" y2="9.652" width="0.8128" layer="46" style="shortdash"/>
+<wire x1="27.94" y1="9.652" x2="27.178" y2="8.89" width="0.8128" layer="46" style="shortdash"/>
+<wire x1="27.178" y1="8.89" x2="18.034" y2="8.89" width="0.8128" layer="46" style="shortdash"/>
+<wire x1="17.018" y1="17.78" x2="17.018" y2="9.906" width="0.8128" layer="46" style="shortdash"/>
+<wire x1="17.018" y1="9.906" x2="17.272" y2="9.652" width="0.8128" layer="46" style="shortdash"/>
+<wire x1="18.542" y1="6.35" x2="17.272" y2="5.08" width="0.8128" layer="46" style="shortdash"/>
+<wire x1="17.272" y1="5.08" x2="17.272" y2="0.762" width="0.8128" layer="46" style="shortdash"/>
 </plain>
 <libraries>
 <library name="SparkFun-Connectors" urn="urn:adsk.eagle:library:513">

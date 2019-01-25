@@ -2324,15 +2324,18 @@ design rules under a new name.</description>
 <contactref element="U$1" pad="2"/>
 <contactref element="X1" pad="1"/>
 <contactref element="R5" pad="2"/>
-<wire x1="14.617190625" y1="9.610784375" x2="14.772" y2="16.034" width="0" layer="19" extent="1-1"/>
-<wire x1="14.772" y1="3.556" x2="14.617190625" y2="9.610784375" width="0" layer="19" extent="1-1"/>
+<wire x1="14.772" y1="16.034" x2="14.772" y2="9.76559375" width="2.54" layer="1"/>
+<wire x1="14.772" y1="9.76559375" x2="14.617190625" y2="9.610784375" width="2.54" layer="1"/>
+<wire x1="14.772" y1="3.556" x2="14.772" y2="9.76559375" width="2.54" layer="1"/>
 </signal>
 <signal name="LINE_L" class="1">
 <contactref element="U$1" pad="1"/>
 <contactref element="R5" pad="1"/>
 <contactref element="F1" pad="2"/>
-<wire x1="25.146" y1="11.764" x2="19.772" y2="16.034" width="0" layer="19" extent="1-1"/>
-<wire x1="20.9012875" y1="12.233215625" x2="19.772" y2="16.034" width="0" layer="19" extent="1-1"/>
+<wire x1="19.772" y1="16.034" x2="19.772" y2="13.362503125" width="2.54" layer="1"/>
+<wire x1="19.772" y1="13.362503125" x2="20.9012875" y2="12.233215625" width="2.54" layer="1"/>
+<wire x1="25.146" y1="11.764" x2="21.370503125" y2="11.764" width="2.54" layer="1"/>
+<wire x1="21.370503125" y1="11.764" x2="20.9012875" y2="12.233215625" width="2.54" layer="1"/>
 </signal>
 <signal name="A0">
 <contactref element="R3" pad="2"/>
@@ -2340,7 +2343,8 @@ design rules under a new name.</description>
 <signal name="N$2">
 <contactref element="F1" pad="1"/>
 <contactref element="X1" pad="2"/>
-<wire x1="19.772" y1="3.556" x2="25.146" y2="6.524" width="0" layer="19" extent="1-1"/>
+<wire x1="19.772" y1="3.556" x2="22.178" y2="3.556" width="2.54" layer="1"/>
+<wire x1="22.178" y1="3.556" x2="25.146" y2="6.524" width="2.54" layer="1"/>
 </signal>
 </signals>
 <mfgpreviewcolors>
