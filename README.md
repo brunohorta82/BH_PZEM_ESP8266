@@ -25,7 +25,7 @@ Os dados são enviados via Wi-Fi
 **Medição de Energia:**
   - Baseado no PZEM-004
   - Leituras muito rigorosas 
-  - Possibilizade de detecão de sentido de energia 
+  - Possibilidade de detecão de sentido de energia 
   - Voltagem, Ampereragem, Potência, Energia
 
 **Medição de Temperatura:**
