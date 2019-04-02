@@ -43,7 +43,7 @@ void checkServices(){
 }
 
 void setup() {
- // Serial.begin(115200);
+ Serial.begin(115200);
   loadStoredConfiguration();
   setupWiFi(); 
   setupWebserver(); 
@@ -81,6 +81,6 @@ void loop() {
 
 void actualUpdate(){
   WiFiClient client;
-  t_httpUpdate_return ret = ESPhttpUpdate.update(client, updateUrl);
+     ESPhttpUpdate.update(client, getUpdateUrl());
  
 }

@@ -8,10 +8,7 @@ std::vector <gpios_t> inUseGpios;
 
 void logger(String payload) {
     if (payload.equals(""))return;
-    Serial.print("Free heap:");
-    Serial.println(ESP.getFreeHeap(), DEC);
-    // events.send(payload.c_str(), "log");
-    Serial.printf((payload + "\n").c_str());
+    Serial.println(payload);
 }
 
 
@@ -23,7 +20,9 @@ void resetToFactoryConfig() {
 JsonObject &getConfigJson() {
     return configJson;
 }
-
+String getUpdateUrl(){
+ return "http://release.bhonofre.pt/release_"+String(FACTORY_TYPE)+".bin";
+ }
 String getHostname() {
     String nodeId = configJson.get<String>("nodeId");
     if (nodeId.equals(configJson.get<String>("hostname"))) {
@@ -90,10 +89,10 @@ void loadStoredConfiguration() {
         if (configFail) {
             logger("[CONFIG] Apply default config...");
             cFile = SPIFFS.open(CONFIG_FILENAME, "w+");
-            configJson.set("nodeId", String(HARDWARE) + "-" + String(MODEL) + "-" + String(ESP.getChipId()));
+            configJson.set("nodeId",String(HARDWARE) +"-"+String(FACTORY_TYPE)+"-"+String(ESP.getChipId()));
             configJson.set("homeAssistantAutoDiscovery", true);
-            configJson.set("homeAssistantAutoDiscoveryPrefix", HOME_ASSISTANT_AUTO_DISCOVERY_PREFIX);
-            configJson.set("hostname", String(HARDWARE) + "-" + String(MODEL) + "-" + String(ESP.getChipId()));
+            configJson.set("homeAssistantAutoDiscoveryPrefix","homeassistant");
+            configJson.set("hostname",String(HARDWARE) +"-"+String(FACTORY_TYPE)+"-"+String(ESP.getChipId()));
             configJson.set("mqttIpDns", MQTT_BROKER_IP);
             configJson.set("mqttUsername", MQTT_USERNAME);
             configJson.set("mqttPassword", MQTT_PASSWORD);
