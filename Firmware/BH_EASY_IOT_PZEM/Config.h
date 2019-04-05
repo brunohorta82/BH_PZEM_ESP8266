@@ -1,4 +1,4 @@
-#define FIRMWARE_VERSION 4.4
+#define FIRMWARE_VERSION 4.5
 
 #define PZEM004
 //#define PZEMDC

@@ -71,7 +71,7 @@ void loadStoredConfiguration() {
                     configJson.set("emoncmsUrl", storedConfig.get<String>("emoncmsUrl"));
                     configJson.set("emoncmsPort", storedConfig.get<int>("emoncmsPort"));
                     configJson.set("hardware", "PZEM");
-
+                    configJson.set("type", String(FACTORY_TYPE));
                     configJson.set("wifiMask", storedConfig.get<String>("wifiMask"));
                     configJson.set("wifiGw", storedConfig.get<String>("wifiGw"));
                     configJson.set("staticIp", storedConfig.get<bool>("staticIp"));
@@ -102,6 +102,7 @@ void loadStoredConfiguration() {
             configJson.set("configVersion", FIRMWARE_VERSION);
             configJson.set("apSecret", AP_SECRET);
             configJson.set("emoncmsPort", 80);
+            configJson.set("type", String(FACTORY_TYPE));
             configJson.set("configTime",0L);
             configJson.set("directionCurrentDetection", false);
             configJson.set("notificationInterval", DELAY_NOTIFICATION);
