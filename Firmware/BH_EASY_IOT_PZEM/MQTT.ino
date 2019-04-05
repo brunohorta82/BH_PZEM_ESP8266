@@ -44,6 +44,7 @@ String MQTT_STATE_TOPIC_BUILDER( String _id,String _class, String _name){
 }
 
 void onMqttConnect(bool sessionPresent) {
+    dissableAP();
     logger("[MQTT] Connected to MQTT.");
     mqttClient.publish(getAvailableTopic().c_str(),0,true,"1");
     subscribeOnMqtt(MQTT_CONFIG_TOPIC);

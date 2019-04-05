@@ -75,7 +75,7 @@ void loadStoredConfiguration() {
                     configJson.set("wifiGw", storedConfig.get<String>("wifiGw"));
                     configJson.set("staticIp", storedConfig.get<bool>("staticIp"));
                     configJson.set("apSecret", storedConfig.get<String>("apSecret"));
-
+                    configJson.set("configTime", storedConfig.get<long>("configTime"));
                     double configVersion = storedConfig.get<double>("configVersion");
                     logger("[CONFIG] CONFIG UPDATED Version " + String(configVersion));
                     configJson.set("configVersion", FIRMWARE_VERSION);
@@ -101,6 +101,7 @@ void loadStoredConfiguration() {
             configJson.set("configVersion", FIRMWARE_VERSION);
             configJson.set("apSecret", AP_SECRET);
             configJson.set("emoncmsPort", 80);
+            configJson.set("configTime",0L);
             configJson.set("directionCurrentDetection", false);
             configJson.set("notificationInterval", DELAY_NOTIFICATION);
             configJson.set("hardware", "PZEM");
@@ -146,7 +147,7 @@ JsonObject &saveWifi(JsonObject &_config) {
     return configJson;
 }
 
-JsonObject &adopt(JsonObject &_config) {
+JsonObject& adoptControllerConfig(JsonObject &_config) {
     configJson.set("wifiSSID", _config.get<String>("wifiSSID"));
     configJson.set("wifiSecret", _config.get<String>("wifiSecret"));
     configJson.set("apSecret", _config.get<String>("apSecret"));
@@ -158,6 +159,7 @@ JsonObject &adopt(JsonObject &_config) {
     configJson.set("emoncmsPrefix", _config.get<String>("emoncmsPrefix"));
     configJson.set("emoncmsUrl", _config.get<String>("emoncmsUrl"));
     configJson.set("emoncmsPort", _config.get<int>("emoncmsPort"));
+      configJson.set("configTime",_config.get<long>("configTime"));
     adopted = true;
     return configJson;
 }

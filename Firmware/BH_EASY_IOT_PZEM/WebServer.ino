@@ -174,12 +174,12 @@ server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
 });server.addHandler(handlerWifi);
 
 
-    AsyncCallbackJsonWebHandler* handlerAdopt = new AsyncCallbackJsonWebHandler("/adopt", [](AsyncWebServerRequest *request, JsonVariant &json) {
+    AsyncCallbackJsonWebHandler* handlerAdopt = new AsyncCallbackJsonWebHandler("/adopt-controller-config", [](AsyncWebServerRequest *request, JsonVariant &json) {
     JsonObject& jsonObj = json.as<JsonObject>();
     if (jsonObj.success()) {
       AsyncResponseStream *response = request->beginResponseStream("application/json");
       //SAVE CONFIG
-      adopt(jsonObj).printTo(*response);
+      adoptControllerConfig(jsonObj).printTo(*response);
       
       request->send(response);
     } else {
