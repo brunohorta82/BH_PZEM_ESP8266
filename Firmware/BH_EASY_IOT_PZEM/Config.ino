@@ -8,9 +8,6 @@ std::vector <gpios_t> inUseGpios;
 
 void logger(String payload) {
     if (payload.equals(""))return;
-    Serial.print("Free heap:");
-    Serial.println(ESP.getFreeHeap(), DEC);
-    // events.send(payload.c_str(), "log");
     Serial.printf((payload + "\n").c_str());
 }
 

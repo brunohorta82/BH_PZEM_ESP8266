@@ -98,7 +98,7 @@ float getEnergy() {
 #endif
 
 void setupBHPzem() {
-
+createPzemSensors();
 #ifdef PZEM004
     pzemrdy = pzem.setAddress(pzemIP);
 #endif
