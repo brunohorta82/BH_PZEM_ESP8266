@@ -81,6 +81,6 @@ void loop() {
 
 void actualUpdate(){
   WiFiClient client;
-  t_httpUpdate_return ret = ESPhttpUpdate.update(client, updateUrl);
+     ESPhttpUpdate.update(client, getUpdateUrl());
  
 }
