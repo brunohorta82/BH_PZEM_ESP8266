@@ -48,6 +48,7 @@ void onMqttConnect(bool sessionPresent) {
     logger("[MQTT] Connected to MQTT.");
     mqttClient.publish(getAvailableTopic().c_str(),0,true,"1");
     subscribeOnMqtt(MQTT_CONFIG_TOPIC);
+    createPzemSensors();
 }
 
 
