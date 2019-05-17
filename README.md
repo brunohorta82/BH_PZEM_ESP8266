@@ -26,7 +26,7 @@ Os dados são enviados via Wi-Fi
   - Baseado no PZEM-004
   - Leituras muito rigorosas 
   - Possibilidade de detecão de sentido de energia 
-  - Voltagem, Ampereragem, Potência, Energia
+  - Voltagem, Amperagem, Potência, Energia
 
 **Medição de Temperatura:**
   - Baseado no sendor 1-wire DS18B20
