@@ -29,7 +29,7 @@ Os dados são enviados via Wi-Fi
   - Voltagem, Amperagem, Potência, Energia
 
 **Medição de Temperatura:**
-  - Baseado no sendor 1-wire DS18B20
+  - Baseado no sensor 1-wire DS18B20
   - Permite adicionar até 10 sensores digitais DS18B20
   - Endereços dos sensores geridos na interface Web
 
