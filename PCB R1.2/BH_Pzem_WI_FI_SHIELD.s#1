@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE eagle SYSTEM "eagle.dtd">
-<eagle version="9.4.1">
+<eagle version="8.6.0">
 <drawing>
 <settings>
 <setting alwaysvectorfont="no"/>
@@ -9046,102 +9046,32 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <attribute name="NAME" x="111.125" y="20.955" size="1.778" layer="95" font="vector" align="bottom-center"/>
 <attribute name="VALUE" x="115.57" y="14.986" size="1.778" layer="96" font="vector" align="top-center"/>
 </instance>
-<instance part="U$2" gate="G$1" x="220.98" y="48.26" smashed="yes">
-<attribute name="NAME" x="208.28" y="55.88" size="1.27" layer="94"/>
-</instance>
-<instance part="FRAME1" gate="G$1" x="-10.16" y="2.54" smashed="yes">
-<attribute name="DRAWING_NAME" x="171.45" y="13.97" size="2.54" layer="94" font="vector"/>
-<attribute name="LAST_DATE_TIME" x="171.45" y="8.89" size="2.286" layer="94" font="vector"/>
-<attribute name="SHEET" x="185.42" y="3.81" size="2.54" layer="94" font="vector"/>
-</instance>
-<instance part="C4" gate="G$1" x="40.64" y="127" smashed="yes" rot="R270">
-<attribute name="NAME" x="41.91" y="130.81" size="1.27" layer="95" ratio="10" rot="R270"/>
-<attribute name="VALUE" x="38.1" y="130.81" size="1.27" layer="96" ratio="10" rot="R270"/>
-</instance>
-<instance part="U2" gate="G$1" x="71.12" y="144.78" smashed="yes">
-<attribute name="NAME" x="58.42" y="154.94" size="1.778" layer="95"/>
-<attribute name="VALUE" x="58.42" y="129.54" size="1.778" layer="96"/>
-</instance>
-<instance part="R8" gate="G$1" x="104.14" y="154.94" smashed="yes" rot="R90">
-<attribute name="NAME" x="102.6414" y="151.13" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="107.442" y="151.13" size="1.778" layer="96" rot="R90"/>
-</instance>
-<instance part="R9" gate="G$1" x="38.1" y="162.56" smashed="yes" rot="R90">
-<attribute name="NAME" x="36.6014" y="158.75" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="41.402" y="158.75" size="1.778" layer="96" rot="R90"/>
-</instance>
-<instance part="R10" gate="G$1" x="48.26" y="162.56" smashed="yes" rot="R90">
-<attribute name="NAME" x="46.7614" y="158.75" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="51.562" y="158.75" size="1.778" layer="96" rot="R90"/>
-</instance>
-<instance part="R11" gate="G$1" x="104.14" y="129.54" smashed="yes" rot="R270">
-<attribute name="NAME" x="105.6386" y="133.35" size="1.778" layer="95" rot="R270"/>
-<attribute name="VALUE" x="100.838" y="133.35" size="1.778" layer="96" rot="R270"/>
-</instance>
-<instance part="J6" gate="G$1" x="114.3" y="162.56" smashed="yes">
-<attribute name="VALUE" x="114.3" y="147.574" size="1.778" layer="96" font="vector"/>
-<attribute name="NAME" x="114.3" y="175.768" size="1.778" layer="95" font="vector"/>
-</instance>
-<instance part="J7" gate="G$1" x="124.46" y="132.08" smashed="yes">
-<attribute name="VALUE" x="119.38" y="119.634" size="1.778" layer="96" font="vector"/>
-<attribute name="NAME" x="119.38" y="145.288" size="1.778" layer="95" font="vector"/>
-</instance>
-<instance part="RESET" gate="G$1" x="58.42" y="93.98" smashed="yes">
-<attribute name="NAME" x="55.88" y="91.44" size="1.778" layer="95"/>
-</instance>
-<instance part="AMS1117" gate="G$1" x="167.64" y="111.76" smashed="yes">
-<attribute name="NAME" x="170.18" y="104.14" size="1.778" layer="95" font="vector"/>
-<attribute name="VALUE" x="170.18" y="101.6" size="1.778" layer="96" font="vector"/>
-</instance>
-<instance part="FLASH" gate="G$1" x="58.42" y="109.22" smashed="yes">
-<attribute name="NAME" x="55.88" y="106.68" size="1.778" layer="95"/>
-</instance>
-<instance part="X3" gate="-1" x="45.72" y="73.66" smashed="yes">
-<attribute name="NAME" x="45.72" y="74.549" size="1.778" layer="95" rot="R180"/>
-</instance>
-<instance part="X3" gate="-2" x="45.72" y="68.58" smashed="yes">
-<attribute name="NAME" x="45.72" y="69.469" size="1.778" layer="95" rot="R180"/>
-</instance>
-<instance part="X3" gate="-3" x="45.72" y="63.5" smashed="yes">
-<attribute name="NAME" x="45.72" y="64.389" size="1.778" layer="95" rot="R180"/>
-</instance>
-<instance part="X3" gate="-4" x="45.72" y="58.42" smashed="yes">
-<attribute name="VALUE" x="43.18" y="54.737" size="1.778" layer="96"/>
-<attribute name="NAME" x="45.72" y="59.309" size="1.778" layer="95" rot="R180"/>
-</instance>
-<instance part="J1" gate="G$1" x="104.14" y="66.04" smashed="yes">
-<attribute name="VALUE" x="99.06" y="58.674" size="1.778" layer="96" font="vector"/>
-<attribute name="NAME" x="99.06" y="74.168" size="1.778" layer="95" font="vector"/>
-</instance>
-<instance part="OK1" gate="A" x="45.72" y="20.32" smashed="yes">
-<attribute name="NAME" x="38.735" y="26.035" size="1.778" layer="95"/>
-<attribute name="VALUE" x="38.735" y="12.7" size="1.778" layer="96"/>
-</instance>
-<instance part="U1" gate="G$1" x="213.36" y="88.9" smashed="yes">
-<attribute name="NAME" x="205.74" y="96.774" size="1.778" layer="95" font="vector"/>
-<attribute name="VALUE" x="205.74" y="81.026" size="1.778" layer="96" font="vector" align="top-left"/>
-</instance>
-<instance part="R1" gate="G$1" x="20.32" y="27.94" smashed="yes" rot="R90">
-<attribute name="NAME" x="18.8214" y="24.13" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="23.622" y="24.13" size="1.778" layer="96" rot="R90"/>
-</instance>
-<instance part="R2" gate="G$1" x="58.42" y="27.94" smashed="yes" rot="R270">
-<attribute name="NAME" x="59.9186" y="31.75" size="1.778" layer="95" rot="R270"/>
-<attribute name="VALUE" x="55.118" y="31.75" size="1.778" layer="96" rot="R270"/>
-</instance>
-<instance part="R3" gate="G$1" x="185.42" y="88.9" smashed="yes" rot="R90">
-<attribute name="NAME" x="183.9214" y="85.09" size="1.778" layer="95" rot="R90"/>
-<attribute name="VALUE" x="188.722" y="85.09" size="1.778" layer="96" rot="R90"/>
-</instance>
-<instance part="J2" gate="G$1" x="48.26" y="38.1" smashed="yes">
-<attribute name="VALUE" x="45.72" y="33.274" size="1.778" layer="96" font="vector"/>
-<attribute name="NAME" x="45.72" y="43.688" size="1.778" layer="95" font="vector"/>
-</instance>
-<instance part="U$1" gate="G$1" x="124.46" y="43.18" smashed="yes"/>
-<instance part="J3" gate="G$1" x="17.78" y="45.72" smashed="yes" rot="R270">
-<attribute name="VALUE" x="12.954" y="48.26" size="1.778" layer="96" font="vector" rot="R270"/>
-<attribute name="NAME" x="23.368" y="48.26" size="1.778" layer="95" font="vector" rot="R270"/>
-</instance>
+<instance part="U$2" gate="G$1" x="220.98" y="48.26"/>
+<instance part="FRAME1" gate="G$1" x="-10.16" y="2.54"/>
+<instance part="C4" gate="G$1" x="40.64" y="127" rot="R270"/>
+<instance part="U2" gate="G$1" x="71.12" y="144.78"/>
+<instance part="R8" gate="G$1" x="104.14" y="154.94" rot="R90"/>
+<instance part="R9" gate="G$1" x="38.1" y="162.56" rot="R90"/>
+<instance part="R10" gate="G$1" x="48.26" y="162.56" rot="R90"/>
+<instance part="R11" gate="G$1" x="104.14" y="129.54" rot="R270"/>
+<instance part="J6" gate="G$1" x="114.3" y="162.56"/>
+<instance part="J7" gate="G$1" x="124.46" y="132.08"/>
+<instance part="RESET" gate="G$1" x="58.42" y="93.98"/>
+<instance part="AMS1117" gate="G$1" x="167.64" y="111.76"/>
+<instance part="FLASH" gate="G$1" x="58.42" y="109.22"/>
+<instance part="X3" gate="-1" x="45.72" y="73.66"/>
+<instance part="X3" gate="-2" x="45.72" y="68.58"/>
+<instance part="X3" gate="-3" x="45.72" y="63.5"/>
+<instance part="X3" gate="-4" x="45.72" y="58.42"/>
+<instance part="J1" gate="G$1" x="104.14" y="66.04"/>
+<instance part="OK1" gate="A" x="45.72" y="20.32"/>
+<instance part="U1" gate="G$1" x="213.36" y="88.9"/>
+<instance part="R1" gate="G$1" x="20.32" y="27.94" rot="R90"/>
+<instance part="R2" gate="G$1" x="58.42" y="27.94" rot="R270"/>
+<instance part="R3" gate="G$1" x="180.34" y="88.9" rot="R90"/>
+<instance part="J2" gate="G$1" x="48.26" y="38.1"/>
+<instance part="U$1" gate="G$1" x="124.46" y="43.18"/>
+<instance part="J3" gate="G$1" x="17.78" y="45.72" rot="R270"/>
 </instances>
 <busses>
 </busses>
@@ -9374,8 +9304,8 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 <wire x1="190.5" y1="86.36" x2="187.96" y2="86.36" width="0.1524" layer="91"/>
 <wire x1="187.96" y1="86.36" x2="187.96" y2="83.82" width="0.1524" layer="91"/>
 <pinref part="R3" gate="G$1" pin="1"/>
-<wire x1="187.96" y1="83.82" x2="185.42" y2="83.82" width="0.1524" layer="91"/>
-<label x="185.42" y="83.82" size="1.778" layer="95" rot="R180" xref="yes"/>
+<wire x1="187.96" y1="83.82" x2="180.34" y2="83.82" width="0.1524" layer="91"/>
+<label x="180.34" y="83.82" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="GPIO14" class="0">
@@ -9484,9 +9414,9 @@ Find the newest version at https://github.com/blddk/EagleLbr/</description>
 </segment>
 <segment>
 <pinref part="U1" gate="G$1" pin="VDD"/>
-<wire x1="203.2" y1="93.98" x2="185.42" y2="93.98" width="0.1524" layer="91"/>
+<wire x1="203.2" y1="93.98" x2="180.34" y2="93.98" width="0.1524" layer="91"/>
 <pinref part="R3" gate="G$1" pin="2"/>
-<label x="185.42" y="93.98" size="1.778" layer="95" rot="R180" xref="yes"/>
+<label x="180.34" y="93.98" size="1.778" layer="95" rot="R180" xref="yes"/>
 </segment>
 </net>
 <net name="CT_1" class="0">

@@ -9,13 +9,14 @@ AsyncWebServer server(80);
 
 void  setupWebserver(){
   MDNS.begin(getHostname().c_str());
-  MDNS.addService("bhsystems","tcp",80);
+  MDNS.addService("bhsystems", "tcp", 80);
   MDNS.addServiceTxt("bhsystems", "tcp", "nodeId", getConfigJson().get<String>("nodeId"));
-  MDNS.addServiceTxt("bhsystems", "tcp", "config_version", getConfigJson().get<String>("configVersion"));
   MDNS.addServiceTxt("bhsystems", "tcp", "hardwareId", String(ESP.getChipId()));
-  MDNS.addServiceTxt("bhsystems", "tcp", "wifi-signal",  String(WiFi.RSSI()));
-
-  MDNS.addServiceTxt("bhsystems", "tcp", "type",  String(FACTORY_TYPE));
+  MDNS.addServiceTxt("bhsystems", "tcp", "type", String(FACTORY_TYPE));
+  MDNS.addServiceTxt("bhsystems", "tcp", "wifiSignal", String(WiFi.RSSI()));
+  MDNS.addServiceTxt("bhsystems", "tcp", "ssid", getApName());
+  MDNS.addServiceTxt("bhsystems", "tcp", "firmware", getConfigJson().get<String>("firmware"));
+  server.addHandler(&events);
 
   server.addHandler(&events);
   /** HTML  **/
@@ -25,10 +26,11 @@ void  setupWebserver(){
     request->send(response);
   });
   
-server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
-    activateScan();
-    request->send(200,  "application/json","{\"result\":\"OK\"}");
+  server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request) {
+    requestWifiScan();
+    request->send(200, "application/json", "{\"result\":\"OK\"}");
   });
+;
   
   server.on("/dashboard.html", HTTP_GET, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", dashboard_html,sizeof(dashboard_html));
@@ -132,20 +134,15 @@ server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
    });
   
    
-   server.on("/reboot", HTTP_GET, [](AsyncWebServerRequest *request){
-   shouldReboot = true;
-   request->redirect("/");
+  server.on("/reboot", HTTP_GET, [](AsyncWebServerRequest *request) {
+   requestReboot();
+    request->redirect("/");
   });
 
-   server.on("/loaddefaults", HTTP_GET, [](AsyncWebServerRequest *request){
-   request->send(200 );
-   laodDefaults = true;
+  server.on("/loaddefaults", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->send(200);
+   requestLoadDefaults();
   });
-   server.on("/auto-update", HTTP_GET, [](AsyncWebServerRequest *request){
-   request->send(200 );
-   autoUpdate = true;
-  });
-  
 
 
   AsyncCallbackJsonWebHandler* handlerNode = new AsyncCallbackJsonWebHandler("/save-node", [](AsyncWebServerRequest *request, JsonVariant &json) {
@@ -175,20 +172,35 @@ server.on("/scan", HTTP_GET, [](AsyncWebServerRequest *request){
     }
 });server.addHandler(handlerWifi);
 
+AsyncCallbackJsonWebHandler *handlerAdopt = new AsyncCallbackJsonWebHandler("/adopt-controller-config", [](AsyncWebServerRequest *request, JsonVariant &json) {
+    logger("ADOPT");
+    if (request->hasHeader("configkey"))
+    {
+      AsyncWebHeader *h = request->getHeader("configkey");
+      Serial.printf("configkey: %s\n", h->value().c_str());
+      String configkey = String(h->value().c_str());
 
-    AsyncCallbackJsonWebHandler* handlerAdopt = new AsyncCallbackJsonWebHandler("/adopt-controller-config", [](AsyncWebServerRequest *request, JsonVariant &json) {
-    JsonObject& jsonObj = json.as<JsonObject>();
-    if (jsonObj.success()) {
-      AsyncResponseStream *response = request->beginResponseStream("application/json");
-      //SAVE CONFIG
-      adoptControllerConfig(jsonObj).printTo(*response);
-      
-      request->send(response);
-    } else {
-      logger("[WEBSERVER] Json Error");
-      request->send(400, "text/plain", "JSON INVALID");
+      JsonObject &jsonObj = json.as<JsonObject>();
+      if (jsonObj.success())
+      {
+        AsyncResponseStream *response = request->beginResponseStream("application/json");
+        //SAVE CONFIG
+        adoptControllerConfig(jsonObj, configkey).printTo(*response);
+        request->send(response);
+      }
+      else
+      {
+        logger("[WEBSERVER] Json Error");
+        request->send(400, "text/plain", "JSON INVALID");
+      }
     }
-});server.addHandler(handlerAdopt);
+    else
+    {
+      logger("MISSING CONFIG KEY");
+    }
+  });
+  server.addHandler(handlerAdopt);
+
 
      AsyncCallbackJsonWebHandler* handlerha = new AsyncCallbackJsonWebHandler("/save-ha", [](AsyncWebServerRequest *request, JsonVariant &json) {
     JsonObject& jsonObj = json.as<JsonObject>();
@@ -233,32 +245,35 @@ AsyncCallbackJsonWebHandler* handleremon = new AsyncCallbackJsonWebHandler("/sav
 });server.addHandler(handlermqtt );
 
  
-  server.on("/update", HTTP_POST, [](AsyncWebServerRequest *request){
-    shouldReboot = !Update.hasError();
-    AsyncWebServerResponse *response = request->beginResponse(200, "text/html", shouldReboot? "<!DOCTYPE html><html lang=\"en\"><head> <meta charset=\"UTF-8\"> <title>Atualização</title> <style>body{background-color: rgb(34, 34, 34); color: white; font-size: 18px; padding: 10px; font-weight: lighter;}</style> <script type=\"text/javascript\">function Redirect(){window.location=\"/\";}document.write(\"Atualização com sucesso, vai ser redirecionado automaticamente daqui a 20 segundos. Aguarde...\"); setTimeout('Redirect()', 20000); </script></head><body></body></html>":"<!DOCTYPE html><html lang=\"en\"><head> <meta charset=\"UTF-8\"> <title>Atualização</title> <style>body{background-color: #cc0000; color: white; font-size: 18px; padding: 10px; font-weight: lighter;}</style> <script type=\"text/javascript\">function Redirect(){window.location=\"/\";}document.write(\"Atualização falhou, poderá ser necessário fazer reset manualmente ao equipamento e tentar novamente.\"); setTimeout('Redirect()', 10000); </script></head><body></body></html>");
+ server.on("/update", HTTP_POST, [](AsyncWebServerRequest *request) {
+    bool error = Update.hasError();
+    if(error){
+      requestReboot();
+      }
+    AsyncWebServerResponse *response = request->beginResponse(200, "text/html", !error? "<!DOCTYPE html><html lang=\"en\"><head> <meta charset=\"UTF-8\"> <title>Atualização</title> <style>body{background-color: rgb(34, 34, 34); color: white; font-size: 18px; padding: 10px; font-weight: lighter;}</style> <script type=\"text/javascript\">function Redirect(){window.location=\"/\";}document.write(\"Atualização com sucesso, vai ser redirecionado automaticamente daqui a 20 segundos. Aguarde...\"); setTimeout('Redirect()', 20000); </script></head><body></body></html>":"<!DOCTYPE html><html lang=\"en\"><head> <meta charset=\"UTF-8\"> <title>Atualização</title> <style>body{background-color: #cc0000; color: white; font-size: 18px; padding: 10px; font-weight: lighter;}</style> <script type=\"text/javascript\">function Redirect(){window.location=\"/\";}document.write(\"Atualização falhou, poderá ser necessário fazer reset manualmente ao equipamento e tentar novamente.\"); setTimeout('Redirect()', 10000); </script></head><body></body></html>");
     response->addHeader("Connection", "close");
-    request->send(response);
-  },[](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final){
+    request->send(response); }, [](AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
     if(!index){
       logger("[FIRMWARE] Update Start:"+ filename);
       Update.runAsync(true);
       if(!Update.begin((ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000)){
-        Update.printError(Serial);
+       // Update.printError(Serial);
       }
     }
     if(!Update.hasError()){
       if(Update.write(data, len) != len){
-        Update.printError(Serial);
+        //Update.printError(Serial);
       }
     }
     if(final){
       if(Update.end(true)){
         logger("[FIRMWARE] Update Success: "+String( index+len));
+        requestReboot();
       } else {
-        Update.printError(Serial);
+        //Update.printError(Serial);
+         requestReboot();
       }
-    }
-  });
+    } });
  
   server.onNotFound([](AsyncWebServerRequest *request) {
   

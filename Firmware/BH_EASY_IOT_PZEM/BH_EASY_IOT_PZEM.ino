@@ -20,28 +20,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-
-
+#include "Libs.h"
 #include "Config.h"
-void checkServices(){
-  if(laodDefaults){
-    SPIFFS.format();
-    shouldReboot = true;
+
+void checkInternalRoutines()
+{
+  if (REBOOT)
+  {
+    static unsigned long timestamp = millis( ); 
+    if( millis( ) -timestamp > 4000ul )
+  {
+     logger("Rebooting...");
+    timestamp = millis( );
+    REBOOT  = false;
+    ESP.restart();
   }
-
-  if(wifiUpdated){
-    saveConfig();
-    reloadWiFiConfig();
-    wifiUpdated = false;
+    return;
+  }
+  
+  if (LOAD_DEFAULTS)
+  {
+    LOAD_DEFAULTS = false;
+    SPIFFS.format();
+    requestReboot();
+  }
+  if (WIFI_SCAN)
+  {
+    WIFI_SCAN = false;
+    scanNewWifiNetworks();
+    
+  }
+  if(STORE_CONFIG){
+    STORE_CONFIG = false;
+    persistConfigFile();
     }
-  if(needScan()){
-      scanNewWifiNetworks();
-   }
-   if(reloadMqttConfiguration){
-     setupMQTT();
-   }
+  if (AUTO_UPDATE)
+  {
+    AUTO_UPDATE = false;
+    actualUpdate();
+  }
+  
+  
 }
-
 void setup() {
   Serial.begin(115200);
   loadStoredConfiguration();
@@ -49,33 +69,16 @@ void setup() {
   setupWebserver(); 
   setupBHPzem();
   setupDisplay();
+  reloadAlexaDiscoveryServices();
   
 }
 
 void loop() {
-   MDNS.update();
-   if(autoUpdate){
-    autoUpdate = false;
-    actualUpdate();
-    }
-  
-  if(adopted){
-   saveConfig();
-   shouldReboot = true;
-   adopted = false;
-  }
-   if(shouldReboot){
-    logger("Rebooting...");
-    shouldReboot = false;
-    ESP.restart();
-    return;
-  }
-  
-    loopBHPzem();
-  
+  checkInternalRoutines();
+  MDNS.update();
+  loopBHPzem();
   loopWiFi();
-  checkServices();
-  mqttMsgDigest();
+   loopMqtt();
   
 }
 

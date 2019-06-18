@@ -217,7 +217,7 @@ void loopBHPzem() {
 
 
 }
-
+/*
 void createPzemSensors() {
     publishOnMqttQueue("homeassistant/sensor/" + getConfigJson().get<String>("nodeId") + "/counter/config",
                        ("{\"name\": \"" + getConfigJson().get<String>("nodeId") + "_counter\", \"state_topic\": \"" +
@@ -240,12 +240,14 @@ void createPzemSensors() {
                         "\", \"value_template\": \"{{ value_json.potencia }}\", \"unit_of_measurement\": \"W\",\"icon\":\"mdi:power-socket-eu\"}"),
                        true);
 
-}
+}*/
 
 void publishData() {
-    publishOnEventSource("pzem-readings", readingsJson);
+  String readings = "";
+  readingsJson.printTo(readings);
+    publishOnEventSource("pzem-readings", readings);
     //MQTT
-    publishOnMqtt(getConfigJson().get<String>("nodeId") + String(PZEM_READINDS_TOPIC), readingsJson, false);
+    publishOnMqtt(getConfigJson().get<String>("nodeId") + String(PZEM_READINDS_TOPIC),readings, false);
     //EMON CMS
-    publishOnEmoncms(readingsJson);
+    publishOnEmoncms(readings);
 }

@@ -1,10 +1,7 @@
 AsyncEventSource events("/events");
 
 JsonObject &configJson = getJsonObject();
-typedef struct {
-    int gpio;
-} gpios_t;
-std::vector <gpios_t> inUseGpios;
+
 
 void logger(String payload) {
     if (payload.equals(""))return;
@@ -13,10 +10,7 @@ void logger(String payload) {
 }
 
 
-void resetToFactoryConfig() {
-    SPIFFS.format();
-    shouldReboot = true;
-}
+
 
 JsonObject &getConfigJson() {
     return configJson;
@@ -24,21 +18,24 @@ JsonObject &getConfigJson() {
 String getUpdateUrl(){
  return "http://release.bhonofre.pt/release_"+String(FACTORY_TYPE)+".bin";
  }
-String getHostname() {
-    String nodeId = configJson.get<String>("nodeId");
-    if (nodeId.equals(configJson.get<String>("hostname"))) {
-        return nodeId;
-    }
-    return String(HARDWARE) + "-" + String(ESP.getChipId()) + "-" + nodeId;
+String getHostname()
+{
+  String nodeId = configJson.get<String>("nodeId");
+  if (nodeId.equals(DEFAULT_NODE_ID))
+  {
+    return DEFAULT_NODE_ID;
+  }
+  return nodeId;
 }
 
-String getApName() {
-
-    String nodeId = configJson.get<String>("nodeId");
-    if (nodeId.equals(configJson.get<String>("hostname"))) {
-        return "bhnode-" + nodeId;
-    }
-    return "bhnode-" + String(ESP.getChipId());
+String getApName()
+{
+  String nodeId = configJson.get<String>("nodeId");
+  if (nodeId.equals(DEFAULT_NODE_ID))
+  {
+    return DEFAULT_NODE_ID;
+  }
+  return nodeId;
 }
 
 void loadStoredConfiguration() {
@@ -115,55 +112,78 @@ void loadStoredConfiguration() {
     }
 }
 
-
-JsonObject &saveNode(JsonObject &nodeConfig) {
-    String nodeId = nodeConfig.get<String>("nodeId");
-
-    if (nodeId != nullptr && !configJson.get<String>("nodeId").equals(nodeId)) {
-        nodeId.replace(" ", "");
-        String oldNodeId = configJson.get<String>("nodeId");
-        configJson.set("nodeId", nodeId);
-
-        //reloadWiFiConfig();
-        reloadMqttConfig();
-        
-    } else {
-
-        configJson.set("notificationInterval", nodeConfig.get<unsigned int>("notificationInterval"));
-        configJson.set("directionCurrentDetection", nodeConfig.get<bool>("directionCurrentDetection"));
-
-    }
-    saveConfig();
-    return configJson;
+String normalize(String inputStr)
+{
+  inputStr.toLowerCase();
+  inputStr.trim();
+  inputStr.replace("_", "");
+  inputStr.replace(".", "");
+  inputStr.replace("/", "");
+  inputStr.replace("\\", "");
+  inputStr.replace("º", "");
+  inputStr.replace("ª", "");
+  inputStr.replace("ç", "c");
+  inputStr.replace("á", "a");
+  inputStr.replace("à", "a");
+  inputStr.replace("é", "e");
+  inputStr.replace("&", "");
+  inputStr.replace("%", "");
+  inputStr.replace("$", "");
+  inputStr.replace("#", "");
+  inputStr.replace("!", "");
+  inputStr.replace("+", "");
+  inputStr.replace("-", "");
+  inputStr.replace(",", "");
+  inputStr.replace("\"", "");
+  inputStr.replace(" ", "");
+  inputStr.replace("â", "a");
+  return inputStr;
+}
+JsonObject &saveNode(JsonObject &nodeConfig)
+{
+  String nodeId = normalize(nodeConfig.get<String>("nodeId"));
+  configJson.set("nodeIdOld", configJson.get<String>("nodeId"));
+  configJson.set("nodeId", nodeId);
+  configJson.set("notificationInterval", nodeConfig.get<unsigned int>("notificationInterval"));
+  configJson.set("directionCurrentDetection", nodeConfig.get<bool>("directionCurrentDetection"));
+  requestConfigStorage();
+  return configJson;
 }
 
-JsonObject &saveWifi(JsonObject &_config) {
-    configJson.set("wifiSSID", _config.get<String>("wifiSSID"));
-    configJson.set("wifiSecret", _config.get<String>("wifiSecret"));
-    configJson.set("wifiIp", _config.get<String>("wifiIp"));
-    configJson.set("wifiMask", _config.get<String>("wifiMask"));
-    configJson.set("wifiGw", _config.get<String>("wifiGw"));
-    configJson.set("staticIp", _config.get<bool>("staticIp"));
-    configJson.set("apSecret", _config.get<String>("apSecret"));
-    wifiUpdated = true;
-    return configJson;
+JsonObject &saveWifi(JsonObject &_config)
+{
+  configJson.set("wifiSSID", _config.get<String>("wifiSSID"));
+  configJson.set("wifiSecret", _config.get<String>("wifiSecret"));
+  configJson.set("wifiSSID2", _config.get<String>("wifiSSID2"));
+  configJson.set("wifiSecret2", _config.get<String>("wifiSecret2"));
+  configJson.set("wifiIp", _config.get<String>("wifiIp"));
+  configJson.set("wifiMask", _config.get<String>("wifiMask"));
+  configJson.set("wifiGw", _config.get<String>("wifiGw"));
+  configJson.set("staticIp", _config.get<bool>("staticIp"));
+  requestConfigStorage();
+  reloadWiFiConfig();
+  return configJson;
 }
 
-JsonObject& adoptControllerConfig(JsonObject &_config) {
-    configJson.set("wifiSSID", _config.get<String>("wifiSSID"));
-    configJson.set("wifiSecret", _config.get<String>("wifiSecret"));
-    configJson.set("apSecret", _config.get<String>("apSecret"));
-    configJson.set("mqttIpDns", _config.get<String>("mqttIpDns"));
-    configJson.set("mqttUsername", _config.get<String>("mqttUsername"));
-    configJson.set("mqttPassword", _config.get<String>("mqttPassword"));
-    configJson.set("mqttEmbedded", _config.get<String>("mqttEmbedded"));
-    configJson.set("emoncmsApiKey", _config.get<String>("emoncmsApiKey"));
-    configJson.set("emoncmsPrefix", _config.get<String>("emoncmsPrefix"));
-    configJson.set("emoncmsUrl", _config.get<String>("emoncmsUrl"));
-    configJson.set("emoncmsPort", _config.get<int>("emoncmsPort"));
-      configJson.set("configTime",_config.get<long>("configTime"));
-    adopted = true;
-    return configJson;
+JsonObject &adoptControllerConfig(JsonObject &_config, String configkey)
+{
+  configJson.set("wifiSSID", _config.get<String>("wifiSSID"));
+  configJson.set("wifiSecret", _config.get<String>("wifiSecret"));
+
+  configJson.set("wifiSSID2", _config.get<String>("wifiSSID2"));
+  configJson.set("wifiSecret2", _config.get<String>("wifiSecret2"));
+
+  configJson.set("mqttIpDns", _config.get<String>("mqttIpDns"));
+  configJson.set("mqttUsername", _config.get<String>("mqttUsername"));
+  configJson.set("mqttPassword", _config.get<String>("mqttPassword"));
+
+  configJson.set("configTime", _config.get<long>("configTime"));
+  configJson.set("configkey", configkey);
+
+  configJson.set("homeAssistantAutoDiscoveryPrefix", _config.get<String>("homeAssistantAutoDiscoveryPrefix"));
+
+  requestConfigStorage();
+  return configJson;
 }
 
 void updateNetworkConfig() {
@@ -172,7 +192,6 @@ void updateNetworkConfig() {
         configJson.set("wifiMask", WiFi.subnetMask().toString());
         configJson.set("wifiGw", WiFi.gatewayIP().toString());
     }
-    saveConfig();
 }
 
 JsonObject &saveMqtt(JsonObject &_config) {
@@ -180,16 +199,14 @@ JsonObject &saveMqtt(JsonObject &_config) {
     configJson.set("mqttUsername", _config.get<String>("mqttUsername"));
     configJson.set("mqttPassword", _config.get<String>("mqttPassword"));
     configJson.set("mqttEmbedded", _config.get<String>("mqttEmbedded"));
-    saveConfig();
-    _config.printTo(Serial);
-    reloadMqttConfig();
+    requestConfigStorage();
     return configJson;
 }
 
 JsonObject &saveHa(JsonObject &_config) {
     configJson.set("homeAssistantAutoDiscovery", _config.get<bool>("homeAssistantAutoDiscovery"));
     configJson.set("homeAssistantAutoDiscoveryPrefix", _config.get<String>("homeAssistantAutoDiscoveryPrefix"));
-    saveConfig();
+    requestConfigStorage();
     return configJson;
 }
 
@@ -199,11 +216,11 @@ JsonObject &saveEmoncms(JsonObject &_config) {
     configJson.set("emoncmsPrefix", _config.get<String>("emoncmsPrefix"));
     configJson.set("emoncmsUrl", _config.get<String>("emoncmsUrl"));
     configJson.set("emoncmsPort", _config.get<int>("emoncmsPort"));
-    saveConfig();
+    requestConfigStorage();
     return configJson;
 }
 
-void saveConfig() {
+void persistConfigFile(){
     if (SPIFFS.begin()) {
         File rFile = SPIFFS.open(CONFIG_FILENAME, "w+");
         if (!rFile) {
@@ -219,13 +236,4 @@ void saveConfig() {
     SPIFFS.end();
     logger("[CONFIG] New config stored.");
 
-}
-
-void releaseGpio(int gpio) {
-
-}
-
-void configGpio(int gpio, int mode) {
-    pinMode(gpio, mode);
-    inUseGpios.push_back({gpio});
 }

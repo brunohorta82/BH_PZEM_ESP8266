@@ -1,23 +1,14 @@
-#define FIRMWARE_VERSION 4.8
+#define HARDWARE "onofre"
+#define FACTORY_TYPE "pzem004T" //pzem004T pzem017 
+#define FIRMWARE_VERSION 6.10
+#define FIRMWARE_VERSION_X "6x10"
+const String DEFAULT_NODE_ID = String(HARDWARE) +"-"+String(FACTORY_TYPE)+"-"+String(ESP.getChipId())+"-"+String(FIRMWARE_VERSION_X);
 
+#define CONFIG_FILENAME  "/config_bh"+String(HARDWARE)+".json"
 #define PZEM004
 //#define PZEMDC
-#define FACTORY_TYPE "pzem004T" //pzem004T pzem017 
+#define FACTORY_TYPE 
 #define HARDWARE "bhpzem"
-
-#include <ESP8266httpUpdate.h>
-#include <JustWifi.h> //https://github.com/xoseperez/justwifi
-#include <ESP8266mDNS.h>
-#include <DallasTemperature.h> // https://github.com/milesburton/Arduino-Temperature-Control-Library
-#include <Timing.h> //https://github.com/scargill/Timing
-#include <AsyncMqttClient.h> //https://github.com/marvinroger/async-mqtt-client
-#include <ArduinoJson.h> //Install from Arduino IDE Library Manager
-#include "FS.h"
-#include <Ticker.h>
-#include <ESPAsyncTCP.h> //https://github.com/me-no-dev/ESPAsyncTCP
-#include <ESPAsyncWebServer.h> //https://github.com/me-no-dev/ESPAsyncWebServer
-#include <AsyncJson.h> //https://github.com/me-no-dev/ESPAsyncWebServer
-
 #define CONFIG_FILENAME  "/config_"+String(HARDWARE)+".json"
 #define CONFIG_BUFFER_SIZE 1024
 
@@ -28,6 +19,15 @@
 //AP PASSWORD  
 #define AP_SECRET "EasyIot@"
 
+#define PAYLOAD_ON "ON"
+#define PAYLOAD_OFF "OFF"
+#define PAYLOAD_CLOSE "CLOSE"
+#define PAYLOAD_OPEN "OPEN"
+#define PAYLOAD_STOP "STOP"
+#define PAYLOAD_LOCK "LOCK"
+#define PAYLOAD_UNLOCK "UNLOCK"
+
+
 
 //MQTT  
 #define MQTT_BROKER_IP ""
@@ -36,14 +36,29 @@
 #define MQTT_PASSWORD ""
 
 
+
 //CONTROL FLAGS
-bool shouldReboot = false;
-bool reloadMqttConfiguration = false;
-bool wifiUpdated = false;
-bool laodDefaults = false;
-bool adopted = false;
-bool autoUpdate = false;
-int easyConfig = 0;
+bool REBOOT = false;
+bool LOAD_DEFAULTS = false;
+bool AUTO_UPDATE = false;
+bool STORE_CONFIG = false;
+bool WIFI_SCAN = false;
+
+void requestConfigStorage(){
+  STORE_CONFIG = true;
+}
+void requestReboot(){
+  REBOOT = true;
+}
+void requestAutoUpdate(){
+  AUTO_UPDATE = true;
+}
+void requestLoadDefaults(){
+  LOAD_DEFAULTS = true;
+}
+void requestWifiScan(){
+  WIFI_SCAN = true;
+}
 DynamicJsonBuffer jsonBuffer(CONFIG_BUFFER_SIZE);
 
 JsonArray& getJsonArray() {

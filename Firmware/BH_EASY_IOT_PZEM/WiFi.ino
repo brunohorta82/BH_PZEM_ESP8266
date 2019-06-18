@@ -1,16 +1,5 @@
 #include <JustWifi.h>
-bool scan = false;
-void activateScan(){
-  scan = true;
-}
-bool needScan(){
-  return scan;
-}
 
- void stopScan(){
-  scan = false;
- logger("[WIFI] WI-Fi Network's Scanner Stoped");
- }
 
 void reloadWiFiConfig(){
        jw.disconnect(); 
@@ -19,8 +8,10 @@ void reloadWiFiConfig(){
        jw.setSoftAP(getHostname().c_str(),getConfigJson().get<String>("apSecret").c_str());
        if(getConfigJson().get<bool>("staticIp")){
         jw.addNetwork(getConfigJson().get<String>("wifiSSID").c_str(), getConfigJson().get<String>("wifiSecret").c_str(),getConfigJson().get<String>("wifiIp").c_str(),getConfigJson().get<String>("wifiGw").c_str(),getConfigJson().get<String>("wifiMask").c_str(),getConfigJson().get<String>("wifiGw").c_str());
+        jw.addNetwork(getConfigJson().get<String>("wifiSSID2").c_str(), getConfigJson().get<String>("wifiSecret2").c_str(),getConfigJson().get<String>("wifiIp").c_str(),getConfigJson().get<String>("wifiGw").c_str(),getConfigJson().get<String>("wifiMask").c_str(),getConfigJson().get<String>("wifiGw").c_str());
        }else{
         jw.addNetwork(getConfigJson().get<String>("wifiSSID").c_str(), getConfigJson().get<String>("wifiSecret").c_str());
+        jw.addNetwork(getConfigJson().get<String>("wifiSSID2").c_str(), getConfigJson().get<String>("wifiSecret2").c_str());
       }
  }
  
@@ -56,7 +47,7 @@ void scanNewWifiNetworks(){
         }
     }
     WiFi.scanDelete();
-    stopScan();
+  
  }
  void dissableAP(){
   jw.enableAP(false);
@@ -65,16 +56,10 @@ void setupWiFi(){
   jw.setHostname(getHostname().c_str());
   jw.subscribe(infoCallback);
   jw.setSoftAP(getApName().c_str(),getConfigJson().get<String>("apSecret").c_str());
-
   jw.enableAP(false);
   jw.enableAPFallback(true);
   jw.enableSTA(true);
-  jw.cleanNetworks();
-    if(getConfigJson().get<bool>("staticIp")){
-    jw.addNetwork(getConfigJson().get<String>("wifiSSID").c_str(), getConfigJson().get<String>("wifiSecret").c_str(),getConfigJson().get<String>("wifiIp").c_str(),getConfigJson().get<String>("wifiGw").c_str(),getConfigJson().get<String>("wifiMask").c_str(),getConfigJson().get<String>("wifiGw").c_str());
-  }else{
-    jw.addNetwork(getConfigJson().get<String>("wifiSSID").c_str(), getConfigJson().get<String>("wifiSecret").c_str());
-  }
+  reloadWiFiConfig();
 }
 
 
@@ -199,4 +184,4 @@ void infoCallback(justwifi_messages_t code, char * parameter) {
       }
       publishOnEventSource("wifi-log",msg);
       logger(msg);
-};
+}
